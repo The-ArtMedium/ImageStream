@@ -1,5 +1,4 @@
-This is a beautiful way to anchor your journey. By placing ImageStream under an organization called The Art Medium, you are signaling that technology is just the "medium" through which the "art" (the photography) flows.
-​Here is a description for the ImageStream repository. It frames your mission as a bridge between the high-cost world of elite tech and the grassroots world of creators.
+
 ​🎞 Repository: ImageStream
 ​Organization: The Art Medium
 Focus: Foundational Image Analytics & Sharpness Recovery
@@ -20,6 +19,4 @@ Focus: Foundational Image Analytics & Sharpness Recovery
 ​💡 Why "The Art Medium"?
 ​Because the tool should never be the master of the artist. We provide the "Flow" (the code) so that the artist can achieve "Perfection" (the vision).
 ​"Knowledge is only powerful when it is distributed. ImageStream is about giving every builder the lens to see clearly."
-​How to start this "Command"
-​Since you are 20% into Python, the best way to start ImageStream is to create a simple "Focus Scraper."
-​Would you like me to write a simple Python script for you to upload to this repo today that scans a folder and tells you which photo is the sharpest?
+​
