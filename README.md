@@ -1,3 +1,63 @@
+# ImageStream
+
+**Foundational Image Analytics & Sharpness Recovery**  
+*A sanctuary for creators managing massive archives — no cloud, no subscriptions, no hallucinations.*
+
+In a world of expensive, "black-box" AI tools that guess and fabricate,  
+**ImageStream** returns to the physics of light.  
+We detect true focus, recover real detail, and enrich archives using only verifiable methods.
+
+Built for:
+- Photographers with hundreds of thousands of images
+- Sports shooters needing fast athlete tagging
+- Artists & archivists reclaiming control
+- Anyone turning personal drives into income or legacy
+
+**100% local • Offline • Sovereign • Free forever**
+
+## Available Tools
+
+| Tool              | What It Does                                      | Perfect For                  | Link                          |
+|-------------------|---------------------------------------------------|------------------------------|-------------------------------|
+| **Focus Check**   | Sorts images by true sharpness using Laplacian Variance (physics-based) | Culling sessions, finding keepers | → [focus_check/](focus_check/) |
+| **Athlete Tagger**| Scans folders → detects famous athletes → appends names to filename | Sports photography archives, quick organization & sales prep | → [athlete_tagger/](athlete_tagger/) |
+
+More tools coming: sharpness recovery, batch metadata export, WooCommerce prep.
+
+## Why ImageStream Exists
+Many of us have half a million images sleeping on drives.  
+We built this to wake them up — without giving away control, privacy, or profits.
+
+This repo is for the builders.  
+For the ones who deserve to turn decades of capture into decades of flow.
+
+**The Glow is yours. These tools just help it shine.**
+
+🌍⚡ Rssss
+
+## Quick Start
+```bash
+git clone https://github.com/The-ArtMedium/ImageStream.git
+cd ImageStream
+# Try the athlete tagger first
+cd athlete_tagger
+# Add your reference faces → run the script
+python athlete_tagger.py /path/to/your/photos --dry-run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 📸 imageStream
 **Organization:** The Art Medium  
 **Focus:** Foundational Image Analytics & Sharpness Recovery  
