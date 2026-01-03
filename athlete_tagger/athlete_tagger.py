@@ -4,40 +4,37 @@ from pathlib import Path
 import face_recognition
 from PIL import Image
 import numpy as np
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
+from tqdm import tqdm
 
 # ==================== CONFIGURATION ====================
-# Add your reference images here: one clear face photo per athlete
-# Format: "Athlete Name": "path/to/reference_face.jpg"
 KNOWN_ATHLETES = {
     "Usain Bolt": "references/usain_bolt.jpg",
     "Serena Williams": "references/serena_williams.jpg",
     "Lionel Messi": "references/lionel_messi.jpg",
-    "Michael Jordan": "references/michael_jordan.jpg",
-    "Cristiano Ronaldo": "references/cristiano_ronaldo.jpg",
-    # Add as many as you want — crop tight on face for best results
+    # Add your reference paths here
 }
 
-# Load known faces once at startup
-print("Loading known athlete faces...")
+# Threshold: Lower is stricter (0.4 is very strict, 0.6 is loose)
+MATCH_THRESHOLD = 0.55 
+
+# Load known faces once globally for worker processes
+print("Preparing reference library...")
 known_encodings = []
 known_names = []
 
 for name, path in KNOWN_ATHLETES.items():
-    if not os.path.exists(path):
-        print(f"Warning: Reference image not found: {path}")
-        continue
-    image = face_recognition.load_image_file(path)
-    encoding = face_recognition.face_encodings(image)
-    if encoding:
-        known_encodings.append(encoding[0])
-        known_names.append(name)
-    else:
-        print(f"Warning: No face found in reference: {path}")
-
-print(f"Loaded {len(known_encodings)} athlete face encodings.\n")
+    if os.path.exists(path):
+        img = face_recognition.load_image_file(path)
+        enc = face_recognition.face_encodings(img)
+        if enc:
+            known_encodings.append(enc[0])
+            known_names.append(name)
 # ======================================================
 
 def rename_with_athletes(image_path):
+    """Core logic for a single image; optimized for parallel execution."""
     try:
         image = face_recognition.load_image_file(image_path)
         face_locations = face_recognition.face_locations(image)
@@ -45,35 +42,62 @@ def rename_with_athletes(image_path):
 
         detected_athletes = set()
         for face_encoding in face_encodings:
-            matches = face_recognition.compare_faces(known_encodings, face_encoding, tolerance=0.55)
-            if True in matches:
-                first_match_index = matches.index(True)
-                name = known_names[first_match_index]
-                # Clean name for filename
-                clean_name = name.replace(" ", "").replace("-", "")
-                detected_athletes.add(clean_name)
+            # Use distance for better accuracy than simple compare_faces
+            distances = face_recognition.face_distance(known_encodings, face_encoding)
+            if len(distances) > 0:
+                best_match_index = np.argmin(distances)
+                if distances[best_match_index] <= MATCH_THRESHOLD:
+                    name = known_names[best_match_index]
+                    detected_athletes.add(name.replace(" ", ""))
 
         if detected_athletes:
             athletes_str = "_".join(sorted(detected_athletes))
             path = Path(image_path)
-            new_name = f"{path.stem}_{athletes_str}{path.suffix}"
-            new_path = path.parent / new_name
-
-            # Avoid overwrite
+            new_path = path.parent / f"{path.stem}_{athletes_str}{path.suffix}"
+            
+            # Collision handling
             counter = 1
             while new_path.exists():
-                new_name = f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
-                new_path = path.parent / new_name
+                new_path = path.parent / f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
                 counter += 1
 
             os.rename(image_path, new_path)
-            print(f"Renamed: {path.name} → {new_path.name}")
-        else:
-            print(f"No known athletes found: {Path(image_path).name}")
+            return True
+    except Exception:
+        return False
+    return False
 
-    except Exception as e:
-        print(f"Error processing {image_path}: {e}")
+def run_scanner(folder_path, dry_run=False):
+    supported = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
+    files_to_process = []
+    
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.lower().endswith(supported):
+                files_to_process.append(os.path.join(root, file))
 
+    if dry_run:
+        print(f"[DRY RUN] Found {len(files_to_process)} images to analyze.")
+        return
+
+    # Using all available CPU cores for massive speed boost
+    cpus = multiprocessing.cpu_count()
+    print(f"Starting scan using {cpus} CPU cores...")
+    
+    with ProcessPoolExecutor(max_workers=cpus) as executor:
+        # tqdm creates the visual progress bar photographers will love
+        list(tqdm(executor.map(rename_with_athletes, files_to_process), 
+                  total=len(files_to_process), 
+                  desc="Scanning Archive"))
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ImageStream Pro: Athlete Tagger")
+    parser.add_argument("folder", help="Target folder")
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+
+    run_scanner(args.folder, dry_run=args.dry_run)
+    print("\nScan Complete.")
 def process_folder(folder_path, dry_run=False):
     supported = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
     for root, _, files in os.walk(folder_path):
