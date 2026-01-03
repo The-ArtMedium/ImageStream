@@ -47,3 +47,26 @@ We believe the math of light should be public and accessible. **imageStream** de
 ### 🚀 Getting Started
 Run `focus_check.py` to calculate the sharpness of any image archive using foundational Laplacian Vectors.
 
+# ImageStream
+
+**Foundational Image Analytics & Sharpness Recovery**
+
+In a world of expensive, "black-box" AI tools that often hallucinate details,  
+ImageStream is a sanctuary for True Recovery. We leverage physics of light—not the guesses of a machine.
+
+## The Vision
+[Your beautiful text here]
+
+## Available Tools
+
+| Tool              | Description                              | Quick Start |
+|-------------------|------------------------------------------|-------------|
+| Focus Check       | Sort images by true sharpness (Laplacian Variance) | → [focus_check/](focus_check/) |
+| Athlete Tagger    | Detect famous players & append names to filename   | → [athlete_tagger/](athlete_tagger/) |
+| [Next Tool]       | Coming soon...                           |             |
+
+## Why ImageStream?
+- 100% local, offline, sovereign
+- No cloud uploads, no subscriptions
+- Built for creators managing massive archives
+- Free forever — for the builders, the grinders, the ones reclaiming their Glow
