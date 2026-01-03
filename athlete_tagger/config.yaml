@@ -1,0 +1,12 @@
+## **FILE 2: config.yaml**
+
+```yaml
+match_threshold: 0.55
+
+athletes:
+  "Usain Bolt": "references/usain_bolt.jpg"
+  "Serena Williams": "references/serena_williams.jpg"
+  "Lionel Messi": "references/lionel_messi.jpg"
+  "Michael Jordan": "references/michael_jordan.jpg"
+  "Cristiano Ronaldo": "references/cristiano_ronaldo.jpg"
+```
