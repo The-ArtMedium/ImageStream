@@ -1,177 +1,343 @@
+You're absolutely right! Let me give you the COMPLETE file in one block. Here we go:
+FILE 1: athlete_tagger.py (COMPLETE)
+#!/usr/bin/env python3
+"""
+ImageStream Athlete Tagger
+Automatically detects athletes in photos and renames files accordingly.
+Perfect for organizing large photo archives.
+"""
+
 import os
 import argparse
 import pickle
 import hashlib
+import logging
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
 
-# Third-party libraries (Install via: pip install face_recognition numpy tqdm)
-import face_recognition
-import numpy as np
-from tqdm import tqdm
+try:
+    import face_recognition
+    import numpy as np
+    from tqdm import tqdm
+    import yaml
+except ImportError as e:
+    print(f"❌ Missing required library: {e}")
+    print("📦 Install with: pip install -r requirements.txt")
+    exit(1)
 
 # ==================== CONFIGURATION ====================
-# Add your reference images here: "Athlete Name": "path/to/reference_face.jpg"
-KNOWN_ATHLETES = {
-    "Usain Bolt": "references/usain_bolt.jpg",
-    "Serena Williams": "references/serena_williams.jpg",
-    "Lionel Messi": "references/lionel_messi.jpg",
-    "Michael Jordan": "references/michael_jordan.jpg",
-    "Cristiano Ronaldo": "references/cristiano_ronaldo.jpg",
-}
-
+CONFIG_FILE = "config.yaml"
 CACHE_FILE = "athlete_encodings.cache"
-MATCH_THRESHOLD = 0.55  # Lower is stricter accuracy
-# ======================================================
+DEFAULT_THRESHOLD = 0.55
 
-def get_encodings_with_cache(athlete_dict):
-    """Loads encodings from cache or computes them if files changed."""
-    # Create a unique key based on the current athlete list
-    config_hash = hashlib.md5(str(sorted(athlete_dict.items())).encode()).hexdigest()
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('athlete_tagger.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# ==================== STATISTICS TRACKER ====================
+class Stats:
+    def __init__(self):
+        self.total_processed = 0
+        self.faces_detected = 0
+        self.matches_found = 0
+        self.files_renamed = 0
+        self.errors = 0
     
+    def print_summary(self):
+        print("\n" + "="*50)
+        print("📊 PROCESSING SUMMARY")
+        print("="*50)
+        print(f"Total images processed:     {self.total_processed}")
+        print(f"Images with faces detected: {self.faces_detected}")
+        print(f"Images with athlete matches: {self.matches_found}")
+        print(f"Files successfully renamed: {self.files_renamed}")
+        print(f"Errors encountered:         {self.errors}")
+        print("="*50)
+
+stats = Stats()
+
+# ==================== CONFIGURATION LOADER ====================
+def load_config(config_path=CONFIG_FILE):
+    """Load athlete configuration from YAML file."""
+    if not os.path.exists(config_path):
+        logger.error(f"❌ Config file not found: {config_path}")
+        logger.info("📝 Creating template config.yaml...")
+        create_template_config(config_path)
+        logger.info("✅ Template created! Edit config.yaml and add your athlete photos.")
+        exit(1)
+    
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    athletes = config.get('athletes', {})
+    threshold = config.get('match_threshold', DEFAULT_THRESHOLD)
+    
+    if not athletes:
+        logger.error("❌ No athletes defined in config.yaml!")
+        exit(1)
+    
+    return athletes, threshold
+
+def create_template_config(config_path):
+    """Create a template configuration file."""
+    template = """# ImageStream Athlete Tagger Configuration
+# Add your athletes below with paths to their reference photos
+
+# Match threshold: Lower = stricter (0.4-0.6 recommended)
+# 0.4 = very strict, 0.6 = more lenient
+match_threshold: 0.55
+
+# Athletes: Add name and path to reference photo
+athletes:
+  "Usain Bolt": "references/usain_bolt.jpg"
+  "Serena Williams": "references/serena_williams.jpg"
+  "Lionel Messi": "references/lionel_messi.jpg"
+  # Add more athletes below:
+  # "Athlete Name": "path/to/photo.jpg"
+"""
+    with open(config_path, 'w') as f:
+        f.write(template)
+
+# ==================== ENCODING CACHE ====================
+def load_or_compute_encodings(athlete_dict, threshold):
+    """Load cached encodings or compute new ones if config changed."""
+    config_hash = hashlib.md5(
+        str(sorted(athlete_dict.items())).encode()
+    ).hexdigest()
+    
+    # Try loading from cache
     if os.path.exists(CACHE_FILE):
         try:
             with open(CACHE_FILE, 'rb') as f:
-                data = pickle.load(f)
-                if data.get('key') == config_hash:
-                    print("⚡ Loaded athlete encodings from cache.")
-                    return data['encodings'], data['names']
-        except:
-            pass
-
-    print("🔍 Computing new face encodings for reference library...")
+                cache_data = pickle.load(f)
+                if cache_data.get('hash') == config_hash:
+                    logger.info("⚡ Loaded athlete encodings from cache")
+                    return cache_data['encodings'], cache_data['names']
+        except Exception as e:
+            logger.warning(f"Cache load failed: {e}")
+    
+    # Compute new encodings
+    logger.info("🔍 Computing face encodings for reference library...")
     encodings, names = [], []
+    
     for name, path in athlete_dict.items():
-        if os.path.exists(path):
-            img = face_recognition.load_image_file(path)
-            enc = face_recognition.face_encodings(img)
-            if enc:
-                encodings.append(enc[0])
+        if not os.path.exists(path):
+            logger.warning(f"⚠️  Reference image not found: {path}")
+            continue
+        
+        try:
+            image = face_recognition.load_image_file(path)
+            face_encodings = face_recognition.face_encodings(image)
+            
+            if face_encodings:
+                encodings.append(face_encodings[0])
                 names.append(name)
+                logger.info(f"✓ Loaded: {name}")
             else:
-                print(f"⚠️ No face found in: {path}")
+                logger.warning(f"⚠️  No face detected in: {path}")
+        except Exception as e:
+            logger.error(f"❌ Error loading {path}: {e}")
+    
+    if not encodings:
+        logger.error("❌ No valid reference faces found!")
+        exit(1)
     
     # Save to cache
+    cache_data = {
+        'hash': config_hash,
+        'encodings': encodings,
+        'names': names
+    }
     with open(CACHE_FILE, 'wb') as f:
-        pickle.dump({'key': config_hash, 'encodings': encodings, 'names': names}, f)
+        pickle.dump(cache_data, f)
     
+    logger.info(f"✅ Encoded {len(encodings)} athlete reference faces")
     return encodings, names
 
-# Load global variables for worker processes
-known_encodings, known_names = get_encodings_with_cache(KNOWN_ATHLETES)
-
-def rename_with_athletes(image_path):
-    """Processes a single image: detects, matches, and renames."""
+# ==================== IMAGE PROCESSING ====================
+def process_image(args):
+    """Process a single image (worker function)."""
+    image_path, known_encodings, known_names, threshold = args
+    
     try:
+        # Load image
         image = face_recognition.load_image_file(image_path)
-        # Fast detection (hog) is better for CPUs; 'cnn' is for GPUs
+        
+        # Detect faces (HOG is faster for CPU)
         face_locations = face_recognition.face_locations(image, model="hog")
+        
+        if not face_locations:
+            return None, False
+        
+        stats.faces_detected += 1
         face_encodings = face_recognition.face_encodings(image, face_locations)
-
+        
+        # Match faces to known athletes
         detected_athletes = set()
         for face_encoding in face_encodings:
             distances = face_recognition.face_distance(known_encodings, face_encoding)
+            
             if len(distances) > 0:
-                best_match_idx = np.argmin(distances)
-                if distances[best_match_idx] <= MATCH_THRESHOLD:
-                    clean_name = known_names[best_match_idx].replace(" ", "").replace("-", "")
+                min_distance = min(distances)
+                
+                if min_distance <= threshold:
+                    best_match_idx = np.argmin(distances)
+                    athlete_name = known_names[best_match_idx]
+                    clean_name = athlete_name.replace(" ", "").replace("-", "")
                     detected_athletes.add(clean_name)
-
-        if detected_athletes:
-            athletes_str = "_".join(sorted(detected_athletes))
-            path = Path(image_path)
-            new_name = f"{path.stem}_{athletes_str}{path.suffix}"
+                    logger.debug(f"  Match: {athlete_name} (distance: {min_distance:.3f})")
+        
+        if not detected_athletes:
+            return None, True
+        
+        # Generate new filename
+        stats.matches_found += 1
+        athletes_str = "_".join(sorted(detected_athletes))
+        path = Path(image_path)
+        new_name = f"{path.stem}_{athletes_str}{path.suffix}"
+        new_path = path.parent / new_name
+        
+        # Handle filename collisions
+        counter = 1
+        while new_path.exists():
+            new_name = f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
             new_path = path.parent / new_name
+            counter += 1
+        
+        return (image_path, new_path), True
+        
+    except Exception as e:
+        logger.error(f"Error processing {image_path}: {e}")
+        stats.errors += 1
+        return None, False
 
-            # Collision handling (prevents overwriting)
-            counter = 1
-            while new_path.exists():
-                new_name = f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
-                new_path = path.parent / new_name
-                counter += 1
-
-            os.rename(image_path, new_path)
-            return True
-    except Exception:
-        return False
-    return False
-
-def process_archive(folder_path, dry_run=False):
-    supported = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
-    image_paths = [
-        os.path.join(root, f) 
-        for root, _, files in os.walk(folder_path) 
-        for f in files if f.lower().endswith(supported)
-    ]
-
-    if not image_paths:
-        print("No images found in the target folder.")
-        return
-
-    if dry_run:
-        print(f"[DRY RUN] Would process {len(image_paths)} images.")
-        return
-
-    # Use all CPU cores for parallel scanning
-    num_workers = multiprocessing.cpu_count()
-    print(f"🚀 Scanning {len(image_paths)} images using {num_workers} cores...")
-
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        # tqdm provides the progress bar
-        list(tqdm(executor.map(rename_with_athletes, image_paths), total=len(image_paths), desc="Processing"))
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ImageStream Athlete Archival Scanner")
-    parser.add_argument("folder", help="Path to the photo archive folder")
-    parser.add_argument("--dry-run", action="store_true", help="Scan without renaming")
-    args = parser.parse_args()
-
-    process_archive(args.folder, dry_run=args.dry_run)
-    print("\n✅ Task Complete. Your archive is now searchable by athlete name.")
-                files_to_process.append(os.path.join(root, file))
-
-    if dry_run:
-        print(f"[DRY RUN] Found {len(files_to_process)} images to analyze.")
-        return
-
-    # Using all available CPU cores for massive speed boost
-    cpus = multiprocessing.cpu_count()
-    print(f"Starting scan using {cpus} CPU cores...")
+# ==================== FOLDER SCANNER ====================
+def scan_folder(folder_path, known_encodings, known_names, threshold, dry_run=False, max_workers=None):
+    """Scan folder and process all images."""
+    supported_formats = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
     
-    with ProcessPoolExecutor(max_workers=cpus) as executor:
-        # tqdm creates the visual progress bar photographers will love
-        list(tqdm(executor.map(rename_with_athletes, files_to_process), 
-                  total=len(files_to_process), 
-                  desc="Scanning Archive"))
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ImageStream Pro: Athlete Tagger")
-    parser.add_argument("folder", help="Target folder")
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
-
-    run_scanner(args.folder, dry_run=args.dry_run)
-    print("\nScan Complete.")
-def process_folder(folder_path, dry_run=False):
-    supported = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
+    # Collect all image paths
+    image_paths = []
     for root, _, files in os.walk(folder_path):
         for file in files:
-            if file.lower().endswith(supported):
-                image_path = os.path.join(root, file)
-                if dry_run:
-                    print(f"[DRY RUN] Would process: {image_path}")
-                else:
-                    rename_with_athletes(image_path)
+            if file.lower().endswith(supported_formats):
+                image_paths.append(os.path.join(root, file))
+    
+    if not image_paths:
+        logger.warning("⚠️  No images found in target folder")
+        return
+    
+    logger.info(f"📸 Found {len(image_paths)} images to process")
+    
+    if dry_run:
+        logger.info("🔍 DRY RUN MODE - No files will be renamed")
+        sample_paths = image_paths[:min(10, len(image_paths))]
+        for path in sample_paths:
+            logger.info(f"  Would process: {path}")
+        logger.info(f"... and {len(image_paths) - len(sample_paths)} more")
+        return
+    
+    # Determine worker count
+    if max_workers is None:
+        max_workers = multiprocessing.cpu_count()
+    
+    logger.info(f"🚀 Processing with {max_workers} CPU cores...")
+    
+    # Prepare arguments for workers
+    worker_args = [
+        (path, known_encodings, known_names, threshold) 
+        for path in image_paths
+    ]
+    
+    # Process in parallel with progress bar
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        results = list(tqdm(
+            executor.map(process_image, worker_args),
+            total=len(image_paths),
+            desc="Scanning photos",
+            unit="img"
+        ))
+    
+    # Apply renames
+    for result, has_faces in results:
+        stats.total_processed += 1
+        if result:
+            old_path, new_path = result
+            try:
+                os.rename(old_path, new_path)
+                stats.files_renamed += 1
+                logger.info(f"✓ Renamed: {Path(old_path).name} → {Path(new_path).name}")
+            except Exception as e:
+                logger.error(f"❌ Failed to rename {old_path}: {e}")
+                stats.errors += 1
+
+# ==================== MAIN ====================
+def main():
+    parser = argparse.ArgumentParser(
+        description="ImageStream Athlete Tagger - Organize photos by detected athletes",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python athlete_tagger.py /path/to/photos
+  python athlete_tagger.py /path/to/photos --dry-run
+  python athlete_tagger.py /path/to/photos --threshold 0.50
+  python athlete_tagger.py /path/to/photos --workers 4
+        """
+    )
+    
+    parser.add_argument('folder', help='Path to folder containing photos to process')
+    parser.add_argument('--dry-run', action='store_true', help='Preview without making changes')
+    parser.add_argument('--threshold', type=float, help=f'Face matching threshold (default from config)')
+    parser.add_argument('--workers', type=int, help='Number of CPU cores to use (default: all)')
+    parser.add_argument('--config', default=CONFIG_FILE, help=f'Path to config file (default: {CONFIG_FILE})')
+    
+    args = parser.parse_args()
+    
+    # Validate folder
+    if not os.path.isdir(args.folder):
+        logger.error(f"❌ Folder not found: {args.folder}")
+        exit(1)
+    
+    print("="*50)
+    print("🏃 ImageStream Athlete Tagger")
+    print("="*50)
+    
+    # Load configuration
+    athletes, threshold = load_config(args.config)
+    
+    # Override threshold if specified
+    if args.threshold:
+        threshold = args.threshold
+        logger.info(f"Using custom threshold: {threshold}")
+    
+    # Load/compute encodings
+    known_encodings, known_names = load_or_compute_encodings(athletes, threshold)
+    
+    # Process folder
+    scan_folder(
+        args.folder,
+        known_encodings,
+        known_names,
+        threshold,
+        dry_run=args.dry_run,
+        max_workers=args.workers
+    )
+    
+    # Print summary
+    if not args.dry_run:
+        stats.print_summary()
+    
+    print("\n✅ Processing complete!")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ImageStream Athlete Tagger: Append detected athlete names to filenames")
-    parser.add_argument("folder", help="Path to folder to scan recursively")
-    parser.add_argument("--dry-run", action="store_true", help="Test without renaming files")
-    args = parser.parse_args()
-
-    print(f"Scanning folder: {args.folder}")
-    if args.dry_run:
-        print("DRY RUN MODE — no files will be renamed\n")
-    process_folder(args.folder, dry_run=args.dry_run)
-    print("\nDone.")
+    main()
+Copy that entire block ☝️ and save it as athlete_tagger.py
+When you're done, say "next" and I'll give you the next file!
