@@ -1,0 +1,161 @@
+
+================================================================================
+                 IMAGESTREAM ATHLETE TAGGER - SETUP GUIDE
+================================================================================
+
+STEP 1: INSTALL PYTHON LIBRARIES
+---------------------------------
+
+Open your terminal/command prompt and type:
+
+    pip install -r requirements.txt
+
+Press ENTER and wait for installation to complete.
+
+If you get errors, you may need to install additional tools first:
+- Mac users: brew install cmake
+- Ubuntu/Debian: sudo apt-get install cmake
+- Windows: Install Visual Studio Build Tools
+
+
+STEP 2: PREPARE REFERENCE PHOTOS
+---------------------------------
+
+1. Create a folder called "references" in the athlete_tagger folder
+
+2. Add one photo of each athlete you want to detect
+   - Use clear, well-lit photos
+   - Face should be clearly visible
+   - Straight-on is best (not side angles)
+
+3. Name them clearly (examples):
+   - usain_bolt.jpg
+   - serena_williams.jpg
+   - lionel_messi.jpg
+
+
+STEP 3: EDIT CONFIG.YAML
+-------------------------
+
+Open config.yaml in any text editor (Notepad, TextEdit, etc)
+
+Add your athletes like this:
+
+    athletes:
+      "Usain Bolt": "references/usain_bolt.jpg"
+      "Serena Williams": "references/serena_williams.jpg"
+
+Save the file when done.
+
+
+STEP 4: TEST RUN (DRY RUN)
+---------------------------
+
+Before processing real photos, do a test run.
+
+In your terminal, type:
+
+    python athlete_tagger.py /path/to/your/photos --dry-run
+
+Replace "/path/to/your/photos" with your actual folder path.
+
+This shows what WOULD happen without changing anything.
+
+
+STEP 5: PROCESS YOUR PHOTOS
+----------------------------
+
+If the dry run looks good, run it for real:
+
+    python athlete_tagger.py /path/to/your/photos
+
+The script will:
+- Scan all photos in the folder
+- Detect athlete faces
+- Rename files to include athlete names
+- Show you a progress bar
+- Give you a summary at the end
+
+
+UNDERSTANDING THE RESULTS
+--------------------------
+
+After running, you'll see:
+- Total images processed: How many photos were scanned
+- Images with faces detected: How many had any faces
+- Images with athlete matches: How many had your athletes
+- Files successfully renamed: How many were changed
+
+Check "athlete_tagger.log" for detailed information.
+
+
+TIPS FOR BETTER RESULTS
+------------------------
+
+If too many WRONG matches (false positives):
+    python athlete_tagger.py /path/to/photos --threshold 0.45
+
+If MISSING matches (not detecting athletes):
+    python athlete_tagger.py /path/to/photos --threshold 0.60
+
+If processing is slow, limit CPU cores:
+    python athlete_tagger.py /path/to/photos --workers 4
+
+
+TROUBLESHOOTING
+---------------
+
+Problem: "No face detected in reference photo"
+Solution: Use a clearer photo with face visible straight-on
+
+Problem: Script is too slow
+Solution: Use fewer CPU cores with --workers 2
+
+Problem: Too many false matches
+Solution: Use stricter threshold with --threshold 0.45
+
+Problem: Missing obvious matches
+Solution: Use looser threshold with --threshold 0.60
+
+
+SAFETY NOTES
+------------
+
+- The script will NOT overwrite existing files
+- Your original photos are renamed, not copied
+- Use --dry-run first to be safe
+- All operations are logged in athlete_tagger.log
+- You can always rename files back manually if needed
+
+
+NEED MORE HELP?
+---------------
+
+Check the README.md file for detailed documentation
+Visit the GitHub repo: github.com/The-ArtMedium/ImageStream
+Open an issue on GitHub if you find bugs
+
+
+QUICK REFERENCE
+---------------
+
+Basic usage:
+    python athlete_tagger.py /path/to/photos
+
+Preview only:
+    python athlete_tagger.py /path/to/photos --dry-run
+
+Stricter matching:
+    python athlete_tagger.py /path/to/photos --threshold 0.45
+
+Looser matching:
+    python athlete_tagger.py /path/to/photos --threshold 0.60
+
+Limit CPU usage:
+    python athlete_tagger.py /path/to/photos --workers 4
+
+
+================================================================================
+                            HAPPY ORGANIZING!
+================================================================================
+```
