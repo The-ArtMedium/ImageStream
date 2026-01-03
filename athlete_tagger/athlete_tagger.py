@@ -1,64 +1,94 @@
 import os
 import argparse
+import pickle
+import hashlib
 from pathlib import Path
-import face_recognition
-from PIL import Image
-import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
+
+# Third-party libraries (Install via: pip install face_recognition numpy tqdm)
+import face_recognition
+import numpy as np
 from tqdm import tqdm
 
 # ==================== CONFIGURATION ====================
+# Add your reference images here: "Athlete Name": "path/to/reference_face.jpg"
 KNOWN_ATHLETES = {
     "Usain Bolt": "references/usain_bolt.jpg",
     "Serena Williams": "references/serena_williams.jpg",
     "Lionel Messi": "references/lionel_messi.jpg",
-    # Add your reference paths here
+    "Michael Jordan": "references/michael_jordan.jpg",
+    "Cristiano Ronaldo": "references/cristiano_ronaldo.jpg",
 }
 
-# Threshold: Lower is stricter (0.4 is very strict, 0.6 is loose)
-MATCH_THRESHOLD = 0.55 
-
-# Load known faces once globally for worker processes
-print("Preparing reference library...")
-known_encodings = []
-known_names = []
-
-for name, path in KNOWN_ATHLETES.items():
-    if os.path.exists(path):
-        img = face_recognition.load_image_file(path)
-        enc = face_recognition.face_encodings(img)
-        if enc:
-            known_encodings.append(enc[0])
-            known_names.append(name)
+CACHE_FILE = "athlete_encodings.cache"
+MATCH_THRESHOLD = 0.55  # Lower is stricter accuracy
 # ======================================================
 
+def get_encodings_with_cache(athlete_dict):
+    """Loads encodings from cache or computes them if files changed."""
+    # Create a unique key based on the current athlete list
+    config_hash = hashlib.md5(str(sorted(athlete_dict.items())).encode()).hexdigest()
+    
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'rb') as f:
+                data = pickle.load(f)
+                if data.get('key') == config_hash:
+                    print("⚡ Loaded athlete encodings from cache.")
+                    return data['encodings'], data['names']
+        except:
+            pass
+
+    print("🔍 Computing new face encodings for reference library...")
+    encodings, names = [], []
+    for name, path in athlete_dict.items():
+        if os.path.exists(path):
+            img = face_recognition.load_image_file(path)
+            enc = face_recognition.face_encodings(img)
+            if enc:
+                encodings.append(enc[0])
+                names.append(name)
+            else:
+                print(f"⚠️ No face found in: {path}")
+    
+    # Save to cache
+    with open(CACHE_FILE, 'wb') as f:
+        pickle.dump({'key': config_hash, 'encodings': encodings, 'names': names}, f)
+    
+    return encodings, names
+
+# Load global variables for worker processes
+known_encodings, known_names = get_encodings_with_cache(KNOWN_ATHLETES)
+
 def rename_with_athletes(image_path):
-    """Core logic for a single image; optimized for parallel execution."""
+    """Processes a single image: detects, matches, and renames."""
     try:
         image = face_recognition.load_image_file(image_path)
-        face_locations = face_recognition.face_locations(image)
+        # Fast detection (hog) is better for CPUs; 'cnn' is for GPUs
+        face_locations = face_recognition.face_locations(image, model="hog")
         face_encodings = face_recognition.face_encodings(image, face_locations)
 
         detected_athletes = set()
         for face_encoding in face_encodings:
-            # Use distance for better accuracy than simple compare_faces
             distances = face_recognition.face_distance(known_encodings, face_encoding)
             if len(distances) > 0:
-                best_match_index = np.argmin(distances)
-                if distances[best_match_index] <= MATCH_THRESHOLD:
-                    name = known_names[best_match_index]
-                    detected_athletes.add(name.replace(" ", ""))
+                best_match_idx = np.argmin(distances)
+                if distances[best_match_idx] <= MATCH_THRESHOLD:
+                    clean_name = known_names[best_match_idx].replace(" ", "").replace("-", "")
+                    detected_athletes.add(clean_name)
 
         if detected_athletes:
             athletes_str = "_".join(sorted(detected_athletes))
             path = Path(image_path)
-            new_path = path.parent / f"{path.stem}_{athletes_str}{path.suffix}"
-            
-            # Collision handling
+            new_name = f"{path.stem}_{athletes_str}{path.suffix}"
+            new_path = path.parent / new_name
+
+            # Collision handling (prevents overwriting)
             counter = 1
             while new_path.exists():
-                new_path = path.parent / f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
+                new_name = f"{path.stem}_{athletes_str}_{counter}{path.suffix}"
+                new_path = path.parent / new_name
                 counter += 1
 
             os.rename(image_path, new_path)
@@ -67,13 +97,38 @@ def rename_with_athletes(image_path):
         return False
     return False
 
-def run_scanner(folder_path, dry_run=False):
+def process_archive(folder_path, dry_run=False):
     supported = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
-    files_to_process = []
-    
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            if file.lower().endswith(supported):
+    image_paths = [
+        os.path.join(root, f) 
+        for root, _, files in os.walk(folder_path) 
+        for f in files if f.lower().endswith(supported)
+    ]
+
+    if not image_paths:
+        print("No images found in the target folder.")
+        return
+
+    if dry_run:
+        print(f"[DRY RUN] Would process {len(image_paths)} images.")
+        return
+
+    # Use all CPU cores for parallel scanning
+    num_workers = multiprocessing.cpu_count()
+    print(f"🚀 Scanning {len(image_paths)} images using {num_workers} cores...")
+
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        # tqdm provides the progress bar
+        list(tqdm(executor.map(rename_with_athletes, image_paths), total=len(image_paths), desc="Processing"))
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="ImageStream Athlete Archival Scanner")
+    parser.add_argument("folder", help="Path to the photo archive folder")
+    parser.add_argument("--dry-run", action="store_true", help="Scan without renaming")
+    args = parser.parse_args()
+
+    process_archive(args.folder, dry_run=args.dry_run)
+    print("\n✅ Task Complete. Your archive is now searchable by athlete name.")
                 files_to_process.append(os.path.join(root, file))
 
     if dry_run:
