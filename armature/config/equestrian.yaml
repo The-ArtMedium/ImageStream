@@ -1,0 +1,49 @@
+sport: equestrian
+display_name: "Equestrian Archive"
+site_url: "https://snowmanview.com"
+description: "5 years of daily coverage - elite horses and riders"
+
+archive_stats:
+  years_active: 5
+  hours_per_day: 8
+  estimated_photos: 60000
+  disciplines:
+    - "Dressage"
+    - "Show Jumping"
+    - "Polo"
+
+categories:
+  - Dressage
+  - Show Jumping
+  - Polo
+  - Cross Country
+  - Eventing
+  - Training Sessions
+
+search_filters:
+  - rider
+  - horse
+  - discipline
+  - event
+  - venue
+  - year
+
+notable_subjects:
+  - "Georgina Bloomberg"
+  - "Elite FEI Events"
+  - "Olympic-level horses"
+
+athlete_tags:
+  enabled: true
+  reference_path: "references/equestrian/"
+  
+pricing:
+  single_photo: 60
+  event_gallery: 250
+  exclusive_rights: 800
+
+branding:
+  primary_color: "#8B4513"
+  secondary_color: "#F4A460"
+  logo: "snowmanview-logo.png"
+  tagline: "World-Class Equestrian Photography"
