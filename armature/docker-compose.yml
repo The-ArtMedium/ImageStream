@@ -55,11 +55,7 @@ services:
     networks:
       - armature_net
 
-networks:
-  armature_net:
-    driver: bridge
-
-# The Mantle Conduit (API Bridge)
+  # The Mantle Conduit (API Bridge)
   api:
     build: ./services/api
     container_name: armature_api
@@ -81,3 +77,7 @@ networks:
       - ollama
       - meilisearch
       - redis
+
+networks:
+  armature_net:
+    driver: bridge
