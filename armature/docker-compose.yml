@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # The Nervous System (Automation)
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+    volumes:
+      - ./services/n8n:/home/node/.n8n
+    networks:
+      - armature_net
+
+  # The Resonant Heart (Local AI)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./services/ollama:/root/.ollama
+    networks:
+      - armature_net
+
+  # The Intelligent Filter (Search)
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_KEY}
+    volumes:
+      - ./services/meilisearch:/meili_data
+    networks:
+      - armature_net
+
+  # The Flow Regulator (Cache/Rate Limit)
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./services/redis:/data
+    networks:
+      - armature_net
+
+networks:
+  armature_net:
+    driver: bridge
