@@ -1,0 +1,46 @@
+sport: soccer
+display_name: "Soccer Archive"
+site_url: "https://soccerview.com"
+description: "6 World Cups and 500+ official matches documented"
+
+archive_stats:
+  world_cups: 6
+  official_matches: 500
+  estimated_photos: 75000
+  key_events:
+    - "World Cup Coverage"
+    - "Champions League"
+    - "MLS"
+    - "International Matches"
+
+categories:
+  - World Cup
+  - Champions League
+  - MLS
+  - Premier League
+  - International Friendlies
+  - Copa America
+  - Euro Championship
+
+search_filters:
+  - player
+  - team
+  - tournament
+  - year
+  - stadium
+  - match_result
+
+athlete_tags:
+  enabled: true
+  reference_path: "references/soccer/"
+  
+pricing:
+  single_photo: 75
+  match_gallery: 300
+  exclusive_rights: 1000
+
+branding:
+  primary_color: "#00A86B"
+  secondary_color: "#FFFFFF"
+  logo: "soccerview-logo.png"
+  tagline: "Global Football Through the Lens"
