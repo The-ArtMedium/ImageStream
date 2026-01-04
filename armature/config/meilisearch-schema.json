@@ -1,0 +1,38 @@
+{
+  "photos": {
+    "searchableAttributes": [
+      "filename",
+      "athletes",
+      "event",
+      "venue",
+      "year",
+      "description",
+      "tags"
+    ],
+    "filterableAttributes": [
+      "sport",
+      "year",
+      "event",
+      "venue",
+      "discipline",
+      "athletes"
+    ],
+    "sortableAttributes": [
+      "date",
+      "event",
+      "year"
+    ],
+    "displayedAttributes": [
+      "id",
+      "filename",
+      "sport",
+      "athletes",
+      "event",
+      "venue",
+      "year",
+      "thumbnail_url",
+      "full_url",
+      "price"
+    ]
+  }
+}
