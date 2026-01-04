@@ -58,3 +58,26 @@ services:
 networks:
   armature_net:
     driver: bridge
+
+# The Mantle Conduit (API Bridge)
+  api:
+    build: ./services/api
+    container_name: armature_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - MEILI_URL=http://meilisearch:7700
+      - MEILI_KEY=${MEILI_KEY}
+      - REDIS_URL=redis://redis:6379
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook
+      - WP_WEBHOOK_SECRET=${WP_WEBHOOK_SECRET}
+    volumes:
+      - ./services/api:/app
+    networks:
+      - armature_net
+    depends_on:
+      - ollama
+      - meilisearch
+      - redis
