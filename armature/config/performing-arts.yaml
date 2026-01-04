@@ -1,0 +1,45 @@
+sport: performing-arts
+display_name: "Performing Arts Archive"
+site_url: "https://theartmedium.com"
+description: "40 years of concert and performance photography"
+
+archive_stats:
+  years_active: 40
+  estimated_photos: 50000
+  key_subjects:
+    - "Rolling Stones"
+    - "Ravi Shankar"
+    - "Concert Photography"
+    - "Theater"
+    - "Dance"
+    - "Opera"
+
+categories:
+  - Rock Concerts
+  - Classical Music
+  - Theater Productions
+  - Dance Performances
+  - Opera
+  - World Music
+
+search_filters:
+  - performer
+  - venue
+  - year
+  - event_type
+  - genre
+
+athlete_tags:
+  enabled: true
+  reference_path: "references/performing-arts/"
+  
+pricing:
+  single_photo: 50
+  gallery_pack: 200
+  exclusive_rights: 500
+
+branding:
+  primary_color: "#8B008B"
+  secondary_color: "#FFD700"
+  logo: "theartmedium-logo.png"
+  tagline: "Four Decades of Performance History"
