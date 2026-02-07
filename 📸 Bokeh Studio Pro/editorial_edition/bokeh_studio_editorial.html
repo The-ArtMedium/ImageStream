@@ -1,1 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bokeh Studio Pro - Editorial Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: #1a1a1a;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 25px;
+            border-bottom: 1px solid #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .logo h1 {
+            font-size: 1.6em;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo .tagline {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .logo .free-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .controls-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .control-panel {
+            background: #252525;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .panel-header {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+
+        .control-value {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #3a3a3a;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            min-height: 44px;
+            padding: 19px 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 12px;
+            min-height: 48px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: #353535;
+            border-color: #667eea;
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f0f0f;
+        }
+
+        .toolbar {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 15px 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            min-height: 44px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #353535;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .upload-box {
+            text-align: center;
+            padding: 60px;
+            border: 3px dashed #444;
+            border-radius: 20px;
+            background: #1a1a1a;
+            max-width: 600px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: #667eea;
+            background: #252525;
+        }
+
+        .upload-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .canvas-wrapper {
+            flex: 1;
+            display: none;
+            position: relative;
+            overflow: auto;
+            background: #0a0a0a;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+
+        .focus-point {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            box-shadow: 0 0 0 2px #667eea, 0 0 30px rgba(102, 126, 234, 0.8);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .focus-point::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        .status-bar {
+            background: #1a1a1a;
+            border-top: 1px solid #333;
+            padding: 10px 25px;
+            font-size: 0.85em;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-note {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>📸 Bokeh Studio Pro</h1>
+                <div class="tagline">Editorial-Grade Depth of Field Control</div>
+                <div class="free-badge">FREE FOREVER • EDITORIAL STANDARD</div>
+            </div>
+
+            <div class="controls-section">
+                <div class="info-note">
+                    <strong>Editorial Mode:</strong> Blurs background while keeping subjects at the same depth plane sharp. Click on your subject (horse, rider, jump bar) to set the focal plane. Everything at that depth stays sharp - everything behind it blurs naturally.
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <span>🎯</span>
+                        <span>Lens Simulation</span>
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="preset-btn active" data-lens="portrait">
+                            85mm f/1.4<br><small>Portrait</small>
+                        </button>
+                        <button class="preset-btn" data-lens="nifty">
+                            50mm f/1.8<br><small>Standard</small>
+                        </button>
+                        <button class="preset-btn" data-lens="dream">
+                            50mm f/1.2<br><small>Dream</small>
+                        </button>
+                        <button class="preset-btn" data-lens="sony">
+                            Sony GM<br><small>Feathered</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <span>💫</span>
+                        <span>Depth of Field</span>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Background Blur</span>
+                            <span class="control-value" id="blurValue">20</span>
+                        </div>
+                        <input type="range" id="blurIntensity" min="0" max="50" value="20" step="1">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Depth Plane Tolerance</span>
+                            <span class="control-value" id="toleranceValue">15%</span>
+                        </div>
+                        <input type="range" id="depthTolerance" min="5" max="30" value="15" step="1">
+                        <div style="font-size: 0.75em; color: #888; margin-top: 5px;">
+                            Lower = narrower sharp zone (like f/1.4)<br>
+                            Higher = wider sharp zone (like f/2.8)
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Blur Falloff</span>
+                            <span class="control-value" id="falloffValue">Medium</span>
+                        </div>
+                        <input type="range" id="blurFalloff" min="1" max="3" value="2" step="1">
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <span>🎨</span>
+                        <span>Enhancement</span>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Vignette</span>
+                            <span class="control-value" id="vignetteValue">0%</span>
+                        </div>
+                        <input type="range" id="vignetteStrength" min="0" max="60" value="0" step="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div class="toolbar">
+                <button class="btn btn-primary" id="uploadBtn">📁 Open Photo</button>
+                <button class="btn" id="downloadBtn" style="display:none;">⬇️ Download</button>
+                <button class="btn" id="resetBtn" style="display:none;">🔄 Reset</button>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-box" id="uploadBox">
+                    <div class="upload-icon">📸</div>
+                    <h2>Upload Your Photo</h2>
+                    <p style="color: #888; margin: 15px 0;">Click to select or drag and drop</p>
+                    <button class="btn btn-primary">Select Photo</button>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="originalCanvas" style="display:none;"></canvas>
+                    <canvas id="displayCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <span id="statusText">Ready • Click on your subject to set focal plane</span>
+                <span style="font-size: 0.8em; color: #666;">Editorial Standard • Created by Claude</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let focusPoint = { x: null, y: null };
+        let depthMap = null;
+        
+        const originalCanvas = document.getElementById('originalCanvas');
+        const displayCanvas = document.getElementById('displayCanvas');
+        const originalCtx = originalCanvas.getContext('2d');
+        const displayCtx = displayCanvas.getContext('2d');
+        
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadBox = document.getElementById('uploadBox');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        const canvasContainer = document.getElementById('canvasContainer');
+
+        // Lens presets
+        const lensPresets = {
+            portrait: { blur: 20, tolerance: 15, falloff: 2 },
+            nifty: { blur: 15, tolerance: 18, falloff: 2 },
+            dream: { blur: 30, tolerance: 12, falloff: 1 },
+            sony: { blur: 25, tolerance: 14, falloff: 3 }
+        };
+
+        document.getElementById('uploadBtn').addEventListener('click', () => fileInput.click());
+        uploadBox.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) loadImage(file);
+        }
+
+        function loadImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    
+                    const maxWidth = 1200;
+                    const scale = Math.min(1, maxWidth / img.width);
+                    const width = img.width * scale;
+                    const height = img.height * scale;
+                    
+                    originalCanvas.width = displayCanvas.width = width;
+                    originalCanvas.height = displayCanvas.height = height;
+                    
+                    originalCtx.drawImage(img, 0, 0, width, height);
+                    
+                    focusPoint = { x: width / 2, y: height / 2 };
+                    
+                    generateDepthMap();
+                    
+                    uploadArea.style.display = 'none';
+                    canvasWrapper.style.display = 'flex';
+                    document.getElementById('downloadBtn').style.display = 'inline-flex';
+                    document.getElementById('resetBtn').style.display = 'inline-flex';
+                    
+                    applyEffect();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function generateDepthMap() {
+            const imageData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
+            const data = imageData.data;
+            depthMap = new Float32Array(originalCanvas.width * originalCanvas.height);
+            
+            // Simplified depth estimation based on:
+            // 1. Vertical position (lower = closer in many photos)
+            // 2. Brightness/contrast (sharper edges = closer)
+            // 3. Saturation (more saturated = often closer)
+            
+            for (let y = 0; y < originalCanvas.height; y++) {
+                for (let x = 0; x < originalCanvas.width; x++) {
+                    const idx = (y * originalCanvas.width + x) * 4;
+                    const idx1d = y * originalCanvas.width + x;
+                    
+                    // Vertical gradient (top = far, bottom = near)
+                    const verticalDepth = y / originalCanvas.height;
+                    
+                    // Brightness
+                    const brightness = (data[idx] + data[idx + 1] + data[idx + 2]) / (3 * 255);
+                    
+                    // Simple saturation
+                    const max = Math.max(data[idx], data[idx + 1], data[idx + 2]);
+                    const min = Math.min(data[idx], data[idx + 1], data[idx + 2]);
+                    const saturation = max === 0 ? 0 : (max - min) / max;
+                    
+                    // Combine factors (weighted average)
+                    depthMap[idx1d] = verticalDepth * 0.7 + (1 - saturation) * 0.2 + brightness * 0.1;
+                }
+            }
+        }
+
+        displayCanvas.addEventListener('click', (e) => {
+            const rect = displayCanvas.getBoundingClientRect();
+            const scaleX = displayCanvas.width / rect.width;
+            const scaleY = displayCanvas.height / rect.height;
+            
+            focusPoint.x = (e.clientX - rect.left) * scaleX;
+            focusPoint.y = (e.clientY - rect.top) * scaleY;
+            
+            applyEffect();
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const preset = lensPresets[this.dataset.lens];
+                document.getElementById('blurIntensity').value = preset.blur;
+                document.getElementById('depthTolerance').value = preset.tolerance;
+                document.getElementById('blurFalloff').value = preset.falloff;
+                
+                document.getElementById('blurValue').textContent = preset.blur;
+                document.getElementById('toleranceValue').textContent = preset.tolerance + '%';
+                const falloffs = ['Soft', 'Medium', 'Sharp'];
+                document.getElementById('falloffValue').textContent = falloffs[preset.falloff - 1];
+                
+                if (originalImage) applyEffect();
+            });
+        });
+
+        // Controls
+        document.getElementById('blurIntensity').addEventListener('input', (e) => {
+            document.getElementById('blurValue').textContent = e.target.value;
+            if (originalImage) applyEffect();
+        });
+
+        document.getElementById('depthTolerance').addEventListener('input', (e) => {
+            document.getElementById('toleranceValue').textContent = e.target.value + '%';
+            if (originalImage) applyEffect();
+        });
+
+        document.getElementById('blurFalloff').addEventListener('input', (e) => {
+            const falloffs = ['Soft', 'Medium', 'Sharp'];
+            document.getElementById('falloffValue').textContent = falloffs[e.target.value - 1];
+            if (originalImage) applyEffect();
+        });
+
+        document.getElementById('vignetteStrength').addEventListener('input', (e) => {
+            document.getElementById('vignetteValue').textContent = e.target.value + '%';
+            if (originalImage) applyEffect();
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'bokeh-editorial.png';
+            link.href = displayCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            focusPoint = { x: displayCanvas.width / 2, y: displayCanvas.height / 2 };
+            document.getElementById('blurIntensity').value = 20;
+            document.getElementById('depthTolerance').value = 15;
+            document.getElementById('blurFalloff').value = 2;
+            document.getElementById('vignetteStrength').value = 0;
+            
+            document.getElementById('blurValue').textContent = '20';
+            document.getElementById('toleranceValue').textContent = '15%';
+            document.getElementById('falloffValue').textContent = 'Medium';
+            document.getElementById('vignetteValue').textContent = '0%';
+            
+            applyEffect();
+        });
+
+        function applyEffect() {
+            if (!originalImage || !depthMap) return;
+
+            const blurAmount = parseInt(document.getElementById('blurIntensity').value);
+            const tolerance = parseInt(document.getElementById('depthTolerance').value) / 100;
+            const falloff = parseInt(document.getElementById('blurFalloff').value);
+            const vignetteStrength = parseInt(document.getElementById('vignetteStrength').value);
+
+            displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+            displayCtx.drawImage(originalCanvas, 0, 0);
+
+            if (blurAmount === 0) {
+                updateFocusMarker();
+                return;
+            }
+
+            // Get focal plane depth
+            const focalIdx = Math.floor(focusPoint.y) * displayCanvas.width + Math.floor(focusPoint.x);
+            const focalDepth = depthMap[focalIdx];
+
+            // Create blurred version
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = displayCanvas.width;
+            tempCanvas.height = displayCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCtx.drawImage(originalCanvas, 0, 0);
+            tempCtx.filter = `blur(${blurAmount}px)`;
+            tempCtx.drawImage(tempCanvas, 0, 0);
+            
+            const blurredData = tempCtx.getImageData(0, 0, displayCanvas.width, displayCanvas.height).data;
+            const imageData = displayCtx.getImageData(0, 0, displayCanvas.width, displayCanvas.height);
+            const data = imageData.data;
+
+            // Apply depth-based blending
+            for (let y = 0; y < displayCanvas.height; y++) {
+                for (let x = 0; x < displayCanvas.width; x++) {
+                    const idx = (y * displayCanvas.width + x) * 4;
+                    const idx1d = y * displayCanvas.width + x;
+                    
+                    const pixelDepth = depthMap[idx1d];
+                    const depthDiff = Math.abs(pixelDepth - focalDepth);
+                    
+                    // Calculate blur factor based on depth difference
+                    let blurFactor = 0;
+                    if (depthDiff > tolerance) {
+                        blurFactor = Math.min(1, (depthDiff - tolerance) / (0.5 - tolerance));
+                        blurFactor = Math.pow(blurFactor, 3 - falloff); // Falloff curve
+                    }
+                    
+                    // Blend sharp and blurred
+                    data[idx] = data[idx] * (1 - blurFactor) + blurredData[idx] * blurFactor;
+                    data[idx + 1] = data[idx + 1] * (1 - blurFactor) + blurredData[idx + 1] * blurFactor;
+                    data[idx + 2] = data[idx + 2] * (1 - blurFactor) + blurredData[idx + 2] * blurFactor;
+                }
+            }
+
+            displayCtx.putImageData(imageData, 0, 0);
+
+            // Apply vignette if enabled
+            if (vignetteStrength > 0) {
+                const gradient = displayCtx.createRadialGradient(
+                    displayCanvas.width / 2, displayCanvas.height / 2, 0,
+                    displayCanvas.width / 2, displayCanvas.height / 2, 
+                    Math.max(displayCanvas.width, displayCanvas.height) / 1.5
+                );
+                gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                gradient.addColorStop(1, `rgba(0,0,0,${vignetteStrength / 100})`);
+                displayCtx.fillStyle = gradient;
+                displayCtx.fillRect(0, 0, displayCanvas.width, displayCanvas.height);
+            }
+
+            updateFocusMarker();
+        }
+
+        function updateFocusMarker() {
+            const oldMarker = document.querySelector('.focus-point');
+            if (oldMarker) oldMarker.remove();
+
+            const marker = document.createElement('div');
+            marker.className = 'focus-point';
+            const rect = displayCanvas.getBoundingClientRect();
+            const scaleX = rect.width / displayCanvas.width;
+            const scaleY = rect.height / displayCanvas.height;
+            marker.style.left = (focusPoint.x * scaleX) + 'px';
+            marker.style.top = (focusPoint.y * scaleY) + 'px';
+            canvasContainer.appendChild(marker);
+        }
+
+        // Drag and drop
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#667eea';
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.style.borderColor = '#444';
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = '#444';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                loadImage(file);
+            }
+        });
+    </script>
+</body>
+</html>
