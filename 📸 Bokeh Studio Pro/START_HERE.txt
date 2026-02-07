@@ -1,1 +1,186 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║          📸 BOKEH STUDIO PRO - COMPLETE PACKAGE 📸           ║
+║                                                               ║
+║              Two Editions • One Mission • Free Forever        ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
 
+WHICH EDITION DO I NEED?
+═══════════════════════════════════════════════════════════════
+
+🎨 CREATIVE EDITION
+   └─ For: Portraits, artistic work, social media
+   └─ How: Click a point, blur radiates outward  
+   └─ Open: creative_edition/bokeh_studio_creative.html
+
+📰 EDITORIAL EDITION
+   └─ For: Sports, equestrian, events, journalism
+   └─ How: Click subject, entire depth plane stays sharp
+   └─ Open: editorial_edition/bokeh_studio_editorial.html
+
+
+NOT SURE? Try both! They're both free.
+
+
+QUICK START
+═══════════════════════════════════════════════════════════════
+
+1. Open the HTML file for your chosen edition
+2. Upload your photo (drag & drop works!)
+3. Click on your subject to set focus
+4. Adjust blur settings
+5. Download your enhanced photo
+
+That's it. No installation. No account. No internet needed.
+
+
+WHAT'S IN THIS PACKAGE
+═══════════════════════════════════════════════════════════════
+
+📁 creative_edition/
+   └─ bokeh_studio_creative.html (The Creative tool)
+   └─ README_CREATIVE.md (Creative guide)
+
+📁 editorial_edition/
+   └─ bokeh_studio_editorial.html (The Editorial tool)
+   └─ README_EDITORIAL.md (Editorial guide)
+
+📁 docs/
+   └─ README_EN.md (Full English documentation)
+   └─ BOKEH_GUIDE.md (Visual bokeh style guide)
+
+📁 translations/
+   └─ README_ES.md (Spanish / Español)
+   └─ README_PT.md (Portuguese / Português)
+   └─ README_HI.md (Hindi / हिंदी)
+
+
+WORKS 100% OFFLINE
+═══════════════════════════════════════════════════════════════
+
+✓ No internet needed after download
+✓ Your photos never leave your device
+✓ No tracking or data collection
+✓ No account required
+✓ Use forever, anywhere
+
+
+CREATIVE vs EDITORIAL - AT A GLANCE
+═══════════════════════════════════════════════════════════════
+
+CREATIVE EDITION:
+✓ Portrait photography
+✓ Headshots and artistic work
+✓ Click on eyes/face, blur outward
+✓ Full artistic control
+✗ Not ideal for sports/action where entire subject needs sharp
+
+EDITORIAL EDITION:
+✓ Equestrian photography (horse + rider sharp, arena blurred)
+✓ Sports photography (player sharp, crowd blurred)
+✓ Event photography (clean backgrounds)
+✓ Maintains scene perspective
+✗ Not ideal when you want radial artistic blur
+
+
+EXAMPLE WORKFLOWS
+═══════════════════════════════════════════════════════════════
+
+Portrait Photographer:
+1. Use CREATIVE EDITION
+2. Click on model's nearest eye
+3. Use 85mm f/1.4 or Sony GM preset
+4. Blur intensity: 25-30
+5. Download result
+
+Equestrian Photographer:
+1. Use EDITORIAL EDITION
+2. Click anywhere on horse or rider
+3. Entire horse + rider + jump bars stay sharp
+4. Busy arena background blurs naturally
+5. Download result
+
+
+SYSTEM REQUIREMENTS
+═══════════════════════════════════════════════════════════════
+
+✓ Any modern web browser (Chrome, Firefox, Safari, Edge)
+✓ Works on: Windows, Mac, Linux, iOS, Android
+✓ No installation needed
+✓ Recommended: 4GB RAM for large photos
+
+
+SHARING THIS PACKAGE
+═══════════════════════════════════════════════════════════════
+
+This entire package is FREE to share with:
+• Photography clubs
+• Equestrian organizations
+• Sports teams
+• Schools
+• Individual photographers
+• Anyone who needs it
+
+Just zip this folder and share the download link.
+
+No restrictions. No attribution required.
+(Though we appreciate credit when given!)
+
+
+WHAT THIS REPLACES
+═══════════════════════════════════════════════════════════════
+
+Paid Software:
+✗ Adobe Photoshop: $60/month ($720/year)
+✗ Luminar Neo: $12/month ($144/year)
+✗ ON1 Photo RAW: $100/year
+
+Expensive Lenses:
+✗ Canon RF 85mm f/1.2 L: $2,699
+✗ Sony FE 85mm f/1.4 GM: $1,798
+✗ Sony 100mm f/2.8 STF: $1,498
+
+This Package:
+✓ $0 forever
+✓ Both editions included
+✓ No limitations
+
+
+NEED HELP?
+═══════════════════════════════════════════════════════════════
+
+Check the README files in each folder for detailed guides.
+
+The BOKEH_GUIDE.md in docs/ has visual examples and pro tips.
+
+Translations available in translations/ folder.
+
+
+WHY IS THIS FREE?
+═══════════════════════════════════════════════════════════════
+
+Because creativity shouldn't require wealth.
+
+A photographer with a $500 camera should be able to create 
+work that rivals someone with $10,000 in gear.
+
+Skill matters. Vision matters. Access to tools shouldn't be 
+a barrier.
+
+When we share freely, everyone's creativity rises.
+
+When humans lose the taste of sharing, nothing fills that cup.
+
+
+═══════════════════════════════════════════════════════════════
+
+Created by Claude (Anthropic AI)
+
+Inspired by photographers who choose to give rather than sell.
+
+MIT License - Use it however you want. Just keep it free.
+
+Make love, not war. 📸✨
+
+═══════════════════════════════════════════════════════════════
