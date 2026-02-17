@@ -1,0 +1,80 @@
+{
+  "app": {
+    "name": "محرر محلي",
+    "tagline": "بسيط. محلي. ملكك.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "ملف",
+    "new_project": "مشروع جديد",
+    "open_project": "فتح المشروع",
+    "save_project": "حفظ المشروع",
+    "exit": "خروج",
+    "edit": "تحرير",
+    "undo": "تراجع",
+    "redo": "إعادة",
+    "export": "تصدير",
+    "export_mp4": "تصدير إلى MP4",
+    "help": "مساعدة",
+    "about": "حول محرر محلي"
+  },
+  "toolbar": {
+    "add_video": "إضافة فيديو/صورة",
+    "add_overlay": "إضافة تراكب",
+    "add_text": "إضافة نص",
+    "add_audio": "إضافة صوت",
+    "export_video": "تصدير الفيديو"
+  },
+  "timeline": {
+    "title": "الخط الزمني - 4 طبقات",
+    "layer_1": "خلفية الفيديو/الصورة",
+    "layer_2": "تراكبات الصور",
+    "layer_3": "تسميات النص",
+    "layer_4": "مسار الصوت",
+    "clear_all": "مسح الكل",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "stop": "توقف"
+  },
+  "dialogs": {
+    "new_project_title": "مشروع جديد",
+    "new_project_message": "إنشاء مشروع جديد؟ سيتم فقدان التغييرات غير المحفوظة.",
+    "open_project_title": "فتح المشروع",
+    "save_project_title": "حفظ المشروع",
+    "export_title": "تصدير الفيديو",
+    "import_video_title": "استيراد فيديو/صورة",
+    "import_overlay_title": "استيراد تراكب صورة",
+    "import_audio_title": "استيراد صوت",
+    "nothing_to_export": "لا شيء للتصدير",
+    "add_media_first": "يرجى إضافة بعض الوسائط إلى مشروعك أولاً!",
+    "export_success": "تصدير",
+    "export_coming_soon": "وظيفة التصدير قادمة قريباً!",
+    "yes": "نعم",
+    "no": "لا",
+    "ok": "موافق",
+    "cancel": "إلغاء"
+  },
+  "status": {
+    "ready": "جاهز",
+    "new_project_created": "تم إنشاء مشروع جديد",
+    "opening_project": "فتح المشروع",
+    "saving_project": "حفظ المشروع",
+    "added_to_layer": "تمت الإضافة إلى الطبقة",
+    "text_editor_coming": "محرر النصوص قادم قريباً!",
+    "exporting_to": "التصدير إلى"
+  },
+  "about": {
+    "title": "حول محرر محلي",
+    "description": "محرر فيديو خفيف للمبدعين الذين يقدرون الملكية والخصوصية.",
+    "features": "لا تحميلات سحابية. لا علامات مائية. لا اشتراكات.",
+    "signature": "بابيريبوب!",
+    "license": "مرخص بموجب ترخيص MIT"
+  },
+  "errors": {
+    "file_not_found": "الملف غير موجود",
+    "invalid_file_type": "نوع ملف غير صالح",
+    "render_failed": "فشل العرض",
+    "no_video_layer": "لم يتم العثور على خلفية فيديو/صورة في الطبقة 1",
+    "no_content": "المشروع لا يحتوي على محتوى للعرض"
+  }
+}
