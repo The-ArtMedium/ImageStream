@@ -1,1 +1,81 @@
 
+{
+  "app": {
+    "name": "LocalEdit",
+    "tagline": "Simple. Local. Yours.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "File",
+    "new_project": "New Project",
+    "open_project": "Open Project",
+    "save_project": "Save Project",
+    "exit": "Exit",
+    "edit": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "export": "Export",
+    "export_mp4": "Export to MP4",
+    "help": "Help",
+    "about": "About LocalEdit"
+  },
+  "toolbar": {
+    "add_video": "Add Video/Image",
+    "add_overlay": "Add Overlay",
+    "add_text": "Add Text",
+    "add_audio": "Add Audio",
+    "export_video": "Export Video"
+  },
+  "timeline": {
+    "title": "Timeline - 4 Layers",
+    "layer_1": "Video/Image Background",
+    "layer_2": "Image Overlays",
+    "layer_3": "Text Captions",
+    "layer_4": "Audio Track",
+    "clear_all": "Clear All",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop"
+  },
+  "dialogs": {
+    "new_project_title": "New Project",
+    "new_project_message": "Create a new project? Unsaved changes will be lost.",
+    "open_project_title": "Open Project",
+    "save_project_title": "Save Project",
+    "export_title": "Export Video",
+    "import_video_title": "Import Video/Image",
+    "import_overlay_title": "Import Image Overlay",
+    "import_audio_title": "Import Audio",
+    "nothing_to_export": "Nothing to Export",
+    "add_media_first": "Please add some media to your project first!",
+    "export_success": "Export",
+    "export_coming_soon": "Export functionality coming soon!",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "ready": "Ready",
+    "new_project_created": "New project created",
+    "opening_project": "Opening project",
+    "saving_project": "Saving project",
+    "added_to_layer": "Added to Layer",
+    "text_editor_coming": "Text editor coming soon!",
+    "exporting_to": "Exporting to"
+  },
+  "about": {
+    "title": "About LocalEdit",
+    "description": "A lightweight video editor for creators who value ownership and privacy.",
+    "features": "No cloud uploads. No watermarks. No subscriptions.",
+    "signature": "Baperebup!",
+    "license": "Licensed under MIT License"
+  },
+  "errors": {
+    "file_not_found": "File not found",
+    "invalid_file_type": "Invalid file type",
+    "render_failed": "Render failed",
+    "no_video_layer": "No video/image background found in Layer 1",
+    "no_content": "Project has no content to render"
+  }
+}
