@@ -1,68 +1,47 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-*.whl
+#!/usr/bin/env python3
+"""
+LocalEdit - Simple. Local. Yours.
+A lightweight video editor for creators who value ownership and privacy.
+"""
 
-# Virtual environments
-venv/
-env/
-ENV/
-.venv
+import sys
+from pathlib import Path
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+src_path = Path(__file__).parent
+sys.path.insert(0, str(src_path))
 
-# OS
-Thumbs.db
-desktop.ini
+from utils.config import get_config
+from utils.locale_manager import get_locale_manager
 
-# User media files (don't commit user's projects)
-projects/
-exports/
-temp/
-*.mp4
-*.mov
-*.avi
-*.mkv
-*.mp3
-*.wav
-*.flac
+try:
+    from PyQt5.QtWidgets import QApplication
+    from ui.main_window import MainWindow
+except ImportError:
+    print("PyQt5 not found. Please run install.bat or install.sh first!")
+    sys.exit(1)
 
-# Logs
-*.log
-logs/
 
-# Config files with personal settings
-config.local.json
-settings.local.json
+def main():
+    config = get_config()
+    locale = get_locale_manager()
+    locale.switch_language(config.get_language())
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+    print("================================================")
+    print("LocalEdit - Simple. Local. Yours.")
+    print("================================================")
+    print(f"Language: {locale.get_current_language_name()}")
+    print("Starting...")
+    print()
 
-# Documentation builds
-docs/_build/
+    app = QApplication(sys.argv)
+    app.setApplicationName("LocalEdit")
+    app.setOrganizationName("LocalEdit")
 
-# Temporary files
-tmp/
-*.tmp
-*.bak
-Copy this and save it as .gitignore in your root folder!
-What it does:
-Keeps Python cache files out of git
-Ignores user's video/audio projects (privacy!)
-Excludes IDE settings
-No temporary or log files in repo
-Next: Should we start on the actual code? Src/main.py?
+    window = MainWindow(config=config, locale=locale)
+    window.show()
+
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
