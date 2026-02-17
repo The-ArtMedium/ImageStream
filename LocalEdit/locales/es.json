@@ -1,1 +1,80 @@
-
+{
+  "app": {
+    "name": "LocalEdit",
+    "tagline": "Simple. Local. Tuyo.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "Archivo",
+    "new_project": "Nuevo Proyecto",
+    "open_project": "Abrir Proyecto",
+    "save_project": "Guardar Proyecto",
+    "exit": "Salir",
+    "edit": "Editar",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "export": "Exportar",
+    "export_mp4": "Exportar a MP4",
+    "help": "Ayuda",
+    "about": "Acerca de LocalEdit"
+  },
+  "toolbar": {
+    "add_video": "Añadir Video/Imagen",
+    "add_overlay": "Añadir Superposición",
+    "add_text": "Añadir Texto",
+    "add_audio": "Añadir Audio",
+    "export_video": "Exportar Video"
+  },
+  "timeline": {
+    "title": "Línea de Tiempo - 4 Capas",
+    "layer_1": "Fondo Video/Imagen",
+    "layer_2": "Superposiciones de Imagen",
+    "layer_3": "Subtítulos de Texto",
+    "layer_4": "Pista de Audio",
+    "clear_all": "Borrar Todo",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "stop": "Detener"
+  },
+  "dialogs": {
+    "new_project_title": "Nuevo Proyecto",
+    "new_project_message": "¿Crear un nuevo proyecto? Se perderán los cambios no guardados.",
+    "open_project_title": "Abrir Proyecto",
+    "save_project_title": "Guardar Proyecto",
+    "export_title": "Exportar Video",
+    "import_video_title": "Importar Video/Imagen",
+    "import_overlay_title": "Importar Superposición de Imagen",
+    "import_audio_title": "Importar Audio",
+    "nothing_to_export": "Nada para Exportar",
+    "add_media_first": "¡Por favor añade algún medio a tu proyecto primero!",
+    "export_success": "Exportar",
+    "export_coming_soon": "¡Funcionalidad de exportación próximamente!",
+    "yes": "Sí",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancelar"
+  },
+  "status": {
+    "ready": "Listo",
+    "new_project_created": "Nuevo proyecto creado",
+    "opening_project": "Abriendo proyecto",
+    "saving_project": "Guardando proyecto",
+    "added_to_layer": "Añadido a la Capa",
+    "text_editor_coming": "¡Editor de texto próximamente!",
+    "exporting_to": "Exportando a"
+  },
+  "about": {
+    "title": "Acerca de LocalEdit",
+    "description": "Un editor de video ligero para creadores que valoran la propiedad y la privacidad.",
+    "features": "Sin cargas en la nube. Sin marcas de agua. Sin suscripciones.",
+    "signature": "¡Baperebup!",
+    "license": "Licenciado bajo Licencia MIT"
+  },
+  "errors": {
+    "file_not_found": "Archivo no encontrado",
+    "invalid_file_type": "Tipo de archivo inválido",
+    "render_failed": "Renderizado fallido",
+    "no_video_layer": "No se encontró fondo de video/imagen en la Capa 1",
+    "no_content": "El proyecto no tiene contenido para renderizar"
+  }
+}
