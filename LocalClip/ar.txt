@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "لوكال كليب",
+    "tagline": "بسيط. محلي. ملكك.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "ملف",
+    "import_video": "استيراد فيديو",
+    "exit": "خروج",
+    "help": "مساعدة",
+    "about": "حول لوكال كليب"
+  },
+  "buttons": {
+    "import_video": "استيراد فيديو",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "mark_start": "تحديد البداية (I)",
+    "mark_end": "تحديد النهاية (O)",
+    "reset_markers": "إعادة تعيين العلامات",
+    "export_clip": "تصدير المقطع"
+  },
+  "labels": {
+    "no_video": "لم يتم تحميل فيديو",
+    "loaded": "محمل",
+    "duration": "المدة",
+    "in_point": "البداية",
+    "out_point": "النهاية",
+    "tagline_subtitle": "قص مقاطع الفيديو. بدون سحابة. بدون علامات مائية."
+  },
+  "dialogs": {
+    "import_title": "استيراد فيديو",
+    "export_title": "تصدير المقطع",
+    "invalid_range": "نطاق غير صالح",
+    "invalid_range_msg": "يجب أن تكون نقطة النهاية بعد نقطة البداية!",
+    "export_complete": "اكتمل التصدير",
+    "export_success": "تم تصدير المقطع بنجاح!",
+    "export_failed": "فشل التصدير",
+    "failed_msg": "فشل تصدير المقطع:",
+    "load_error": "خطأ",
+    "load_error_msg": "فشل تحميل ملف الفيديو!"
+  },
+  "status": {
+    "ready": "جاهز - استورد فيديو للبدء",
+    "video_loaded": "تم تحميل الفيديو",
+    "start_marked": "تم تحديد البداية عند",
+    "end_marked": "تم تحديد النهاية عند",
+    "markers_reset": "تمت إعادة تعيين العلامات",
+    "exporting": "جاري تصدير المقطع...",
+    "export_complete": "اكتمل التصدير!",
+    "export_failed": "فشل التصدير"
+  },
+  "about": {
+    "title": "حول لوكال كليب",
+    "description": "أداة خفيفة لقص الفيديو للمبدعين.",
+    "features": "لا تحميلات سحابية. لا علامات مائية. لا حدود.",
+    "signature": "بابيريبوب!",
+    "license": "مرخص بموجب ترخيص MIT"
+  }
+}
