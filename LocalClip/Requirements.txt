@@ -1,0 +1,17 @@
+# LocalClip Requirements
+# Python 3.8+ required
+
+# Core video processing
+moviepy==1.0.3
+Pillow>=10.0.0
+
+# GUI Framework
+PyQt5>=5.15.9
+
+# Additional utilities
+numpy>=1.24.0
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9
+
+# Progress bars
+tqdm>=4.65.0
