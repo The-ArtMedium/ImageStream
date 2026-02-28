@@ -1,0 +1,27 @@
+QMainWindow {
+    background-color: #1e1e1e;
+}
+
+QWidget {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+QPushButton {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    padding: 6px;
+}
+
+QPushButton:hover {
+    background-color: #3a3a3a;
+}
+
+QLabel {
+    color: #ffffff;
+}
+
+QScrollArea {
+    border: none;
+}
