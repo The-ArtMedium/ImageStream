@@ -1,21 +1,53 @@
---# Python
+# =========================
+# Python cache files
+# =========================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py[cod]
 
+# =========================
 # Virtual environments
+# =========================
 venv/
 .env/
+.env.local/
 
-# Build outputs
+# =========================
+# Build / Distribution
+# =========================
 build/
 dist/
 *.spec
+*.egg-info/
+*.egg
 
-# OS files
+# =========================
+# Release packages
+# =========================
+LocalRAW_*.zip
+*.dmg
+
+# =========================
+# macOS
+# =========================
 .DS_Store
-Thumbs.db
 
+# =========================
+# Windows
+# =========================
+Thumbs.db
+Desktop.ini
+
+# =========================
 # Logs
+# =========================
 *.log
+
+# =========================
+# IDE / Editor files
+# =========================
+.vscode/
+.idea/
+*.swp
