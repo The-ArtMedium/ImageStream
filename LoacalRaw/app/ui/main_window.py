@@ -13,6 +13,7 @@ from PySide6.QtCore import Qt
 
 from app.core.pipeline import Pipeline
 from app.core.exporter import Exporter
+from app.core.raw_loader import RawLoader
 
 
 class MainWindow(QMainWindow):
@@ -24,6 +25,8 @@ class MainWindow(QMainWindow):
 
         self.pipeline = Pipeline()
         self.exporter = Exporter()
+        self.raw_loader = RawLoader()
+
         self.current_image = None
         self.image_files = []
 
@@ -118,3 +121,31 @@ class MainWindow(QMainWindow):
         right_layout.addStretch()
 
         # ================= Layout Assembly
+        main_layout.addLayout(left_layout, 2)
+        main_layout.addWidget(self.scroll_area, 4)
+        main_layout.addWidget(self.preview_label, 5)
+        main_layout.addLayout(right_layout, 3)
+
+    # --------------------------------------------------
+
+    def import_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Folder")
+
+        if folder:
+            supported = (".jpg", ".jpeg", ".png", ".cr2", ".nef", ".arw", ".dng")
+
+            self.image_files = [
+                os.path.join(folder, f)
+                for f in os.listdir(folder)
+                if f.lower().endswith(supported)
+            ]
+
+            self.status_label.setText(f"{len(self.image_files)} images found")
+            self.display_thumbnails()
+
+    # --------------------------------------------------
+
+    def display_thumbnails(self):
+        for i in reversed(range(self.grid_layout.count())):
+            widget = self.grid_layout.itemAt(i).widget()
+            if
