@@ -1,4 +1,5 @@
 import os
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout,
     QVBoxLayout, QPushButton, QFileDialog,
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow):
 
         left_panel.addWidget(self.import_button)
         left_panel.addWidget(self.status_label)
+        left_panel.addStretch()
 
         # THUMBNAIL AREA
         self.scroll_area = QScrollArea()
@@ -61,12 +63,13 @@ class MainWindow(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select Folder")
 
         if folder:
-            files = []
             supported_extensions = (".jpg", ".jpeg", ".png", ".cr2", ".nef", ".arw", ".dng")
 
-            for f in os.listdir(folder):
-                if f.lower().endswith(supported_extensions):
-                    files.append(os.path.join(folder, f))
+            files = [
+                os.path.join(folder, f)
+                for f in os.listdir(folder)
+                if f.lower().endswith(supported_extensions)
+            ]
 
             self.image_files = files
             self.status_label.setText(f"{len(files)} images found")
@@ -76,16 +79,26 @@ class MainWindow(QMainWindow):
     def display_thumbnails(self):
         # Clear existing thumbnails
         for i in reversed(range(self.grid_layout.count())):
-            self.grid_layout.itemAt(i).widget().setParent(None)
+            widget = self.grid_layout.itemAt(i).widget()
+            if widget:
+                widget.setParent(None)
 
         row = 0
         col = 0
 
         for file_path in self.image_files:
             pixmap = QPixmap(file_path)
-            pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-            label = QLabel()
+            if pixmap.isNull():
+                continue
+
+            pixmap = pixmap.scaled(
+                150, 150,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+
+            label = ClickableLabel(file_path, self.preview)
             label.setPixmap(pixmap)
 
             self.grid_layout.addWidget(label, row, col)
@@ -94,3 +107,6 @@ class MainWindow(QMainWindow):
             if col > 4:
                 col = 0
                 row += 1
+
+
+class ClickableLabel(QLabel):
