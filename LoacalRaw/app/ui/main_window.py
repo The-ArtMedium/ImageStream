@@ -8,9 +8,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
-from ui.controls_panel import ControlsPanel
-from ui.preview_widget import PreviewWidget
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -21,13 +18,14 @@ class MainWindow(QMainWindow):
 
         self.image_files = []
 
+        # Central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
         main_layout = QHBoxLayout()
         central_widget.setLayout(main_layout)
 
-        # LEFT PANEL
+        # Left panel
         left_panel = QVBoxLayout()
 
         self.import_button = QPushButton("Import Folder")
@@ -39,45 +37,39 @@ class MainWindow(QMainWindow):
         left_panel.addWidget(self.status_label)
         left_panel.addStretch()
 
-        # THUMBNAIL AREA
+        # Thumbnail area
         self.scroll_area = QScrollArea()
-        self.scroll_area_widget = QWidget()
+        self.scroll_widget = QWidget()
         self.grid_layout = QGridLayout()
 
-        self.scroll_area_widget.setLayout(self.grid_layout)
-        self.scroll_area.setWidget(self.scroll_area_widget)
+        self.scroll_widget.setLayout(self.grid_layout)
+        self.scroll_area.setWidget(self.scroll_widget)
         self.scroll_area.setWidgetResizable(True)
 
-        # CENTER PREVIEW
-        self.preview = PreviewWidget()
-
-        # RIGHT CONTROLS
-        self.controls = ControlsPanel()
-
+        # Add to main layout
         main_layout.addLayout(left_panel, 1)
-        main_layout.addWidget(self.scroll_area, 2)
-        main_layout.addWidget(self.preview, 3)
-        main_layout.addWidget(self.controls, 1)
+        main_layout.addWidget(self.scroll_area, 4)
 
     def import_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Folder")
 
         if folder:
-            supported_extensions = (".jpg", ".jpeg", ".png", ".cr2", ".nef", ".arw", ".dng")
+            supported = (
+                ".jpg", ".jpeg", ".png",
+                ".cr2", ".nef", ".arw", ".dng"
+            )
 
-            files = [
+            self.image_files = [
                 os.path.join(folder, f)
                 for f in os.listdir(folder)
-                if f.lower().endswith(supported_extensions)
+                if f.lower().endswith(supported)
             ]
 
-            self.image_files = files
-            self.status_label.setText(f"{len(files)} images found")
-
+            self.status_label.setText(f"{len(self.image_files)} images found")
             self.display_thumbnails()
 
     def display_thumbnails(self):
-        # Clear existing thumbnails
+        # Clear old thumbnails
         for i in reversed(range(self.grid_layout.count())):
             widget = self.grid_layout.itemAt(i).widget()
             if widget:
@@ -98,7 +90,7 @@ class MainWindow(QMainWindow):
                 Qt.SmoothTransformation
             )
 
-            label = ClickableLabel(file_path, self.preview)
+            label = QLabel()
             label.setPixmap(pixmap)
 
             self.grid_layout.addWidget(label, row, col)
@@ -107,6 +99,3 @@ class MainWindow(QMainWindow):
             if col > 4:
                 col = 0
                 row += 1
-
-
-class ClickableLabel(QLabel):
