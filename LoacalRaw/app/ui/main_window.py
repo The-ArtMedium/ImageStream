@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.exposure_slider.valueChanged.connect(self.update_pipeline)
 
         self.contrast_slider = QSlider(Qt.Horizontal)
-        self.contrast_slider.setRange(10, 30)  # 1.0 to 3.0
+        self.contrast_slider.setRange(10, 30)
         self.contrast_slider.setValue(10)
         self.contrast_slider.valueChanged.connect(self.update_pipeline)
 
@@ -118,58 +118,3 @@ class MainWindow(QMainWindow):
         right_layout.addStretch()
 
         # ================= Layout Assembly
-        main_layout.addLayout(left_layout, 2)
-        main_layout.addWidget(self.scroll_area, 4)
-        main_layout.addWidget(self.preview_label, 5)
-        main_layout.addLayout(right_layout, 3)
-
-    # --------------------------------------------------
-
-    def import_folder(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Folder")
-
-        if folder:
-            supported = (".jpg", ".jpeg", ".png", ".cr2", ".nef", ".arw", ".dng")
-
-            self.image_files = [
-                os.path.join(folder, f)
-                for f in os.listdir(folder)
-                if f.lower().endswith(supported)
-            ]
-
-            self.status_label.setText(f"{len(self.image_files)} images found")
-            self.display_thumbnails()
-
-    # --------------------------------------------------
-
-    def display_thumbnails(self):
-        for i in reversed(range(self.grid_layout.count())):
-            widget = self.grid_layout.itemAt(i).widget()
-            if widget:
-                widget.setParent(None)
-
-        row, col = 0, 0
-
-        for file_path in self.image_files:
-            pixmap = QPixmap(file_path)
-            if pixmap.isNull():
-                continue
-
-            pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
-            label = QLabel()
-            label.setPixmap(pixmap)
-            label.mousePressEvent = lambda event, path=file_path: self.load_image(path)
-
-            self.grid_layout.addWidget(label, row, col)
-
-            col += 1
-            if col > 4:
-                col = 0
-                row += 1
-
-    # --------------------------------------------------
-
-    def load_image(self, file_path):
-        image = cv2.imread(file_path)
-        if image is
