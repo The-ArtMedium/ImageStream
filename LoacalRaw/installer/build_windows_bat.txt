@@ -1,0 +1,28 @@
+@echo off
+REM LocalRAW Windows Build Script
+REM Run this from the project root folder
+REM Requirements: pip install pyinstaller
+
+echo ========================================
+echo   LocalRAW Windows Build
+echo   Version: 1.0.0
+echo ========================================
+
+echo.
+echo [1/2] Cleaning previous build...
+if exist build rmdir /s /q build
+if exist dist rmdir /s /q dist
+echo Done.
+
+echo.
+echo [2/2] Building LocalRAW.exe with PyInstaller...
+pyinstaller LocalRAW.spec --clean
+
+echo.
+echo ========================================
+echo   BUILD COMPLETE
+echo   EXE: dist\LocalRAW.exe
+echo   Now run Inno Setup on installer\windows.iss
+echo   to create the installer wizard.
+echo ========================================
+pause

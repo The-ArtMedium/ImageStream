@@ -1,0 +1,66 @@
+; LocalRAW Windows Installer Script
+; Built with Inno Setup 6
+; Download Inno Setup at: https://jrsoftware.org/isinfo.php
+
+[Setup]
+AppName=LocalRAW
+AppVersion=1.0.0
+AppPublisher=LocalRAW Project
+AppPublisherURL=https://github.com/yourname/LocalRAW
+AppSupportURL=https://github.com/yourname/LocalRAW/issues
+AppUpdatesURL=https://github.com/yourname/LocalRAW/releases
+
+; Install to Program Files by default
+DefaultDirName={autopf}\LocalRAW
+DefaultGroupName=LocalRAW
+
+; Output
+OutputDir=dist\installer
+OutputBaseFilename=LocalRAW-Setup-1.0.0-Windows
+
+; Compression
+Compression=lzma2
+SolidCompression=yes
+
+; Require admin to install
+PrivilegesRequired=admin
+
+; Appearance
+WizardStyle=modern
+SetupIconFile=..\resources\icon.ico
+UninstallDisplayIcon={app}\LocalRAW.exe
+
+; License
+LicenseFile=..\LICENSE
+
+[Languages]
+Name: "english";    MessagesFile: "compiler:Default.isl"
+Name: "spanish";    MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+
+[Tasks]
+Name: "desktopicon";    Description: "Create a desktop shortcut";    GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "startmenuicon";  Description: "Add to Start Menu";             GroupDescription: "Additional shortcuts:"; Flags: checked
+
+[Files]
+; Main executable (built by PyInstaller)
+Source: "..\dist\LocalRAW.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; Resources
+Source: "..\resources\style.qss";              DestDir: "{app}\resources";              Flags: ignoreversion
+Source: "..\resources\translations\*.json";    DestDir: "{app}\resources\translations"; Flags: ignoreversion recursesubdirs
+
+[Icons]
+; Start Menu
+Name: "{group}\LocalRAW";          Filename: "{app}\LocalRAW.exe"
+Name: "{group}\Uninstall LocalRAW"; Filename: "{uninstallexe}"
+
+; Desktop shortcut (optional)
+Name: "{autodesktop}\LocalRAW"; Filename: "{app}\LocalRAW.exe"; Tasks: desktopicon
+
+[Run]
+; Offer to launch after install
+Filename: "{app}\LocalRAW.exe"; Description: "Launch LocalRAW"; Flags: nowait postinstall skipifsilent
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}"
