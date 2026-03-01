@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "LocalClip",
+    "tagline": "Simple. Local. Yours.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "File",
+    "import_video": "Import Video",
+    "exit": "Exit",
+    "help": "Help",
+    "about": "About LocalClip"
+  },
+  "buttons": {
+    "import_video": "Import Video",
+    "play": "Play",
+    "pause": "Pause",
+    "mark_start": "Mark Start (I)",
+    "mark_end": "Mark End (O)",
+    "reset_markers": "Reset Markers",
+    "export_clip": "Export Clip"
+  },
+  "labels": {
+    "no_video": "No video loaded",
+    "loaded": "Loaded",
+    "duration": "Duration",
+    "in_point": "In",
+    "out_point": "Out",
+    "tagline_subtitle": "Trim videos. No cloud. No watermarks."
+  },
+  "dialogs": {
+    "import_title": "Import Video",
+    "export_title": "Export Clip",
+    "invalid_range": "Invalid Range",
+    "invalid_range_msg": "End point must be after start point!",
+    "export_complete": "Export Complete",
+    "export_success": "Clip exported successfully!",
+    "export_failed": "Export Failed",
+    "failed_msg": "Failed to export clip:",
+    "load_error": "Error",
+    "load_error_msg": "Failed to load video file!"
+  },
+  "status": {
+    "ready": "Ready - Import a video to begin",
+    "video_loaded": "Video loaded",
+    "start_marked": "Start marked at",
+    "end_marked": "End marked at",
+    "markers_reset": "Markers reset",
+    "exporting": "Exporting clip...",
+    "export_complete": "Export complete!",
+    "export_failed": "Export failed"
+  },
+  "about": {
+    "title": "About LocalClip",
+    "description": "A lightweight video trimming tool for creators.",
+    "features": "No cloud uploads. No watermarks. No limits.",
+    "signature": "Baperebup!",
+    "license": "Licensed under MIT License"
+  }
+}
