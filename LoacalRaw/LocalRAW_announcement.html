@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LocalRAW — Announced</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c87a;
+    --gold-dim: #7a6030;
+    --black: #0a0a0a;
+    --dark: #111111;
+    --dark2: #1a1a1a;
+    --dark3: #222222;
+    --white: #f5f0e8;
+    --muted: #6b6560;
+    --accent: #c9a84c;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 80px 40px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(72px, 12vw, 140px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-title span {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .hero-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.5s forwards;
+  }
+
+  .hero-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(18px, 2.5vw, 26px);
+    color: var(--white);
+    opacity: 0.7;
+    max-width: 600px;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-line {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  /* ── MANIFESTO STRIP ── */
+  .manifesto {
+    background: var(--gold);
+    color: var(--black);
+    padding: 20px 40px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .manifesto-inner {
+    display: inline-flex;
+    gap: 60px;
+    animation: marquee 20s linear infinite;
+  }
+
+  .manifesto-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .manifesto-dot {
+    color: rgba(0,0,0,0.4);
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 120px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+
+  .section-title em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  /* ── THE PROBLEM ── */
+  .problem {
+    border-left: 1px solid var(--gold-dim);
+    padding-left: 48px;
+    margin-bottom: 80px;
+  }
+
+  .problem p {
+    font-size: 18px;
+    color: rgba(245,240,232,0.75);
+    max-width: 680px;
+    margin-bottom: 20px;
+  }
+
+  .problem p strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  /* ── FEATURES GRID ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2px;
+    background: var(--dark3);
+    border: 1px solid #2a2a2a;
+    margin-bottom: 80px;
+  }
+
+  .feature-card {
+    background: var(--dark);
+    padding: 40px;
+    transition: background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px;
+    height: 0;
+    background: var(--gold);
+    transition: height 0.4s ease;
+  }
+
+  .feature-card:hover { background: var(--dark2); }
+  .feature-card:hover::before { height: 100%; }
+
+  .feature-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--dark3);
+    line-height: 1;
+    margin-bottom: 16px;
+    transition: color 0.3s;
+  }
+
+  .feature-card:hover .feature-number { color: var(--gold-dim); }
+
+  .feature-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+
+  .feature-name span {
+    color: var(--gold);
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── ADVANTAGES ── */
+  .advantages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 80px;
+  }
+
+  .advantage {
+    border-top: 1px solid #2a2a2a;
+    padding-top: 32px;
+  }
+
+  .advantage-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+
+  .advantage-title span { color: var(--gold); }
+
+  .advantage p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ── WHO IT'S FOR ── */
+  .for-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 80px;
+  }
+
+  .for-item {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    padding: 28px 32px;
+    position: relative;
+  }
+
+  .for-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .for-item:hover::after { transform: scaleX(1); }
+
+  .for-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .for-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .for-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── PHILOSOPHY QUOTE ── */
+  .philosophy {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid var(--gold);
+    padding: 64px 80px;
+    text-align: center;
+    margin: 0 -40px 80px;
+  }
+
+  .philosophy blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 3.5vw, 38px);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--white);
+    max-width: 800px;
+    margin: 0 auto 24px;
+  }
+
+  .philosophy cite {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
+  /* ── SPECS TABLE ── */
+  .specs {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 80px;
+    font-size: 14px;
+  }
+
+  .specs thead tr {
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  .specs th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 16px 24px;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .specs td {
+    padding: 18px 24px;
+    border-bottom: 1px solid #1e1e1e;
+    color: rgba(245,240,232,0.7);
+    vertical-align: top;
+  }
+
+  .specs tr:hover td { background: var(--dark2); color: var(--white); }
+
+  .specs .check {
+    color: var(--gold);
+    font-size: 16px;
+  }
+
+  .specs .cross {
+    color: #444;
+    font-size: 16px;
+  }
+
+  /* ── LANGUAGES ── */
+  .languages {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+  }
+
+  .lang-badge {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    transition: all 0.2s;
+  }
+
+  .lang-badge:hover {
+    background: var(--gold);
+    color: var(--black);
+    border-color: var(--gold);
+  }
+
+  /* ── FOOTER CTA ── */
+  .footer-cta {
+    text-align: center;
+    padding: 120px 40px;
+    border-top: 1px solid #1e1e1e;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .footer-cta::before {
+    content: 'LOCALRAW';
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 20vw;
+    font-weight: 900;
+    color: rgba(201,168,76,0.03);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .footer-cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .footer-cta h2 em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .footer-cta p {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 18px 48px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid var(--gold);
+  }
+
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--gold);
+  }
+
+  .footer-note {
+    margin-top: 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  .footer-note span { color: var(--gold); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    margin: 0;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    section { padding: 80px 24px; }
+    .advantages { grid-template-columns: 1fr; }
+    .philosophy { padding: 48px 32px; margin: 0 -24px 60px; }
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">ImageStream Tools — Announcing</div>
+  <h1 class="hero-title">Local<span>RAW</span></h1>
+  <div class="hero-version">v1.2.0 — Free Forever</div>
+  <p class="hero-tagline">Professional RAW photo editing. No internet. No subscription. No compromise.</p>
+  <div class="hero-line"></div>
+</div>
+
+<!-- MARQUEE -->
+<div class="manifesto">
+  <div class="manifesto-inner">
+    <span class="manifesto-item">Free Forever <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">100% Local <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Cloud <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Subscription <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Upload <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Your Images Stay Yours <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Works Offline <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Windows &amp; macOS <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Free Forever <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">100% Local <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Cloud <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Subscription <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">No Upload <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Your Images Stay Yours <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Works Offline <span class="manifesto-dot">·</span></span>
+    <span class="manifesto-item">Windows &amp; macOS <span class="manifesto-dot">·</span></span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- THE PROBLEM -->
+<section>
+  <div class="section-label reveal">The Reality</div>
+  <h2 class="section-title reveal">The world has talent.<br><em>Not everyone has bandwidth.</em></h2>
+
+  <div class="problem reveal">
+    <p>A photojournalist at a stadium in Lagos. A documentary photographer in the Andes. A wedding photographer in Manila. <strong>The talent is everywhere. The expensive subscriptions and fast internet are not.</strong></p>
+    <p>Adobe Lightroom costs $20/month — a significant percentage of income in much of the world. Cloud editing means uploading 25MB RAW files over slow, expensive data. It means your images sit on corporate servers you don't control, analyzed, stored, governed by terms you agreed to without reading.</p>
+    <p><strong>LocalRAW was built because that is wrong.</strong></p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-label reveal">What It Does</div>
+  <h2 class="section-title reveal">Professional tools.<br><em>Zero compromise.</em></h2>
+
+  <div class="features-grid reveal">
+
+    <div class="feature-card">
+      <div class="feature-number">01</div>
+      <div class="feature-name">RAW File <span>Support</span></div>
+      <div class="feature-desc">CR2, NEF, ARW, DNG — Canon, Nikon, Sony, all major cameras. Plus JPG and PNG. Open any image, no conversion needed.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">02</div>
+      <div class="feature-name">White <span>Balance</span></div>
+      <div class="feature-desc">LAB colorspace temperature and tint shifting. Not a crude RGB multiply — a perceptually accurate shift that looks natural on any image.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">03</div>
+      <div class="feature-name">Exposure & <span>Contrast</span></div>
+      <div class="feature-desc">Real stops-based exposure. S-curve contrast applied to luminance only — shadows deepen, highlights open, midtones stay clean.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">04</div>
+      <div class="feature-name">Noise <span>Reduction</span></div>
+      <div class="feature-desc">Dual-channel: luminance NL-means denoising removes grain, color channel smoothing kills chroma noise. High-ISO images become usable.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">05</div>
+      <div class="feature-name">Luminance <span>Sharpening</span></div>
+      <div class="feature-desc">Unsharp mask on the L channel only. Detail comes forward without introducing color fringing or amplifying noise in the color channels.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">06</div>
+      <div class="feature-name"><span>Dehaze</span></div>
+      <div class="feature-desc">Dark channel prior algorithm removes atmospheric haze and restores depth. Wildlife, landscape, and outdoor photographers know what this means.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">07</div>
+      <div class="feature-name">Batch <span>Rename</span></div>
+      <div class="feature-desc">Rename entire folders using patterns: {prefix}_{date}_{n}. Live preview before any file is touched. Confirm and done.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">08</div>
+      <div class="feature-name"><span>Watermark</span></div>
+      <div class="feature-desc">Text watermark with position control, opacity, and automatic shadow for readability on any background — light or dark.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">09</div>
+      <div class="feature-name">Metadata <span>Editor</span></div>
+      <div class="feature-desc">Read full EXIF — camera, lens, ISO, shutter, aperture, date. Write Artist, Copyright, and Description. Your name stays with your image.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">10</div>
+      <div class="feature-name">Live <span>Preview</span></div>
+      <div class="feature-desc">Debounced real-time preview on a downscaled working copy. Every slider feels instant. Full resolution is only processed at export.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">11</div>
+      <div class="feature-name">Export <span>Control</span></div>
+      <div class="feature-desc">JPEG at 95% quality or lossless PNG. Full resolution. Your file, your format, your folder. Nothing uploaded anywhere.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-number">12</div>
+      <div class="feature-name">5 <span>Languages</span></div>
+      <div class="feature-desc">English, Spanish, Portuguese, Arabic, Hindi. Over 3.5 billion people can use this in their own language on day one.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHILOSOPHY -->
+<section style="padding-bottom: 0;">
+  <div class="philosophy reveal">
+    <blockquote>"The images never leave my drive. That is not a feature — that is a right."</blockquote>
+    <cite>The LocalRAW Philosophy</cite>
+  </div>
+</section>
+
+<!-- ADVANTAGES -->
+<section>
+  <div class="section-label reveal">Why It Matters</div>
+  <h2 class="section-title reveal">Unique <em>advantages</em><br>no subscription gives you.</h2>
+
+  <div class="advantages reveal">
+    <div class="advantage">
+      <div class="advantage-title">⚡ Field Speed</div>
+      <p>The sports photographer who edits pitchside and transmits over a phone hotspot beats the one waiting in the media room. LocalRAW makes that possible with any laptop, any connection — or none at all.</p>
+    </div>
+    <div class="advantage">
+      <div class="advantage-title">🔒 <span>True</span> Privacy</div>
+      <p>No terms of service claiming rights to uploaded content. No AI trained on your images. No metadata exposed to third-party servers. A photojournalist covering sensitive stories needs this — not as a preference, but as a necessity.</p>
+    </div>
+    <div class="advantage">
+      <div class="advantage-title">🌍 <span>Global</span> Access</div>
+      <p>Uploading a 25MB RAW file costs real money on metered data in Africa, South Asia, and Latin America. LocalRAW eliminates that cost entirely. Edit locally, transmit only the final JPEG — a 90% reduction in data per image.</p>
+    </div>
+    <div class="advantage">
+      <div class="advantage-title">🏫 <span>Education</span></div>
+      <p>A photography school with 30 students needs no server, no cloud accounts, no per-seat licensing. One USB drive, 30 installations, zero ongoing cost. The lesson becomes about light and composition — not login screens.</p>
+    </div>
+    <div class="advantage">
+      <div class="advantage-title">⚡ <span>Grid</span> Independence</div>
+      <p>Load shedding in South Africa. Blackouts in Venezuela. Unreliable power anywhere. A charged laptop and LocalRAW means you can still create, still edit, still deliver. No internet required. Ever.</p>
+    </div>
+    <div class="advantage">
+      <div class="advantage-title">💰 <span>Zero</span> Cost</div>
+      <p>$0 today. $0 next year. $0 forever. No trial period that expires. No features locked behind a tier. The full tool, complete, for anyone who needs it — whether they can afford it or not.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHO IT'S FOR -->
+<section>
+  <div class="section-label reveal">Built For</div>
+  <h2 class="section-title reveal">Every photographer<br><em>the industry forgot.</em></h2>
+
+  <div class="for-list reveal">
+    <div class="for-item">
+      <div class="for-icon">📸</div>
+      <div class="for-title">Photojournalists</div>
+      <div class="for-desc">Edit in the field. Transmit in minutes. Beat the deadline without the media room.</div>
+    </div>
+    <div class="for-item">
+      <div class="for-icon">🐎</div>
+      <div class="for-title">Equestrian & Sport</div>
+      <div class="for-desc">No wifi at the stable or the arena. No problem. Edit the shoot before you drive home.</div>
+    </div>
+    <div class="for-item">
+      <div class="for-icon">🎭</div>
+      <div class="for-title">Performing Arts</div>
+      <div class="for-desc">Performers protect their image. LocalRAW means their faces never reach a corporate server.</div>
+    </div>
+    <div class="for-item">
+      <div class="for-icon">🌿</div>
+      <div class="for-title">Documentary & Nature</div>
+      <div class="for-desc">Remote locations, sensitive subjects, zero connectivity. Edit everything on the drive.</div>
+    </div>
+    <div class="for-item">
+      <div class="for-icon">🎓</div>
+      <div class="for-title">Students & Schools</div>
+      <div class="for-desc">Professional tools for every student, no budget required, no accounts to manage.</div>
+    </div>
+    <div class="for-item">
+      <div class="for-icon">🌍</div>
+      <div class="for-title">Emerging Markets</div>
+      <div class="for-desc">Lagos. São Paulo. Karachi. Nairobi. The talent was always there. Now the tools are too.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPARISON TABLE -->
+<section>
+  <div class="section-label reveal">Comparison</div>
+  <h2 class="section-title reveal">LocalRAW vs<br><em>the subscription model.</em></h2>
+
+  <table class="specs reveal">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>LocalRAW</th>
+        <th>Adobe Lightroom</th>
+        <th>Cloud Editors</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Cost</td><td style="color:#c9a84c; font-weight:500;">Free forever</td><td>$10–20/month</td><td>$5–15/month</td></tr>
+      <tr><td>Internet required</td><td><span class="check">✕ Never</span></td><td><span class="cross">✓ Activation</span></td><td><span class="cross">✓ Always</span></td></tr>
+      <tr><td>Images leave your device</td><td><span class="check">✕ Never</span></td><td><span class="cross">✓ Cloud sync</span></td><td><span class="cross">✓ Required</span></td></tr>
+      <tr><td>RAW support</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td>Limited</td></tr>
+      <tr><td>Works during power cuts</td><td><span class="check">✓ Yes</span></td><td>Partial</td><td><span class="cross">✕ No</span></td></tr>
+      <tr><td>Data cost to edit</td><td><span class="check">✕ Zero</span></td><td>Low</td><td><span class="cross">High</span></td></tr>
+      <tr><td>Metadata stays private</td><td><span class="check">✓ Always</span></td><td>Partial</td><td><span class="cross">✕ No</span></td></tr>
+      <tr><td>Works on basic hardware</td><td><span class="check">✓ Yes</span></td><td>Demanding</td><td>Browser only</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- LANGUAGES -->
+<section>
+  <div class="section-label reveal">Language Support</div>
+  <h2 class="section-title reveal">Available on day one<br><em>in 5 languages.</em></h2>
+  <p style="color:var(--muted); margin-bottom: 32px;" class="reveal">Covering over 3.5 billion people. More languages coming.</p>
+
+  <div class="languages reveal">
+    <div class="lang-badge">🇬🇧 English</div>
+    <div class="lang-badge">🇪🇸 Español</div>
+    <div class="lang-badge">🇧🇷 Português</div>
+    <div class="lang-badge">🇸🇦 العربية</div>
+    <div class="lang-badge">🇮🇳 हिन्दी</div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<div class="footer-cta">
+  <h2 class="reveal">Free. Local. <em>Yours.</em></h2>
+  <p class="reveal">Part of the ImageStream creative suite. Built with independence and creative freedom in mind.</p>
+  <a href="#" class="btn-primary reveal">Download LocalRAW</a>
+  <div class="footer-note reveal">Windows &amp; macOS · No installation of Python required · <span>Free Forever</span></div>
+</div>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
