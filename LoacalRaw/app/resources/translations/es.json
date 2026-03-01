@@ -1,7 +1,60 @@
 {
-  "app_name": "LocalRAW",
-  "import_folder": "Importar Carpeta",
-  "no_folder": "Ninguna carpeta cargada",
-  "images_found": "imágenes encontradas",
-  "adjustments": "Ajustes"
+  "app": {
+    "name": "LocalClip",
+    "tagline": "Simple. Local. Tuyo.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "Archivo",
+    "import_video": "Importar Video",
+    "exit": "Salir",
+    "help": "Ayuda",
+    "about": "Acerca de LocalClip"
+  },
+  "buttons": {
+    "import_video": "Importar Video",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "mark_start": "Marcar Inicio (I)",
+    "mark_end": "Marcar Fin (O)",
+    "reset_markers": "Restablecer Marcadores",
+    "export_clip": "Exportar Clip"
+  },
+  "labels": {
+    "no_video": "No hay video cargado",
+    "loaded": "Cargado",
+    "duration": "Duración",
+    "in_point": "Inicio",
+    "out_point": "Fin",
+    "tagline_subtitle": "Recorta videos. Sin nube. Sin marcas de agua."
+  },
+  "dialogs": {
+    "import_title": "Importar Video",
+    "export_title": "Exportar Clip",
+    "invalid_range": "Rango Inválido",
+    "invalid_range_msg": "¡El punto final debe ser después del punto inicial!",
+    "export_complete": "Exportación Completa",
+    "export_success": "¡Clip exportado exitosamente!",
+    "export_failed": "Exportación Fallida",
+    "failed_msg": "Error al exportar clip:",
+    "load_error": "Error",
+    "load_error_msg": "¡Error al cargar el archivo de video!"
+  },
+  "status": {
+    "ready": "Listo - Importa un video para comenzar",
+    "video_loaded": "Video cargado",
+    "start_marked": "Inicio marcado en",
+    "end_marked": "Fin marcado en",
+    "markers_reset": "Marcadores restablecidos",
+    "exporting": "Exportando clip...",
+    "export_complete": "¡Exportación completa!",
+    "export_failed": "Exportación fallida"
+  },
+  "about": {
+    "title": "Acerca de LocalClip",
+    "description": "Una herramienta ligera de recorte de video para creadores.",
+    "features": "Sin cargas en la nube. Sin marcas de agua. Sin límites.",
+    "signature": "¡Baperebup!",
+    "license": "Licenciado bajo Licencia MIT"
+  }
 }

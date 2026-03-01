@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "LocalClip",
+    "tagline": "Simple. Local. À vous.",
+    "version": "0.1.0"
+  },
+  "menu": {
+    "file": "Fichier",
+    "import_video": "Importer une vidéo",
+    "exit": "Quitter",
+    "help": "Aide",
+    "about": "À propos de LocalClip"
+  },
+  "buttons": {
+    "import_video": "Importer une vidéo",
+    "play": "Lecture",
+    "pause": "Pause",
+    "mark_start": "Marquer le début (I)",
+    "mark_end": "Marquer la fin (O)",
+    "reset_markers": "Réinitialiser les marqueurs",
+    "export_clip": "Exporter le clip"
+  },
+  "labels": {
+    "no_video": "Aucune vidéo chargée",
+    "loaded": "Chargé",
+    "duration": "Durée",
+    "in_point": "Début",
+    "out_point": "Fin",
+    "tagline_subtitle": "Coupez des vidéos. Sans cloud. Sans filigrane."
+  },
+  "dialogs": {
+    "import_title": "Importer une vidéo",
+    "export_title": "Exporter le clip",
+    "invalid_range": "Plage invalide",
+    "invalid_range_msg": "Le point de fin doit être après le point de début!",
+    "export_complete": "Exportation terminée",
+    "export_success": "Clip exporté avec succès!",
+    "export_failed": "Échec de l'exportation",
+    "failed_msg": "Échec de l'exportation du clip:",
+    "load_error": "Erreur",
+    "load_error_msg": "Échec du chargement du fichier vidéo!"
+  },
+  "status": {
+    "ready": "Prêt - Importez une vidéo pour commencer",
+    "video_loaded": "Vidéo chargée",
+    "start_marked": "Début marqué à",
+    "end_marked": "Fin marquée à",
+    "markers_reset": "Marqueurs réinitialisés",
+    "exporting": "Exportation du clip...",
+    "export_complete": "Exportation terminée!",
+    "export_failed": "Échec de l'exportation"
+  },
+  "about": {
+    "title": "À propos de LocalClip",
+    "description": "Un outil léger de découpage vidéo pour les créateurs.",
+    "features": "Pas de téléchargements cloud. Pas de filigrane. Pas de limites.",
+    "signature": "Baperebup!",
+    "license": "Sous licence MIT"
+  }
+}
