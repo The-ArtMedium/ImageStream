@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Crash Course — Photography Dataset</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Code+Pro:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #1a1a14;
+    --bg2:     #232318;
+    --bg3:     #2c2c20;
+    --bg4:     #353528;
+    --border:  #3a3a2a;
+    --border2: #4a4a38;
+    --text:    #f5f0e3;
+    --text2:   #d4ccb8;
+    --text3:   #9a9278;
+    --gold:    #e8b84b;
+    --blue:    #7eb8f7;
+    --green:   #6bcf8a;
+    --coral:   #f08060;
+    --purple:  #c4a0f0;
+    --teal:    #5dd0c8;
+    --pink:    #f0a0c0;
+    --code-bg: #111110;
+    --code-text:#e8e0d0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 270px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border2);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .sidebar-title {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .sidebar-sub { font-size: 12px; color: var(--green); letter-spacing: 0.08em; font-weight: 600; }
+
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+
+  .nav-section {
+    padding: 12px 24px 4px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text3);
+    font-weight: 700;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 24px;
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+  .nav-item.active { color: var(--green); border-left-color: var(--green); background: var(--bg3); }
+
+  .nav-num {
+    width: 24px; height: 24px;
+    background: var(--bg3);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-family: 'Source Code Pro', monospace;
+    flex-shrink: 0;
+    color: var(--text3);
+    border: 1px solid var(--border2);
+  }
+
+  .nav-item.active .nav-num {
+    background: var(--green);
+    color: var(--bg);
+    border-color: var(--green);
+    font-weight: 700;
+  }
+
+  /* ── MAIN ── */
+  .main { margin-left: 270px; min-height: 100vh; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--bg2);
+    border-bottom: 2px solid var(--green);
+    padding: 70px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: 'Python';
+    position: absolute;
+    right: -10px; bottom: -20px;
+    font-family: 'Lora', serif;
+    font-size: 140px;
+    font-weight: 700;
+    color: rgba(107,207,138,0.04);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 4.5vw, 52px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 em { color: var(--green); font-style: italic; }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--text2);
+    max-width: 580px;
+    line-height: 1.75;
+    margin-bottom: 36px;
+  }
+
+  .hero-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ── DATASET STRIP ── */
+  .dataset-strip {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border2);
+    padding: 32px 64px;
+  }
+
+  .dataset-strip h2 {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .dataset-strip code {
+    font-family: 'Source Code Pro', monospace;
+    color: var(--green);
+    font-size: 17px;
+  }
+
+  .files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .file-card {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .file-card-name {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .file-card-fields {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.9;
+    font-family: 'Source Code Pro', monospace;
+  }
+
+  /* ── LESSON ── */
+  .lesson {
+    padding: 56px 64px;
+    border-bottom: 1px solid var(--border);
+    display: none;
+    max-width: 980px;
+  }
+
+  .lesson.active { display: block; }
+
+  .lesson-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .lesson-number {
+    font-family: 'Lora', serif;
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--border2);
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: -8px;
+  }
+
+  .lesson-meta { flex: 1; }
+
+  .lesson-tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .lesson h2 {
+    font-family: 'Lora', serif;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .lesson-desc { font-size: 16px; color: var(--text3); }
+
+  .lesson p {
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 20px;
+    max-width: 740px;
+    line-height: 1.85;
+  }
+
+  .lesson h3 {
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 36px 0 14px;
+  }
+
+  /* ── BOXES ── */
+  .concept {
+    background: var(--bg3);
+    border-left: 4px solid var(--blue);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+    max-width: 740px;
+  }
+
+  .concept strong {
+    display: block;
+    color: var(--blue);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .concept p { color: var(--text2) !important; margin-bottom: 0 !important; font-size: 16px !important; }
+
+  .tip {
+    background: var(--bg3);
+    border-left: 4px solid var(--coral);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+    max-width: 740px;
+  }
+
+  .tip strong {
+    display: block;
+    color: var(--coral);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .tip p { color: var(--text2) !important; margin-bottom: 0 !important; font-size: 16px !important; }
+
+  .syntax {
+    background: var(--bg3);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin: 20px 0;
+    max-width: 740px;
+  }
+
+  .syntax-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .syntax code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.9;
+  }
+
+  .syntax code em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+    max-width: 740px;
+    border: 1px solid var(--border2);
+  }
+
+  .code-header {
+    background: #18180f;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .code-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .code-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #6b3030; }
+  .dot-y { background: #6b5a20; }
+  .dot-g { background: #2a5a30; }
+
+  .code-body {
+    padding: 22px 26px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    line-height: 2;
+    color: var(--code-text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Python syntax colours */
+  .kw  { color: #7eb8f7; font-weight: 600; } /* keywords: for, if, def, import */
+  .fn  { color: #6bcf8a; }                    /* functions: print, len, range */
+  .str { color: #e8c06a; }                    /* strings */
+  .num { color: #f0a090; }                    /* numbers */
+  .cmt { color: #6a6458; font-style: italic;} /* comments */
+  .var { color: #e8e0d0; }                    /* variables */
+  .cls { color: #5dd0c8; }                    /* classes / types */
+  .dec { color: #c4a0f0; }                    /* decorators / special */
+  .out { color: #6bcf8a; font-style: italic;} /* output */
+
+  /* ── OUTPUT BLOCK ── */
+  .output-block {
+    background: #0d0d0a;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 16px 24px;
+    margin: 4px 0 24px;
+    max-width: 740px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--green);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .output-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 700;
+    margin: 16px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .output-label::before {
+    content: '▶';
+    font-size: 10px;
+  }
+
+  /* ── RESULT TABLE ── */
+  .result-table {
+    width: 100%;
+    max-width: 740px;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 16px 0 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+  }
+
+  .result-table th {
+    background: #111110;
+    color: var(--gold);
+    padding: 12px 18px;
+    text-align: left;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .result-table td {
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .result-table tr:last-child td { border-bottom: none; }
+  .result-table tr:nth-child(even) td { background: var(--bg3); }
+  .result-table tr:hover td { background: var(--bg4); }
+  .result-table code {
+    font-family: 'Source Code Pro', monospace;
+    color: var(--teal);
+    font-size: 13px;
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* ── EXERCISE ── */
+  .exercise {
+    background: var(--bg3);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 32px 0;
+    max-width: 740px;
+  }
+
+  .exercise-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .exercise p { color: var(--text) !important; font-weight: 600; margin-bottom: 14px !important; font-size: 16px !important; }
+
+  .exercise ol { padding-left: 22px; }
+
+  .exercise li { color: var(--text2); margin-bottom: 10px; font-size: 16px; line-height: 1.7; }
+
+  /* ── OVERVIEW ── */
+  .overview { padding: 56px 64px; }
+
+  .overview h2 { font-family: 'Lora', serif; font-size: 30px; color: var(--text); margin-bottom: 8px; }
+
+  .overview-sub { color: var(--text3); margin-bottom: 36px; font-size: 16px; }
+
+  .lessons-list { display: grid; gap: 10px; max-width: 740px; }
+
+  .lesson-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lesson-card:hover { border-color: var(--green); background: var(--bg3); transform: translateX(4px); }
+
+  .lesson-card-num {
+    width: 42px; height: 42px;
+    background: var(--bg3);
+    color: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+    border: 1px solid var(--border2);
+  }
+
+  .lesson-card-info { flex: 1; }
+  .lesson-card-title { font-weight: 700; color: var(--text); font-size: 16px; margin-bottom: 2px; }
+  .lesson-card-desc { font-size: 13px; color: var(--text3); }
+  .lesson-card-arrow { color: var(--border2); font-size: 20px; }
+
+  /* ── NAV ── */
+  .lesson-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 64px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border2);
+    position: sticky;
+    bottom: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .btn-primary { background: var(--green); color: var(--bg); }
+  .btn-primary:hover { background: #7de09a; transform: translateY(-1px); }
+  .btn-secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+  .btn-secondary:hover { background: var(--bg4); color: var(--text); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+
+  .progress { font-size: 14px; color: var(--text3); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 220px; }
+    .main { margin-left: 220px; }
+    .hero, .lesson, .overview, .lesson-nav, .dataset-strip { padding-left: 28px; padding-right: 28px; }
+  }
+
+  @media (max-width: 680px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Python Crash Course</div>
+    <div class="sidebar-sub">Photography Dataset · Dark Edition</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Start Here</div>
+    <a class="nav-item active" onclick="showLesson(0)"><span class="nav-num">✦</span> Overview</a>
+    <a class="nav-item" onclick="showLesson(1)"><span class="nav-num">1</span> Variables & Data Types</a>
+    <div class="nav-section">Core Python</div>
+    <a class="nav-item" onclick="showLesson(2)"><span class="nav-num">2</span> Lists, Dicts & Tuples</a>
+    <a class="nav-item" onclick="showLesson(3)"><span class="nav-num">3</span> Loops & Conditionals</a>
+    <a class="nav-item" onclick="showLesson(4)"><span class="nav-num">4</span> Functions</a>
+    <div class="nav-section">Working with Data</div>
+    <a class="nav-item" onclick="showLesson(5)"><span class="nav-num">5</span> Reading CSV Files</a>
+    <a class="nav-item" onclick="showLesson(6)"><span class="nav-num">6</span> Pandas & DataFrames</a>
+    <a class="nav-item" onclick="showLesson(7)"><span class="nav-num">7</span> Filtering & Grouping</a>
+    <div class="nav-section">Visualisation</div>
+    <a class="nav-item" onclick="showLesson(8)"><span class="nav-num">8</span> Matplotlib Charts</a>
+  </div>
+</nav>
+
+<div class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Data Analysis Bootcamp — Python Foundation</div>
+    <h1>Learn Python with<br><em>Photography Data</em></h1>
+    <p>8 lessons using one original dataset — photographers, shoots, and equipment from around the world. No pale grey text. No eye strain. Built for human beings.</p>
+    <div class="hero-tags">
+      <span class="tag">8 Lessons</span>
+      <span class="tag">Original Dataset</span>
+      <span class="tag">Dark Theme</span>
+      <span class="tag">Print-Ready</span>
+      <span class="tag">Beginner to Data Analysis</span>
+    </div>
+  </div>
+
+  <div class="dataset-strip">
+    <h2>Your Dataset: <code>ImageStream Photography Database</code></h2>
+    <div class="files-grid">
+      <div class="file-card">
+        <div class="file-card-name">photographers.csv</div>
+        <div class="file-card-fields">photographer_id · name<br>country · specialty<br>years_experience · rating<br>total_shoots · camera</div>
+      </div>
+      <div class="file-card">
+        <div class="file-card-name">shoots.csv</div>
+        <div class="file-card-fields">shoot_id · photographer_id<br>location · year<br>photos_taken · photos_exported<br>lens · fee_usd · client_rating</div>
+      </div>
+      <div class="file-card">
+        <div class="file-card-name">equipment.csv</div>
+        <div class="file-card-fields">item_id · photographer_id<br>type · brand · model<br>purchase_year<br>purchase_price_usd</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSON 0 — OVERVIEW -->
+  <div class="lesson active" id="lesson-0">
+    <div class="overview">
+      <h2>Course Overview</h2>
+      <p class="overview-sub">8 lessons · Start at Lesson 1 · Same photography dataset throughout</p>
+      <div class="lessons-list">
+        <div class="lesson-card" onclick="showLesson(1)"><div class="lesson-card-num">1</div><div class="lesson-card-info"><div class="lesson-card-title">Variables & Data Types</div><div class="lesson-card-desc">Numbers, text, booleans — the building blocks</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(2)"><div class="lesson-card-num">2</div><div class="lesson-card-info"><div class="lesson-card-title">Lists, Dicts & Tuples</div><div class="lesson-card-desc">Storing collections of data</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(3)"><div class="lesson-card-num">3</div><div class="lesson-card-info"><div class="lesson-card-title">Loops & Conditionals</div><div class="lesson-card-desc">Making decisions and repeating actions</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(4)"><div class="lesson-card-num">4</div><div class="lesson-card-info"><div class="lesson-card-title">Functions</div><div class="lesson-card-desc">Reusable blocks of code with a name</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(5)"><div class="lesson-card-num">5</div><div class="lesson-card-info"><div class="lesson-card-title">Reading CSV Files</div><div class="lesson-card-desc">Load real data from photographers.csv</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(6)"><div class="lesson-card-num">6</div><div class="lesson-card-info"><div class="lesson-card-title">Pandas & DataFrames</div><div class="lesson-card-desc">The most powerful data tool in Python</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(7)"><div class="lesson-card-num">7</div><div class="lesson-card-info"><div class="lesson-card-title">Filtering & Grouping</div><div class="lesson-card-desc">Ask real questions of real data</div></div><div class="lesson-card-arrow">→</div></div>
+        <div class="lesson-card" onclick="showLesson(8)"><div class="lesson-card-num">8</div><div class="lesson-card-info"><div class="lesson-card-title">Matplotlib Charts</div><div class="lesson-card-desc">Turn numbers into visual stories</div></div><div class="lesson-card-arrow">→</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSON 1 — VARIABLES -->
+  <div class="lesson" id="lesson-1">
+    <div class="lesson-header"><div class="lesson-number">01</div><div class="lesson-meta"><div class="lesson-tag">Foundation</div><h2>Variables & Data Types</h2><div class="lesson-desc">The building blocks of every Python program</div></div></div>
+
+    <p>A <strong>variable</strong> is a name that holds a value. You create it by writing the name, an equals sign, and the value. Python figures out the type automatically.</p>
+
+    <div class="concept"><strong>No need to declare types</strong><p>In some languages you must say "this is a number" before using it. In Python you just write the value and Python understands. This makes it faster to write.</p></div>
+
+    <h3>Basic variables — photography examples</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># String — text in quotes</span>
+<span class="var">photographer_name</span> = <span class="str">"Amara Diallo"</span>
+<span class="var">country</span>           = <span class="str">"Senegal"</span>
+<span class="var">specialty</span>         = <span class="str">"Wildlife"</span>
+
+<span class="cmt"># Integer — whole number</span>
+<span class="var">years_experience</span>  = <span class="num">22</span>
+<span class="var">total_shoots</span>      = <span class="num">779</span>
+
+<span class="cmt"># Float — number with decimal</span>
+<span class="var">rating</span>            = <span class="num">3.7</span>
+<span class="var">shoot_fee</span>         = <span class="num">750.00</span>
+
+<span class="cmt"># Boolean — True or False only</span>
+<span class="var">is_available</span>      = <span class="cls">True</span>
+<span class="var">has_drone_licence</span> = <span class="cls">False</span>
+
+<span class="fn">print</span>(<span class="var">photographer_name</span>)
+<span class="fn">print</span>(<span class="str">"Rating:"</span>, <span class="var">rating</span>)
+<span class="fn">print</span>(<span class="str">"Years active:"</span>, <span class="var">years_experience</span>)</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">Amara Diallo
+Rating: 3.7
+Years active: 22</div>
+
+    <h3>The four main data types</h3>
+    <table class="result-table">
+      <thead><tr><th>Type</th><th>Example</th><th>Use for</th></tr></thead>
+      <tbody>
+        <tr><td><code>str</code></td><td><code>"Amara Diallo"</code></td><td>Names, text, labels</td></tr>
+        <tr><td><code>int</code></td><td><code>22</code></td><td>Whole numbers — years, counts</td></tr>
+        <tr><td><code>float</code></td><td><code>3.7</code></td><td>Decimals — ratings, fees, prices</td></tr>
+        <tr><td><code>bool</code></td><td><code>True</code> / <code>False</code></td><td>Yes/No decisions</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Checking the type and doing arithmetic</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="fn">print</span>(<span class="fn">type</span>(<span class="var">photographer_name</span>))  <span class="cmt"># &lt;class 'str'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="var">rating</span>))             <span class="cmt"># &lt;class 'float'&gt;</span>
+
+<span class="cmt"># Arithmetic with variables</span>
+<span class="var">photos_taken</span>    = <span class="num">744</span>
+<span class="var">photos_exported</span> = <span class="num">128</span>
+<span class="var">kept_percentage</span> = (<span class="var">photos_exported</span> / <span class="var">photos_taken</span>) * <span class="num">100</span>
+
+<span class="fn">print</span>(<span class="fn">round</span>(<span class="var">kept_percentage</span>, <span class="num">1</span>), <span class="str">"%"</span>)</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">&lt;class 'str'&gt;
+&lt;class 'float'&gt;
+17.2 %</div>
+
+    <div class="tip"><strong>Naming Convention</strong><p>Python variable names use lowercase with underscores — called snake_case. Write photographer_name not PhotographerName. This is the Python standard and everyone will expect it.</p></div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these in Python:</p><ol><li>Create a variable for your name, your country, and your years of experience</li><li>Create a variable for photos_taken (600) and photos_exported (90) and calculate the kept percentage</li><li>Use type() to check the type of each variable you created</li></ol></div>
+  </div>
+
+  <!-- LESSON 2 — LISTS, DICTS, TUPLES -->
+  <div class="lesson" id="lesson-2">
+    <div class="lesson-header"><div class="lesson-number">02</div><div class="lesson-meta"><div class="lesson-tag">Core Python</div><h2>Lists, Dicts & Tuples</h2><div class="lesson-desc">Storing collections of data in one place</div></div></div>
+
+    <p>A single variable holds one value. But what if you need to store 20 photographer names? Or a photographer's full profile? Python has three main collection types for this.</p>
+
+    <h3>List — an ordered collection</h3>
+    <p>A list holds multiple values in order. Use square brackets.</p>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">specialties</span> = [<span class="str">"Wildlife"</span>, <span class="str">"Street"</span>, <span class="str">"Portrait"</span>, <span class="str">"Documentary"</span>, <span class="str">"Landscape"</span>]
+
+<span class="cmt"># Access by position — counting starts at 0</span>
+<span class="fn">print</span>(<span class="var">specialties</span>[<span class="num">0</span>])   <span class="cmt"># Wildlife</span>
+<span class="fn">print</span>(<span class="var">specialties</span>[<span class="num">2</span>])   <span class="cmt"># Portrait</span>
+<span class="fn">print</span>(<span class="var">specialties</span>[-<span class="num">1</span>])  <span class="cmt"># Landscape — last item</span>
+
+<span class="cmt"># Useful list operations</span>
+<span class="fn">print</span>(<span class="fn">len</span>(<span class="var">specialties</span>))          <span class="cmt"># 5</span>
+<span class="var">specialties</span>.append(<span class="str">"Architecture"</span>) <span class="cmt"># add to end</span>
+<span class="fn">print</span>(<span class="fn">len</span>(<span class="var">specialties</span>))          <span class="cmt"># 6</span></div></div>
+
+    <h3>Dictionary — key and value pairs</h3>
+    <p>A dictionary stores data with labels. Like a real dictionary — you look up a word (key) and get the definition (value). Use curly braces.</p>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">photographer</span> = {
+    <span class="str">"name"</span>:             <span class="str">"Priya Nair"</span>,
+    <span class="str">"country"</span>:          <span class="str">"India"</span>,
+    <span class="str">"specialty"</span>:        <span class="str">"Portrait"</span>,
+    <span class="str">"years_experience"</span>: <span class="num">23</span>,
+    <span class="str">"rating"</span>:           <span class="num">4.6</span>,
+    <span class="str">"available"</span>:        <span class="cls">True</span>
+}
+
+<span class="cmt"># Access values by key</span>
+<span class="fn">print</span>(<span class="var">photographer</span>[<span class="str">"name"</span>])    <span class="cmt"># Priya Nair</span>
+<span class="fn">print</span>(<span class="var">photographer</span>[<span class="str">"rating"</span>])  <span class="cmt"># 4.6</span>
+
+<span class="cmt"># Update a value</span>
+<span class="var">photographer</span>[<span class="str">"rating"</span>] = <span class="num">4.8</span>
+
+<span class="cmt"># Add a new key</span>
+<span class="var">photographer</span>[<span class="str">"camera"</span>] = <span class="str">"Nikon Z7 II"</span></div></div>
+
+    <h3>Tuple — fixed, unchangeable list</h3>
+    <p>A tuple is like a list but cannot be changed after creation. Use round brackets. Good for data that should never change.</p>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># GPS coordinates — should never change</span>
+<span class="var">lagos_coords</span>  = (<span class="num">6.5244</span>, <span class="num">3.3792</span>)
+<span class="var">nairobi_coords</span> = (-<span class="num">1.2921</span>, <span class="num">36.8219</span>)
+
+<span class="fn">print</span>(<span class="var">lagos_coords</span>[<span class="num">0</span>])   <span class="cmt"># 6.5244 — latitude</span>
+<span class="fn">print</span>(<span class="var">lagos_coords</span>[<span class="num">1</span>])   <span class="cmt"># 3.3792 — longitude</span></div></div>
+
+    <table class="result-table">
+      <thead><tr><th>Type</th><th>Syntax</th><th>Changeable?</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><code>list</code></td><td><code>[a, b, c]</code></td><td>Yes</td><td>Collections that grow or change</td></tr>
+        <tr><td><code>dict</code></td><td><code>{"key": value}</code></td><td>Yes</td><td>Named fields — like a profile</td></tr>
+        <tr><td><code>tuple</code></td><td><code>(a, b, c)</code></td><td>No</td><td>Fixed data — coordinates, constants</td></tr>
+      </tbody>
+    </table>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these in Python:</p><ol><li>Create a list of 5 camera brands you know</li><li>Create a dictionary for a photographer with at least 5 fields</li><li>Access the third item in your cameras list</li><li>Update the rating field in your photographer dictionary</li></ol></div>
+  </div>
+
+  <!-- LESSON 3 — LOOPS & CONDITIONALS -->
+  <div class="lesson" id="lesson-3">
+    <div class="lesson-header"><div class="lesson-number">03</div><div class="lesson-meta"><div class="lesson-tag">Core Python</div><h2>Loops & Conditionals</h2><div class="lesson-desc">Making decisions and repeating actions</div></div></div>
+
+    <p>Two of the most important tools in any programming language — <strong>if/else</strong> for making decisions, and <strong>for loops</strong> for repeating actions.</p>
+
+    <h3>if / elif / else — making decisions</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">rating</span> = <span class="num">4.6</span>
+
+<span class="kw">if</span> <span class="var">rating</span> >= <span class="num">4.5</span>:
+    <span class="fn">print</span>(<span class="str">"Top rated photographer"</span>)
+<span class="kw">elif</span> <span class="var">rating</span> >= <span class="num">4.0</span>:
+    <span class="fn">print</span>(<span class="str">"Well rated photographer"</span>)
+<span class="kw">elif</span> <span class="var">rating</span> >= <span class="num">3.0</span>:
+    <span class="fn">print</span>(<span class="str">"Average photographer"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Needs improvement"</span>)</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">Top rated photographer</div>
+
+    <div class="concept"><strong>Indentation is everything in Python</strong><p>The code inside an if block must be indented — 4 spaces or one Tab. Python uses this indentation to know what belongs inside the if. If you forget the indent, Python will give an error.</p></div>
+
+    <h3>for loop — repeating over a list</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">photographers</span> = [
+    {<span class="str">"name"</span>: <span class="str">"Amara Diallo"</span>,  <span class="str">"rating"</span>: <span class="num">3.7</span>},
+    {<span class="str">"name"</span>: <span class="str">"Priya Nair"</span>,    <span class="str">"rating"</span>: <span class="num">4.6</span>},
+    {<span class="str">"name"</span>: <span class="str">"Sarah Oduya"</span>,   <span class="str">"rating"</span>: <span class="num">4.8</span>},
+    {<span class="str">"name"</span>: <span class="str">"Carlos Mendez"</span>, <span class="str">"rating"</span>: <span class="num">3.8</span>},
+]
+
+<span class="kw">for</span> <span class="var">p</span> <span class="kw">in</span> <span class="var">photographers</span>:
+    <span class="kw">if</span> <span class="var">p</span>[<span class="str">"rating"</span>] >= <span class="num">4.5</span>:
+        <span class="fn">print</span>(<span class="var">p</span>[<span class="str">"name"</span>], <span class="str">"— Top Rated ⭐"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="var">p</span>[<span class="str">"name"</span>])</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">Amara Diallo
+Priya Nair — Top Rated ⭐
+Sarah Oduya — Top Rated ⭐
+Carlos Mendez</div>
+
+    <h3>for loop with range — counting</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># Print shoot numbers 1 to 5</span>
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    <span class="fn">print</span>(<span class="str">"Shoot number"</span>, <span class="var">i</span>)</div></div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these in Python:</p><ol><li>Write an if/elif/else that categorises a shoot fee: free (0), budget (under 500), professional (500+)</li><li>Create a list of 5 locations and loop through them printing each one</li><li>Loop through your locations and print only those that start with the letter "N"</li></ol></div>
+  </div>
+
+  <!-- LESSON 4 — FUNCTIONS -->
+  <div class="lesson" id="lesson-4">
+    <div class="lesson-header"><div class="lesson-number">04</div><div class="lesson-meta"><div class="lesson-tag">Core Python</div><h2>Functions</h2><div class="lesson-desc">Write code once, use it everywhere</div></div></div>
+
+    <p>A <strong>function</strong> is a reusable block of code with a name. Instead of writing the same logic 10 times, you write it once as a function and call it whenever you need it.</p>
+
+    <div class="syntax"><div class="syntax-label">Syntax</div><code><span style="color:var(--blue)">def</span> <em>function_name</em>(<em>parameter</em>):
+    <em>code goes here</em>
+    <span style="color:var(--blue)">return</span> <em>result</em></code></div>
+
+    <h3>A simple function</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">def</span> <span class="fn">kept_percentage</span>(<span class="var">taken</span>, <span class="var">exported</span>):
+    <span class="str">"""Calculate what percentage of photos were kept."""</span>
+    <span class="kw">return</span> <span class="fn">round</span>((<span class="var">exported</span> / <span class="var">taken</span>) * <span class="num">100</span>, <span class="num">1</span>)
+
+<span class="cmt"># Call the function with different shoots</span>
+<span class="fn">print</span>(<span class="fn">kept_percentage</span>(<span class="num">744</span>, <span class="num">128</span>))   <span class="cmt"># 17.2</span>
+<span class="fn">print</span>(<span class="fn">kept_percentage</span>(<span class="num">1200</span>, <span class="num">300</span>))  <span class="cmt"># 25.0</span>
+<span class="fn">print</span>(<span class="fn">kept_percentage</span>(<span class="num">200</span>, <span class="num">45</span>))    <span class="cmt"># 22.5</span></div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">17.2
+25.0
+22.5</div>
+
+    <h3>Function with a conditional</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">def</span> <span class="fn">rate_photographer</span>(<span class="var">rating</span>):
+    <span class="str">"""Return a label based on photographer rating."""</span>
+    <span class="kw">if</span> <span class="var">rating</span> >= <span class="num">4.5</span>:
+        <span class="kw">return</span> <span class="str">"⭐ Top Rated"</span>
+    <span class="kw">elif</span> <span class="var">rating</span> >= <span class="num">4.0</span>:
+        <span class="kw">return</span> <span class="str">"✓ Well Rated"</span>
+    <span class="kw">elif</span> <span class="var">rating</span> >= <span class="num">3.0</span>:
+        <span class="kw">return</span> <span class="str">"— Average"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="str">"↓ Below Average"</span>
+
+<span class="var">ratings</span> = [<span class="num">4.6</span>, <span class="num">3.7</span>, <span class="num">4.1</span>, <span class="num">4.8</span>, <span class="num">3.5</span>]
+<span class="kw">for</span> <span class="var">r</span> <span class="kw">in</span> <span class="var">ratings</span>:
+    <span class="fn">print</span>(<span class="var">r</span>, <span class="str">"—"</span>, <span class="fn">rate_photographer</span>(<span class="var">r</span>))</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">4.6 — ⭐ Top Rated
+3.7 — — Average
+4.1 — ✓ Well Rated
+4.8 — ⭐ Top Rated
+3.5 — — Average</div>
+
+    <div class="tip"><strong>Docstrings</strong><p>The text in triple quotes right after def is called a docstring. It explains what the function does. Always write one — your future self will thank you when you read your code 6 months later.</p></div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these functions:</p><ol><li>A function called fee_category(fee) that returns "Free", "Budget", or "Professional"</li><li>A function called export_ratio(taken, exported) that returns the ratio as a string like "1 in 5"</li><li>Call each function with 3 different values and print the results</li></ol></div>
+  </div>
+
+  <!-- LESSON 5 — CSV FILES -->
+  <div class="lesson" id="lesson-5">
+    <div class="lesson-header"><div class="lesson-number">05</div><div class="lesson-meta"><div class="lesson-tag">Working with Data</div><h2>Reading CSV Files</h2><div class="lesson-desc">Load real data from photographers.csv</div></div></div>
+
+    <p>A CSV file (Comma Separated Values) is a simple text file where each row is a record and commas separate the columns. It is the most common format for sharing data. Python's built-in <code style="color:var(--teal);font-family:'Source Code Pro',monospace;">csv</code> module reads them easily.</p>
+
+    <h3>Read photographers.csv</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">import</span> <span class="cls">csv</span>
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>, <span class="str">"r"</span>) <span class="kw">as</span> <span class="var">file</span>:
+    <span class="var">reader</span> = <span class="cls">csv</span>.DictReader(<span class="var">file</span>)
+    <span class="kw">for</span> <span class="var">row</span> <span class="kw">in</span> <span class="var">reader</span>:
+        <span class="fn">print</span>(<span class="var">row</span>[<span class="str">"name"</span>], <span class="str">"—"</span>, <span class="var">row</span>[<span class="str">"country"</span>], <span class="str">"—"</span>, <span class="var">row</span>[<span class="str">"specialty"</span>])</div></div>
+
+    <div class="output-label">Output (first 4 rows)</div>
+    <div class="output-block">Amara Diallo — Senegal — Wildlife
+Carlos Mendez — Brazil — Street
+Priya Nair — India — Portrait
+James Okonkwo — Nigeria — Documentary</div>
+
+    <div class="concept"><strong>DictReader vs reader</strong><p>csv.reader gives you rows as plain lists — row[0], row[1]. csv.DictReader gives you rows as dictionaries — row["name"], row["country"]. DictReader is almost always better because names are clearer than numbers.</p></div>
+
+    <h3>Load all rows into a list</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">import</span> <span class="cls">csv</span>
+
+<span class="var">photographers</span> = []
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>, <span class="str">"r"</span>) <span class="kw">as</span> <span class="var">file</span>:
+    <span class="var">reader</span> = <span class="cls">csv</span>.DictReader(<span class="var">file</span>)
+    <span class="kw">for</span> <span class="var">row</span> <span class="kw">in</span> <span class="var">reader</span>:
+        <span class="var">photographers</span>.append(<span class="var">row</span>)
+
+<span class="fn">print</span>(<span class="str">"Total photographers:"</span>, <span class="fn">len</span>(<span class="var">photographers</span>))
+<span class="fn">print</span>(<span class="str">"First entry:"</span>, <span class="var">photographers</span>[<span class="num">0</span>][<span class="str">"name"</span>])
+
+<span class="cmt"># Find all Wildlife photographers</span>
+<span class="var">wildlife</span> = [<span class="var">p</span> <span class="kw">for</span> <span class="var">p</span> <span class="kw">in</span> <span class="var">photographers</span> <span class="kw">if</span> <span class="var">p</span>[<span class="str">"specialty"</span>] == <span class="str">"Wildlife"</span>]
+<span class="fn">print</span>(<span class="str">"Wildlife photographers:"</span>, <span class="fn">len</span>(<span class="var">wildlife</span>))</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">Total photographers: 20
+First entry: Amara Diallo
+Wildlife photographers: 3</div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these programs:</p><ol><li>Load photographers.csv and print only photographers from Africa (Nigeria, Senegal, Ghana, Kenya, Sierra Leone, Morocco, Egypt)</li><li>Load shoots.csv and find all shoots with fee_usd above 1000</li><li>Count how many shoots had a client_rating above 4.5</li></ol></div>
+  </div>
+
+  <!-- LESSON 6 — PANDAS -->
+  <div class="lesson" id="lesson-6">
+    <div class="lesson-header"><div class="lesson-number">06</div><div class="lesson-meta"><div class="lesson-tag">Working with Data</div><h2>Pandas & DataFrames</h2><div class="lesson-desc">The most powerful data tool in Python</div></div></div>
+
+    <p><strong>Pandas</strong> is a Python library built for data analysis. It loads your CSV into a <strong>DataFrame</strong> — a table you can query, filter, sort, and calculate on with just one line. It replaces hundreds of lines of manual CSV code.</p>
+
+    <h3>Load the data</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="cmt"># Load each CSV file into a DataFrame</span>
+<span class="var">photographers</span> = <span class="cls">pd</span>.read_csv(<span class="str">"photographers.csv"</span>)
+<span class="var">shoots</span>        = <span class="cls">pd</span>.read_csv(<span class="str">"shoots.csv"</span>)
+<span class="var">equipment</span>     = <span class="cls">pd</span>.read_csv(<span class="str">"equipment.csv"</span>)
+
+<span class="cmt"># Quick look at the data</span>
+<span class="fn">print</span>(<span class="var">photographers</span>.shape)   <span class="cmt"># (20, 8) — 20 rows, 8 columns</span>
+<span class="fn">print</span>(<span class="var">photographers</span>.head())  <span class="cmt"># first 5 rows</span>
+<span class="fn">print</span>(<span class="var">photographers</span>.columns) <span class="cmt"># column names</span></div></div>
+
+    <h3>describe() — instant statistics</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="fn">print</span>(<span class="var">photographers</span>[[<span class="str">"rating"</span>, <span class="str">"years_experience"</span>, <span class="str">"total_shoots"</span>]].describe())</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">       rating  years_experience  total_shoots
+count   20.00             20.00         20.00
+mean     4.12             13.55        369.10
+std      0.43              7.12        259.23
+min      3.50              2.00         20.00
+25%      3.80              7.50        133.50
+50%      4.15             13.50        337.00
+75%      4.50             21.25        578.50
+max      4.80             25.00        779.00</div>
+
+    <h3>Access columns and rows</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># One column — returns a Series</span>
+<span class="fn">print</span>(<span class="var">photographers</span>[<span class="str">"name"</span>])
+
+<span class="cmt"># Multiple columns — returns a DataFrame</span>
+<span class="fn">print</span>(<span class="var">photographers</span>[[<span class="str">"name"</span>, <span class="str">"country"</span>, <span class="str">"rating"</span>]])
+
+<span class="cmt"># Basic calculations on a column</span>
+<span class="fn">print</span>(<span class="str">"Average rating:"</span>, <span class="var">photographers</span>[<span class="str">"rating"</span>].mean())
+<span class="fn">print</span>(<span class="str">"Highest rating:"</span>, <span class="var">photographers</span>[<span class="str">"rating"</span>].max())
+<span class="fn">print</span>(<span class="str">"Total shoots:"</span>,  <span class="var">photographers</span>[<span class="str">"total_shoots"</span>].sum())</div></div>
+
+    <div class="tip"><strong>import pandas as pd</strong><p>The "as pd" part gives pandas a short nickname. Instead of typing pandas.read_csv() every time, you type pd.read_csv(). This is a universal Python convention — everyone uses pd for pandas.</p></div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these with pandas:</p><ol><li>Load photographers.csv and print the average years_experience</li><li>Print only the name and camera columns</li><li>Use describe() on the shoots DataFrame — what is the average fee_usd?</li></ol></div>
+  </div>
+
+  <!-- LESSON 7 — FILTERING & GROUPING -->
+  <div class="lesson" id="lesson-7">
+    <div class="lesson-header"><div class="lesson-number">07</div><div class="lesson-meta"><div class="lesson-tag">Working with Data</div><h2>Filtering & Grouping</h2><div class="lesson-desc">Ask real questions of real data</div></div></div>
+
+    <p>This is where pandas becomes truly powerful. Filtering and grouping lets you answer real questions in one or two lines — questions that would take 20 lines of CSV code.</p>
+
+    <h3>Filtering rows</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="var">photographers</span> = <span class="cls">pd</span>.read_csv(<span class="str">"photographers.csv"</span>)
+
+<span class="cmt"># Photographers with rating above 4.5</span>
+<span class="var">top_rated</span> = <span class="var">photographers</span>[<span class="var">photographers</span>[<span class="str">"rating"</span>] > <span class="num">4.5</span>]
+<span class="fn">print</span>(<span class="var">top_rated</span>[[<span class="str">"name"</span>, <span class="str">"country"</span>, <span class="str">"rating"</span>]])
+
+<span class="cmt"># Portrait photographers only</span>
+<span class="var">portrait</span> = <span class="var">photographers</span>[<span class="var">photographers</span>[<span class="str">"specialty"</span>] == <span class="str">"Portrait"</span>]
+
+<span class="cmt"># Multiple conditions — use & for AND, | for OR</span>
+<span class="var">experienced_wildlife</span> = <span class="var">photographers</span>[
+    (<span class="var">photographers</span>[<span class="str">"specialty"</span>] == <span class="str">"Wildlife"</span>) &
+    (<span class="var">photographers</span>[<span class="str">"years_experience"</span>] > <span class="num">10</span>)
+]</div></div>
+
+    <h3>groupby — summary statistics per group</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># Average rating per specialty</span>
+<span class="var">by_specialty</span> = <span class="var">photographers</span>.groupby(<span class="str">"specialty"</span>)[<span class="str">"rating"</span>].mean()
+<span class="fn">print</span>(<span class="var">by_specialty</span>.sort_values(ascending=<span class="cls">False</span>))</div></div>
+
+    <div class="output-label">Output</div>
+    <div class="output-block">specialty
+Documentary    4.45
+Portrait       4.40
+Landscape      4.35
+Wildlife       4.20
+Street         3.90
+Name: rating, dtype: float64</div>
+
+    <h3>sort_values and value_counts</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="cmt"># Sort by rating, highest first</span>
+<span class="var">ranked</span> = <span class="var">photographers</span>.sort_values(<span class="str">"rating"</span>, ascending=<span class="cls">False</span>)
+<span class="fn">print</span>(<span class="var">ranked</span>[[<span class="str">"name"</span>, <span class="str">"rating"</span>]].head(<span class="num">5</span>))
+
+<span class="cmt"># Count photographers per country</span>
+<span class="fn">print</span>(<span class="var">photographers</span>[<span class="str">"country"</span>].value_counts())</div></div>
+
+    <div class="exercise"><div class="exercise-label">Practice</div><p>Write these with pandas:</p><ol><li>Find all photographers with more than 500 total_shoots</li><li>Calculate the average fee_usd per year using shoots.csv and groupby</li><li>Find the top 3 photographers by rating and print their name and country</li><li>Count how many shoots happened in each location</li></ol></div>
+  </div>
+
+  <!-- LESSON 8 — MATPLOTLIB -->
+  <div class="lesson" id="lesson-8">
+    <div class="lesson-header"><div class="lesson-number">08</div><div class="lesson-meta"><div class="lesson-tag">Visualisation</div><h2>Matplotlib Charts</h2><div class="lesson-desc">Turn numbers into visual stories</div></div></div>
+
+    <p><strong>Matplotlib</strong> is Python's standard charting library. Combined with pandas, you can go from raw CSV to a meaningful chart in under 10 lines of code.</p>
+
+    <h3>Bar chart — photographers per specialty</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="cls">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+
+<span class="var">photographers</span> = <span class="cls">pd</span>.read_csv(<span class="str">"photographers.csv"</span>)
+
+<span class="cmt"># Count per specialty</span>
+<span class="var">counts</span> = <span class="var">photographers</span>[<span class="str">"specialty"</span>].value_counts()
+
+<span class="cmt"># Create bar chart</span>
+<span class="var">plt</span>.figure(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+<span class="var">plt</span>.bar(<span class="var">counts</span>.index, <span class="var">counts</span>.values, color=<span class="str">"#6bcf8a"</span>)
+<span class="var">plt</span>.title(<span class="str">"Photographers by Specialty"</span>)
+<span class="var">plt</span>.xlabel(<span class="str">"Specialty"</span>)
+<span class="var">plt</span>.ylabel(<span class="str">"Count"</span>)
+<span class="var">plt</span>.tight_layout()
+<span class="var">plt</span>.savefig(<span class="str">"specialty_chart.png"</span>)
+<span class="var">plt</span>.show()</div></div>
+
+    <h3>Histogram — distribution of ratings</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">plt</span>.figure(figsize=(<span class="num">8</span>, <span class="num">5</span>))
+<span class="var">plt</span>.hist(<span class="var">photographers</span>[<span class="str">"rating"</span>], bins=<span class="num">10</span>, color=<span class="str">"#e8b84b"</span>, edgecolor=<span class="str">"#1a1a14"</span>)
+<span class="var">plt</span>.title(<span class="str">"Distribution of Photographer Ratings"</span>)
+<span class="var">plt</span>.xlabel(<span class="str">"Rating"</span>)
+<span class="var">plt</span>.ylabel(<span class="str">"Number of Photographers"</span>)
+<span class="var">plt</span>.tight_layout()
+<span class="var">plt</span>.savefig(<span class="str">"ratings_histogram.png"</span>)
+<span class="var">plt</span>.show()</div></div>
+
+    <h3>Line chart — shoots per year</h3>
+    <div class="code-block"><div class="code-header"><div class="code-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="code-label">Python</div></div>
+<div class="code-body"><span class="var">shoots</span> = <span class="cls">pd</span>.read_csv(<span class="str">"shoots.csv"</span>)
+
+<span class="var">by_year</span> = <span class="var">shoots</span>.groupby(<span class="str">"year"</span>).size()
+
+<span class="var">plt</span>.figure(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+<span class="var">plt</span>.plot(<span class="var">by_year</span>.index, <span class="var">by_year</span>.values, marker=<span class="str">"o"</span>, color=<span class="str">"#7eb8f7"</span>, linewidth=<span class="num">2</span>)
+<span class="var">plt</span>.title(<span class="str">"Number of Shoots Per Year"</span>)
+<span class="var">plt</span>.xlabel(<span class="str">"Year"</span>)
+<span class="var">plt</span>.ylabel(<span class="str">"Shoots"</span>)
+<span class="var">plt</span>.grid(<span class="cls">True</span>, alpha=<span class="num">0.2</span>)
+<span class="var">plt</span>.tight_layout()
+<span class="var">plt</span>.savefig(<span class="str">"shoots_per_year.png"</span>)
+<span class="var">plt</span>.show()</div></div>
+
+    <table class="result-table">
+      <thead><tr><th>Chart type</th><th>Function</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>Bar chart</td><td><code>plt.bar()</code></td><td>Comparing categories</td></tr>
+        <tr><td>Histogram</td><td><code>plt.hist()</code></td><td>Distribution of a number</td></tr>
+        <tr><td>Line chart</td><td><code>plt.plot()</code></td><td>Change over time</td></tr>
+        <tr><td>Scatter plot</td><td><code>plt.scatter()</code></td><td>Relationship between two numbers</td></tr>
+      </tbody>
+    </table>
+
+    <div class="concept"><strong>Course Complete</strong><p>You now have the full Python foundation for data analysis — variables, collections, loops, conditionals, functions, CSV reading, pandas DataFrames, filtering, grouping, and visualisation. Every advanced data analysis skill builds on exactly what you learned here.</p></div>
+
+    <div class="exercise"><div class="exercise-label">Final Project</div><p>Build a complete mini-analysis:</p><ol><li>Load photographers.csv with pandas</li><li>Filter to photographers with rating above 4.0</li><li>Create a bar chart showing how many high-rated photographers each country has</li><li>Save the chart as a PNG file</li><li>Print the name and country of the single highest rated photographer</li></ol></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="lesson-nav">
+    <button class="btn btn-secondary" id="btn-prev" onclick="navigate(-1)" disabled>← Previous</button>
+    <span class="progress" id="progress-text">Overview</span>
+    <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">Next Lesson →</button>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const total = 8;
+  const titles = ['Overview','Variables & Data Types','Lists, Dicts & Tuples','Loops & Conditionals','Functions','Reading CSV Files','Pandas & DataFrames','Filtering & Grouping','Matplotlib Charts'];
+
+  function showLesson(n) {
+    document.querySelectorAll('.lesson').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+    document.getElementById('lesson-' + n).classList.add('active');
+    document.querySelectorAll('.nav-item')[n].classList.add('active');
+    current = n;
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === total;
+    document.getElementById('btn-next').textContent = current === total ? '✓ Complete' : 'Next Lesson →';
+    document.getElementById('progress-text').textContent = current === 0 ? 'Overview' : `Lesson ${current} of ${total}: ${titles[current]}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next <= total) showLesson(next);
+  }
+</script>
+</body>
+</html>

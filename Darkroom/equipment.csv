@@ -1,0 +1,69 @@
+item_id,photographer_id,type,brand,model,purchase_year,purchase_price_usd
+1,1,Camera,Sony,A7 IV,2019,2471
+2,1,Memory Card,SanDisk,Extreme Pro 256GB,2018,40
+3,2,Bag,Lowepro,ProTactic 450,2022,362
+4,2,Memory Card,SanDisk,Extreme Pro 256GB,2022,86
+5,2,Filter,NiSi,ND1000,2021,108
+6,2,Lens,Canon,50mm f/1.4,2015,556
+7,2,Lens,Sigma,70-200mm f/2.8,2016,1492
+8,3,Filter,NiSi,ND1000,2016,70
+9,3,Lens,Canon,50mm f/1.4,2018,444
+10,3,Lens,Nikon,85mm f/1.8,2023,469
+11,4,Camera,Canon,EOS R5,2022,3524
+12,4,Lens,Sigma,70-200mm f/2.8,2015,1309
+13,4,Tripod,Manfrotto,MT055,2019,350
+14,5,Memory Card,SanDisk,Extreme Pro 256GB,2019,211
+15,5,Tripod,Manfrotto,MT055,2018,278
+16,5,Camera,Nikon,Z7 II,2016,3089
+17,5,Lens,Canon,50mm f/1.4,2018,565
+18,6,Lens,Nikon,85mm f/1.8,2015,492
+19,6,Camera,Sony,A7 IV,2019,2602
+20,6,Camera,Nikon,Z7 II,2019,3062
+21,7,Tripod,Manfrotto,MT055,2021,411
+22,7,Lens,Nikon,85mm f/1.8,2019,578
+23,8,Tripod,Manfrotto,MT055,2020,324
+24,8,Camera,Nikon,Z7 II,2019,2956
+25,8,Bag,Lowepro,ProTactic 450,2016,188
+26,8,Camera,Canon,EOS R5,2015,3645
+27,8,Lens,Sigma,70-200mm f/2.8,2019,1397
+28,9,Camera,Sony,A7 IV,2023,2616
+29,9,Tripod,Manfrotto,MT055,2022,404
+30,10,Camera,Sony,A7 IV,2016,2570
+31,10,Bag,Lowepro,ProTactic 450,2020,234
+32,10,Lens,Sigma,70-200mm f/2.8,2020,1332
+33,10,Tripod,Manfrotto,MT055,2016,389
+34,11,Lens,Sony,24-70mm f/2.8,2019,2319
+35,11,Lens,Sigma,70-200mm f/2.8,2021,1458
+36,11,Tripod,Manfrotto,MT055,2023,179
+37,12,Camera,Nikon,Z7 II,2021,3171
+38,12,Lens,Sony,24-70mm f/2.8,2023,2361
+39,12,Lens,Nikon,85mm f/1.8,2015,618
+40,12,Filter,NiSi,ND1000,2023,148
+41,12,Memory Card,SanDisk,Extreme Pro 256GB,2021,23
+42,13,Flash,Godox,V1,2022,260
+43,13,Lens,Sony,24-70mm f/2.8,2022,2344
+44,13,Bag,Lowepro,ProTactic 450,2015,182
+45,14,Flash,Godox,V1,2022,131
+46,14,Camera,Sony,A7 IV,2015,2699
+47,14,Lens,Nikon,85mm f/1.8,2018,631
+48,14,Tripod,Manfrotto,MT055,2017,249
+49,15,Flash,Godox,V1,2016,157
+50,15,Lens,Sigma,70-200mm f/2.8,2016,1368
+51,16,Filter,NiSi,ND1000,2022,268
+52,16,Camera,Sony,A7 IV,2019,2580
+53,17,Lens,Sigma,70-200mm f/2.8,2022,1391
+54,17,Tripod,Manfrotto,MT055,2017,268
+55,17,Filter,NiSi,ND1000,2018,265
+56,17,Lens,Canon,50mm f/1.4,2023,591
+57,18,Camera,Nikon,Z7 II,2020,3189
+58,18,Lens,Nikon,85mm f/1.8,2023,518
+59,18,Lens,Sigma,70-200mm f/2.8,2015,1322
+60,19,Bag,Lowepro,ProTactic 450,2022,267
+61,19,Memory Card,SanDisk,Extreme Pro 256GB,2022,98
+62,19,Tripod,Manfrotto,MT055,2020,311
+63,19,Camera,Sony,A7 IV,2023,2546
+64,20,Lens,Sony,24-70mm f/2.8,2021,2161
+65,20,Lens,Canon,50mm f/1.4,2020,590
+66,20,Filter,NiSi,ND1000,2022,210
+67,20,Lens,Sigma,70-200mm f/2.8,2021,1348
+68,20,Bag,Lowepro,ProTactic 450,2017,256

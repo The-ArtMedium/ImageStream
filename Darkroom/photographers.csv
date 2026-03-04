@@ -1,0 +1,21 @@
+photographer_id,name,country,specialty,years_experience,rating,total_shoots,camera
+1,Amara Diallo,Senegal,Wildlife,22,3.7,779,Canon EOS 5D IV
+2,Carlos Mendez,Brazil,Street,9,3.8,774,Nikon Z7 II
+3,Priya Nair,India,Portrait,23,4.6,578,Nikon Z7 II
+4,James Okonkwo,Nigeria,Documentary,20,4.1,50,Nikon Z7 II
+5,Sofia Reyes,Mexico,Landscape,8,3.8,636,Canon EOS R5
+6,Ahmed Hassan,Egypt,Architecture,19,3.8,685,Olympus OM-1
+7,Yuki Tanaka,Japan,Street,15,3.8,623,Canon EOS 5D IV
+8,Fatima Al-Zahra,Morocco,Portrait,2,4.6,183,Sony A7R IV
+9,Ivan Petrov,Ukraine,Photojournalism,12,3.9,240,Nikon D850
+10,Lena Müller,Germany,Fine Art,5,3.6,119,Nikon D850
+11,Marcus Johnson,USA,Sports,13,4.4,64,Leica M11
+12,Aisha Kamara,Sierra Leone,Documentary,19,3.7,407,Nikon Z7 II
+13,Ravi Sharma,India,Wedding,19,3.9,663,Panasonic S5
+14,Elena Costa,Portugal,Landscape,13,4.4,741,Nikon Z7 II
+15,Kofi Mensah,Ghana,Street,3,4.5,316,Nikon Z7 II
+16,Mei Lin,China,Portrait,9,4.8,409,Canon EOS 5D IV
+17,Diego Vargas,Colombia,Wildlife,16,4.5,393,Sony A7 IV
+18,Nour Khalil,Lebanon,Documentary,13,4.0,706,Canon EOS 5D IV
+19,Sarah Oduya,Kenya,Wildlife,24,4.9,683,Nikon Z7 II
+20,Tomás Novak,Czech Republic,Architecture,21,4.5,566,Fujifilm X-T4
