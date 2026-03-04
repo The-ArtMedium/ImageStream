@@ -3,7 +3,7 @@
 <!-- BANNER IMAGE — replace the filename below with your actual banner file name -->
 <!-- Upload your banner image to this same Darkroom folder first, then it will show here -->
 
-![ImageStream Darkroom Banner](banner.png)
+![ImageStream Darkroom Banner](images/banner.png)
 
 ---
 
