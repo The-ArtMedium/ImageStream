@@ -1,1 +1,119 @@
---
+--**FILE 3 of 16**
+
+```
+PATH: ImageStream/LocalBeat/src/index.html
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark" data-scale="medium">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LocalBeat</title>
+<link rel="stylesheet" href="css/theme.css"/>
+<link rel="stylesheet" href="css/layout.css"/>
+<link rel="stylesheet" href="css/accessibility.css"/>
+<link rel="stylesheet" href="css/waveform.css"/>
+</head>
+<body>
+<header class="topbar" role="banner">
+  <div class="topbar__logo">
+    <span aria-hidden="true">🎵</span>
+    <span class="app-name">LocalBeat</span>
+  </div>
+  <div class="topbar__controls">
+    <button id="modeToggle" class="btn btn--toggle"
+      aria-label="Switch between Simple and Full mode">
+      <span class="icon">⚙</span>
+      <span id="modeLabel">Simple Mode</span>
+    </button>
+    <select id="langSelect" class="select--lang" aria-label="Select language">
+      <option value="en">🌐 EN</option>
+      <option value="es">🌐 ES</option>
+      <option value="fr">🌐 FR</option>
+      <option value="pt">🌐 PT</option>
+      <option value="ar">🌐 AR</option>
+      <option value="zh">🌐 ZH</option>
+      <option value="hi">🌐 HI</option>
+    </select>
+    <button class="btn" aria-label="Open settings" onclick="openSettings()">
+      <span class="icon">⚙</span>
+      <span>Settings</span>
+    </button>
+  </div>
+</header>
+<section class="transport" role="region" aria-label="Playback controls">
+  <button class="btn btn--transport" id="btnPlay" aria-label="Play">
+    <span class="icon">▶</span><span>Play</span>
+  </button>
+  <button class="btn btn--transport" id="btnPause" aria-label="Pause">
+    <span class="icon">⏸</span><span>Pause</span>
+  </button>
+  <button class="btn btn--transport" id="btnStop" aria-label="Stop">
+    <span class="icon">⏹</span><span>Stop</span>
+  </button>
+  <div class="transport__time">
+    <span id="currentTime">00:00</span>
+    <input type="range" id="seekBar" class="seek-bar"
+      min="0" max="100" value="0" aria-label="Seek position"/>
+    <span id="totalTime">00:00</span>
+  </div>
+</section>
+<main class="layers" id="layersContainer"
+  role="main" aria-label="Audio layers">
+</main>
+<div class="add-layer">
+  <button class="btn btn--add" id="btnAddLayer"
+    aria-label="Add a new audio layer">
+    <span class="icon">＋</span>
+    <span>Add a Layer</span>
+  </button>
+</div>
+<footer class="toolbar" role="toolbar" aria-label="Main tools">
+  <button class="btn btn--tool" onclick="openImport()"
+    aria-label="Import a sound file">
+    <span class="icon">📂</span><span>Import</span>
+  </button>
+  <button class="btn btn--tool" onclick="openSamples()"
+    aria-label="Open sample library">
+    <span class="icon">🥁</span><span>Samples</span>
+  </button>
+  <button class="btn btn--tool" onclick="openGenerate()"
+    aria-label="Generate a sound">
+    <span class="icon">🎹</span><span>Generate</span>
+  </button>
+  <button class="btn btn--tool full-mode-only" onclick="openMix()"
+    aria-label="Mix layers">
+    <span class="icon">🎛</span><span>Mix</span>
+  </button>
+</footer>
+<div class="actionbar">
+  <button class="btn btn--save" onclick="saveProject()"
+    aria-label="Save your project">
+    <span class="icon">💾</span><span>Save Project</span>
+  </button>
+  <button class="btn btn--export" onclick="exportToLocalEdit()"
+    aria-label="Send audio to LocalEdit">
+    <span class="icon">📤</span><span>Send to LocalEdit</span>
+  </button>
+</div>
+<div id="modalOverlay" class="modal-overlay hidden"
+  role="dialog" aria-modal="true">
+  <div id="modalContent" class="modal-content"></div>
+</div>
+<script src="js/i18n.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/layers.js"></script>
+<script src="js/transport.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/generate.js"></script>
+<script src="js/import.js"></script>
+<script src="js/export.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+```
+
+---
+
+Ready for **FILE 4** when you say next. 🎵
