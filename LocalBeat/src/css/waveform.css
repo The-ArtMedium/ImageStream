@@ -1,0 +1,25 @@
+
+
+.waveform-canvas { width:100%; height:100%; display:block; }
+.layer--active { border-color:var(--accent); }
+.layer--muted { opacity:0.4; }
+.layer--muted .layer__waveform { filter:grayscale(1); }
+.layer-color-1 { border-left:4px solid var(--layer-1); }
+.layer-color-2 { border-left:4px solid var(--layer-2); }
+.layer-color-3 { border-left:4px solid var(--layer-3); }
+.layer-color-4 { border-left:4px solid var(--layer-4); }
+.layer-color-5 { border-left:4px solid var(--layer-5); }
+.layer-color-6 { border-left:4px solid var(--layer-6); }
+.layer-color-7 { border-left:4px solid var(--layer-7); }
+.layer-color-8 { border-left:4px solid var(--layer-8); }
+.clip-region {
+  position:absolute; top:0; height:100%;
+  background:rgba(245,166,35,0.15);
+  border-left:2px solid var(--accent);
+  border-right:2px solid var(--accent);
+  cursor:ew-resize;
+}
+.clip-handle {
+  position:absolute; top:0; width:8px; height:100%;
+  background:var(--accent); opacity:0.8; cursor:ew-resize;
+}
