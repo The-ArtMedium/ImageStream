@@ -1,0 +1,52 @@
+```yaml
+# PATH: ImageStream/LocalBeat/.github/workflows/build.yml
+
+name: Build LocalBeat
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Windows
+        run: cargo tauri build
+        working-directory: ImageStream/LocalBeat
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: LocalBeat-Windows
+          path: ImageStream/LocalBeat/src-tauri/target/release/bundle/msi/*.msi
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Mac
+        run: cargo tauri build
+        working-directory: ImageStream/LocalBeat
+      - name: Upload Mac Installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: LocalBeat-Mac
+          path: ImageStream/LocalBeat/src-tauri/target/release/bundle/dmg/*.dmg
