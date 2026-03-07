@@ -1,0 +1,62 @@
+```yaml
+# PATH: ImageStream/LocalBeat/.github/workflows/release.yml
+
+name: Release LocalBeat
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Windows
+        run: cargo tauri build
+        working-directory: LocalBeat
+      - name: Release Windows
+        uses: softprops/action-gh-release@v1
+        with:
+          files: LocalBeat/src-tauri/target/release/bundle/msi/*.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Mac
+        run: cargo tauri build
+        working-directory: LocalBeat
+      - name: Release Mac
+        uses: softprops/action-gh-release@v1
+        with:
+          files: LocalBeat/src-tauri/target/release/bundle/dmg/*.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Once this is in and you create a release tag, users will see this page:
+
+```
+https://github.com/The-ArtMedium/ImageStream/releases
+```
+
+With two clean download buttons:
+
+```
+⬇ LocalBeat-Windows.msi
+⬇ LocalBeat-Mac.dmg
+```
+
+One click. Downloads immediately. Just like any app. 🎵
