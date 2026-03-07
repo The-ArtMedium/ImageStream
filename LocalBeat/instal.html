@@ -1,0 +1,993 @@
+You are absolutely right. One single HTML file. Open in browser. Click one button. It creates and downloads every single file automatically. Here it is:
+PATH: ImageStream/LocalBeat/INSTALL/localbeat-installer.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>LocalBeat Installer</title>
+<style>
+body{font-family:sans-serif;background:#0e0e0e;color:#f0f0f0;
+padding:40px;max-width:600px;margin:0 auto;text-align:center;}
+h1{color:#f5a623;font-size:2em;margin-bottom:10px;}
+p{color:#a0a0a0;margin-bottom:30px;line-height:1.6;}
+button{background:#f5a623;color:#000;border:none;padding:16px 40px;
+font-size:1.2em;border-radius:8px;cursor:pointer;margin:10px;}
+button:hover{background:#ffb940;}
+.status{margin-top:20px;color:#4caf50;font-size:1em;min-height:30px;}
+.file-list{text-align:left;background:#1a1a1a;border-radius:8px;
+padding:20px;margin-top:20px;font-size:0.85em;color:#a0a0a0;line-height:2;}
+</style>
+</head>
+<body>
+<h1>🎵 LocalBeat</h1>
+<p>Part of the ImageStream Local Suite<br/>
+<strong style="color:#f5a623">Sound for Everyone.</strong><br/><br/>
+Click the button below to download all project files.<br/>
+Then place each file in its correct folder in the repo.</p>
+
+<button onclick="installAll()">⬇ Download All Files</button>
+
+<div class="status" id="status"></div>
+
+<div class="file-list">
+<strong style="color:#f0f0f0">Files that will be created:</strong><br/>
+📄 src-tauri/tauri.conf.json<br/>
+📄 src/index.html<br/>
+📄 src/css/theme.css<br/>
+📄 src/css/layout.css<br/>
+📄 src/css/accessibility.css<br/>
+📄 src/css/waveform.css<br/>
+📄 src/js/i18n.js<br/>
+📄 src/js/app.js<br/>
+📄 src/js/layers.js<br/>
+📄 src/js/transport.js<br/>
+📄 src/js/samples.js<br/>
+📄 src/js/generate.js<br/>
+📄 src/js/import.js<br/>
+📄 src/js/export.js<br/>
+📄 src/js/settings.js<br/>
+📄 src/js/theme.js<br/>
+</div>
+
+<script>
+function dl(filename, content){
+  const blob=new Blob([content],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function installAll(){
+  const btn=document.querySelector('button');
+  btn.disabled=true;
+  btn.textContent='Downloading...';
+  const status=document.getElementById('status');
+
+  const files=[
+
+['tauri.conf.json',`{
+  "build": {
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "devPath": "../src",
+    "distDir": "../src"
+  },
+  "package": {
+    "productName": "LocalBeat",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "fs": { "all": true, "scope": ["$HOME/**","$DOCUMENT/**","$DOWNLOAD/**"] },
+      "dialog": { "all": true },
+      "shell": { "open": true }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "com.theartmedium.localbeat",
+      "icon": ["icons/32x32.png","icons/128x128.png","icons/icon.icns","icons/icon.ico"]
+    },
+    "security": { "csp": null },
+    "windows": [{
+      "fullscreen": false, "resizable": true,
+      "title": "LocalBeat",
+      "width": 900, "height": 640,
+      "minWidth": 640, "minHeight": 480
+    }]
+  }
+}`],
+
+['index.html',`<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark" data-scale="medium">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LocalBeat</title>
+<link rel="stylesheet" href="css/theme.css"/>
+<link rel="stylesheet" href="css/layout.css"/>
+<link rel="stylesheet" href="css/accessibility.css"/>
+<link rel="stylesheet" href="css/waveform.css"/>
+</head>
+<body>
+<header class="topbar" role="banner">
+  <div class="topbar__logo">
+    <span aria-hidden="true">🎵</span>
+    <span class="app-name">LocalBeat</span>
+  </div>
+  <div class="topbar__controls">
+    <button id="modeToggle" class="btn btn--toggle" aria-label="Switch between Simple and Full mode">
+      <span class="icon">⚙</span><span id="modeLabel">Simple Mode</span>
+    </button>
+    <select id="langSelect" class="select--lang" aria-label="Select language">
+      <option value="en">🌐 EN</option>
+      <option value="es">🌐 ES</option>
+      <option value="fr">🌐 FR</option>
+      <option value="pt">🌐 PT</option>
+      <option value="ar">🌐 AR</option>
+      <option value="zh">🌐 ZH</option>
+      <option value="hi">🌐 HI</option>
+    </select>
+    <button class="btn" aria-label="Open settings" onclick="openSettings()">
+      <span class="icon">⚙</span><span>Settings</span>
+    </button>
+  </div>
+</header>
+<section class="transport" role="region" aria-label="Playback controls">
+  <button class="btn btn--transport" id="btnPlay" aria-label="Play">
+    <span class="icon">▶</span><span>Play</span>
+  </button>
+  <button class="btn btn--transport" id="btnPause" aria-label="Pause">
+    <span class="icon">⏸</span><span>Pause</span>
+  </button>
+  <button class="btn btn--transport" id="btnStop" aria-label="Stop">
+    <span class="icon">⏹</span><span>Stop</span>
+  </button>
+  <div class="transport__time">
+    <span id="currentTime">00:00</span>
+    <input type="range" id="seekBar" class="seek-bar" min="0" max="100" value="0" aria-label="Seek position"/>
+    <span id="totalTime">00:00</span>
+  </div>
+</section>
+<main class="layers" id="layersContainer" role="main" aria-label="Audio layers"></main>
+<div class="add-layer">
+  <button class="btn btn--add" id="btnAddLayer" aria-label="Add a new audio layer">
+    <span class="icon">＋</span><span>Add a Layer</span>
+  </button>
+</div>
+<footer class="toolbar" role="toolbar" aria-label="Main tools">
+  <button class="btn btn--tool" onclick="openImport()" aria-label="Import a sound file">
+    <span class="icon">📂</span><span>Import</span>
+  </button>
+  <button class="btn btn--tool" onclick="openSamples()" aria-label="Open sample library">
+    <span class="icon">🥁</span><span>Samples</span>
+  </button>
+  <button class="btn btn--tool" onclick="openGenerate()" aria-label="Generate a sound">
+    <span class="icon">🎹</span><span>Generate</span>
+  </button>
+  <button class="btn btn--tool full-mode-only" onclick="openMix()" aria-label="Mix layers">
+    <span class="icon">🎛</span><span>Mix</span>
+  </button>
+</footer>
+<div class="actionbar">
+  <button class="btn btn--save" onclick="saveProject()" aria-label="Save your project">
+    <span class="icon">💾</span><span>Save Project</span>
+  </button>
+  <button class="btn btn--export" onclick="exportToLocalEdit()" aria-label="Send audio to LocalEdit">
+    <span class="icon">📤</span><span>Send to LocalEdit</span>
+  </button>
+</div>
+<div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div id="modalContent" class="modal-content"></div>
+</div>
+<script src="js/i18n.js"><\\/script>
+<script src="js/theme.js"><\\/script>
+<script src="js/layers.js"><\\/script>
+<script src="js/transport.js"><\\/script>
+<script src="js/samples.js"><\\/script>
+<script src="js/generate.js"><\\/script>
+<script src="js/import.js"><\\/script>
+<script src="js/export.js"><\\/script>
+<script src="js/settings.js"><\\/script>
+<script src="js/app.js"><\\/script>
+</body>
+</html>`],
+
+['theme.css',`:root {
+  --bg-primary:#0e0e0e; --bg-secondary:#1a1a1a;
+  --bg-elevated:#252525; --bg-hover:#2e2e2e;
+  --accent:#f5a623; --accent-hover:#ffb940; --accent-muted:#7a5210;
+  --text-primary:#f0f0f0; --text-secondary:#a0a0a0; --text-muted:#606060;
+  --layer-1:#1e3a5f; --layer-2:#1e5f3a; --layer-3:#5f3a1e;
+  --layer-4:#3a1e5f; --layer-5:#5f1e3a; --layer-6:#1e5f5f;
+  --layer-7:#5f5f1e; --layer-8:#3a5f1e;
+  --success:#4caf50; --warning:#f5a623; --danger:#e53935;
+  --border:#333333;
+  --font-sm:13px; --font-base:16px; --font-lg:20px; --font-xl:26px;
+  --space-xs:4px; --space-sm:8px; --space-md:16px;
+  --space-lg:24px; --space-xl:32px;
+  --radius:8px; --radius-sm:4px; --transition:0.2s ease;
+}
+[data-scale="small"]  { font-size:var(--font-sm);  }
+[data-scale="medium"] { font-size:var(--font-base); }
+[data-scale="large"]  { font-size:var(--font-lg);  }
+[data-scale="xl"]     { font-size:var(--font-xl);  }
+[data-contrast="high"] {
+  --bg-primary:#000; --bg-secondary:#111;
+  --text-primary:#fff; --border:#fff; --accent:#ffcc00;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body {
+  background-color:var(--bg-primary); color:var(--text-primary);
+  font-family:system-ui,-apple-system,sans-serif;
+  font-size:var(--font-base); line-height:1.5;
+  min-height:100vh; display:flex; flex-direction:column;
+}
+*:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }`],
+
+['layout.css',`.topbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:var(--space-sm) var(--space-md);
+  background:var(--bg-secondary); border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+}
+.topbar__logo {
+  display:flex; align-items:center; gap:var(--space-sm);
+  font-size:1.2em; font-weight:700; color:var(--accent);
+}
+.topbar__controls { display:flex; align-items:center; gap:var(--space-sm); }
+.transport {
+  display:flex; align-items:center; gap:var(--space-sm);
+  padding:var(--space-sm) var(--space-md);
+  background:var(--bg-secondary); border-bottom:1px solid var(--border);
+}
+.transport__time {
+  display:flex; align-items:center; gap:var(--space-sm);
+  flex:1; color:var(--text-secondary); font-variant-numeric:tabular-nums;
+}
+.seek-bar { flex:1; accent-color:var(--accent); height:6px; cursor:pointer; }
+.layers {
+  flex:1; padding:var(--space-md);
+  display:flex; flex-direction:column;
+  gap:var(--space-sm); overflow-y:auto;
+}
+.layer {
+  display:flex; align-items:center; gap:var(--space-sm);
+  padding:var(--space-sm) var(--space-md);
+  background:var(--bg-elevated); border:1px solid var(--border);
+  border-radius:var(--radius); min-height:56px;
+}
+.layer__name { min-width:80px; font-weight:600; color:var(--text-primary); }
+.layer__waveform {
+  flex:1; height:36px; background:var(--bg-secondary);
+  border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden;
+}
+.layer__waveform canvas { width:100%; height:100%; }
+.layer__controls { display:flex; align-items:center; gap:var(--space-xs); }
+.add-layer { padding:var(--space-sm) var(--space-md); border-top:1px solid var(--border); }
+.toolbar {
+  display:flex; justify-content:space-around;
+  padding:var(--space-sm) var(--space-md);
+  background:var(--bg-secondary);
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.actionbar {
+  display:flex; justify-content:space-between;
+  padding:var(--space-sm) var(--space-md); background:var(--bg-secondary);
+}
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.75);
+  display:flex; align-items:center; justify-content:center; z-index:200;
+}
+.modal-content {
+  background:var(--bg-elevated); border:1px solid var(--border);
+  border-radius:var(--radius); padding:var(--space-lg);
+  width:90%; max-width:480px; max-height:80vh; overflow-y:auto;
+}
+.hidden { display:none !important; }
+.full-mode-only { display:none; }
+[data-mode="full"] .full-mode-only { display:flex; }`],
+
+['accessibility.css',`.btn {
+  display:inline-flex; align-items:center; gap:var(--space-xs);
+  padding:var(--space-sm) var(--space-md);
+  border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--bg-elevated); color:var(--text-primary);
+  font-size:1em; cursor:pointer;
+  transition:background var(--transition),border-color var(--transition);
+  min-height:44px; min-width:44px; white-space:nowrap;
+}
+.btn:hover { background:var(--bg-hover); border-color:var(--accent); }
+.btn--transport {
+  background:var(--bg-secondary); border-color:var(--accent-muted);
+  color:var(--accent); font-size:1.1em;
+}
+.btn--tool { flex-direction:column; gap:2px; font-size:0.85em; padding:var(--space-xs) var(--space-sm); }
+.btn--tool .icon { font-size:1.5em; }
+.btn--export { background:var(--accent); color:#000; border-color:var(--accent); font-weight:700; }
+.btn--export:hover { background:var(--accent-hover); }
+.btn--add { width:100%; justify-content:center; border-style:dashed; color:var(--text-secondary); }
+.btn--add:hover { color:var(--accent); border-color:var(--accent); }
+.volume-slider { width:70px; accent-color:var(--accent); cursor:pointer; }
+.select--lang {
+  background:var(--bg-elevated); color:var(--text-primary);
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:var(--space-xs) var(--space-sm); font-size:0.9em; cursor:pointer; min-height:44px;
+}
+.sr-only {
+  position:absolute; width:1px; height:1px; padding:0;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}`],
+
+['waveform.css',`.waveform-canvas { width:100%; height:100%; display:block; }
+.layer--active { border-color:var(--accent); }
+.layer--muted { opacity:0.4; }
+.layer--muted .layer__waveform { filter:grayscale(1); }
+.layer-color-1 { border-left:4px solid var(--layer-1); }
+.layer-color-2 { border-left:4px solid var(--layer-2); }
+.layer-color-3 { border-left:4px solid var(--layer-3); }
+.layer-color-4 { border-left:4px solid var(--layer-4); }
+.layer-color-5 { border-left:4px solid var(--layer-5); }
+.layer-color-6 { border-left:4px solid var(--layer-6); }
+.layer-color-7 { border-left:4px solid var(--layer-7); }
+.layer-color-8 { border-left:4px solid var(--layer-8); }
+.clip-region {
+  position:absolute; top:0; height:100%;
+  background:rgba(245,166,35,0.15);
+  border-left:2px solid var(--accent); border-right:2px solid var(--accent);
+  cursor:ew-resize;
+}
+.clip-handle {
+  position:absolute; top:0; width:8px; height:100%;
+  background:var(--accent); opacity:0.8; cursor:ew-resize;
+}`],
+
+['i18n.js',`const LANGUAGES={
+  en:{dir:"ltr",play:"Play",pause:"Pause",stop:"Stop",addLayer:"Add a Layer",
+    import:"Import",samples:"Samples",generate:"Generate",mix:"Mix",
+    save:"Save Project",export:"Send to LocalEdit",settings:"Settings",
+    simpleMode:"Simple Mode",fullMode:"Full Mode",
+    volume:"Volume",clip:"Clip",mute:"Mute",remove:"Remove",layer:"Layer",
+    confirmRemove:"Remove this layer? This cannot be undone.",
+    yes:"Yes",no:"No, keep it",sampleLib:"Sample Library",
+    beats:"Beats",ambient:"Ambient",world:"World",tones:"Tones",fx:"FX",
+    preview:"Preview",addToLayer:"Add to Layer",generateTitle:"Generate Sound",
+    settingsTitle:"Settings",language:"Language",textSize:"Text Size",
+    uiScale:"UI Scale",highContrast:"High Contrast",
+    aiPlugins:"AI Plugins (optional)",about:"About LocalBeat",
+    small:"Small",medium:"Medium",large:"Large",extraLarge:"Extra Large"},
+  es:{dir:"ltr",play:"Reproducir",pause:"Pausa",stop:"Detener",
+    addLayer:"Agregar Capa",import:"Importar",samples:"Muestras",
+    generate:"Generar",mix:"Mezclar",save:"Guardar Proyecto",
+    export:"Enviar a LocalEdit",settings:"Ajustes",
+    simpleMode:"Modo Simple",fullMode:"Modo Completo",
+    volume:"Volumen",clip:"Cortar",mute:"Silenciar",remove:"Eliminar",layer:"Capa",
+    confirmRemove:"¿Eliminar esta capa? Esta acción no se puede deshacer.",
+    yes:"Sí",no:"No, mantener",sampleLib:"Biblioteca de Muestras",
+    beats:"Ritmos",ambient:"Ambiente",world:"Mundial",tones:"Tonos",fx:"Efectos",
+    preview:"Vista previa",addToLayer:"Añadir a Capa",generateTitle:"Generar Sonido",
+    settingsTitle:"Ajustes",language:"Idioma",textSize:"Tamaño de Texto",
+    uiScale:"Escala de Interfaz",highContrast:"Alto Contraste",
+    aiPlugins:"Plugins de IA (opcional)",about:"Acerca de LocalBeat",
+    small:"Pequeño",medium:"Mediano",large:"Grande",extraLarge:"Extra Grande"},
+  fr:{dir:"ltr",play:"Lecture",pause:"Pause",stop:"Arrêt",
+    addLayer:"Ajouter une Piste",import:"Importer",samples:"Échantillons",
+    generate:"Générer",mix:"Mixer",save:"Sauvegarder",
+    export:"Envoyer à LocalEdit",settings:"Paramètres",
+    simpleMode:"Mode Simple",fullMode:"Mode Complet",
+    volume:"Volume",clip:"Couper",mute:"Muet",remove:"Supprimer",layer:"Piste",
+    confirmRemove:"Supprimer cette piste ? Action irréversible.",
+    yes:"Oui",no:"Non, garder",sampleLib:"Bibliothèque d'Échantillons",
+    beats:"Rythmes",ambient:"Ambiance",world:"Monde",tones:"Tons",fx:"Effets",
+    preview:"Aperçu",addToLayer:"Ajouter à la Piste",generateTitle:"Générer un Son",
+    settingsTitle:"Paramètres",language:"Langue",textSize:"Taille du Texte",
+    uiScale:"Échelle Interface",highContrast:"Contraste Élevé",
+    aiPlugins:"Plugins IA (optionnel)",about:"À propos de LocalBeat",
+    small:"Petit",medium:"Moyen",large:"Grand",extraLarge:"Très Grand"},
+  pt:{dir:"ltr",play:"Reproduzir",pause:"Pausar",stop:"Parar",
+    addLayer:"Adicionar Camada",import:"Importar",samples:"Amostras",
+    generate:"Gerar",mix:"Mixar",save:"Salvar Projeto",
+    export:"Enviar para LocalEdit",settings:"Configurações",
+    simpleMode:"Modo Simples",fullMode:"Modo Completo",
+    volume:"Volume",clip:"Cortar",mute:"Mudo",remove:"Remover",layer:"Camada",
+    confirmRemove:"Remover esta camada? Esta ação não pode ser desfeita.",
+    yes:"Sim",no:"Não, manter",sampleLib:"Biblioteca de Amostras",
+    beats:"Batidas",ambient:"Ambiente",world:"Mundial",tones:"Tons",fx:"Efeitos",
+    preview:"Pré-visualizar",addToLayer:"Adicionar à Camada",generateTitle:"Gerar Som",
+    settingsTitle:"Configurações",language:"Idioma",textSize:"Tamanho do Texto",
+    uiScale:"Escala da Interface",highContrast:"Alto Contraste",
+    aiPlugins:"Plugins de IA (opcional)",about:"Sobre o LocalBeat",
+    small:"Pequeno",medium:"Médio",large:"Grande",extraLarge:"Extra Grande"},
+  ar:{dir:"rtl",play:"تشغيل",pause:"إيقاف مؤقت",stop:"إيقاف",
+    addLayer:"إضافة طبقة",import:"استيراد",samples:"عينات",
+    generate:"إنشاء",mix:"مزج",save:"حفظ المشروع",
+    export:"إرسال إلى LocalEdit",settings:"الإعدادات",
+    simpleMode:"الوضع البسيط",fullMode:"الوضع الكامل",
+    volume:"الصوت",clip:"قص",mute:"كتم",remove:"حذف",layer:"طبقة",
+    confirmRemove:"حذف هذه الطبقة؟ لا يمكن التراجع عن هذا الإجراء.",
+    yes:"نعم",no:"لا، احتفظ بها",sampleLib:"مكتبة العينات",
+    beats:"إيقاعات",ambient:"أجواء",world:"عالمي",tones:"نغمات",fx:"مؤثرات",
+    preview:"معاينة",addToLayer:"إضافة إلى الطبقة",generateTitle:"إنشاء صوت",
+    settingsTitle:"الإعدادات",language:"اللغة",textSize:"حجم النص",
+    uiScale:"مقياس الواجهة",highContrast:"تباين عالٍ",
+    aiPlugins:"إضافات الذكاء الاصطناعي (اختياري)",about:"حول LocalBeat",
+    small:"صغير",medium:"متوسط",large:"كبير",extraLarge:"كبير جداً"},
+  zh:{dir:"ltr",play:"播放",pause:"暂停",stop:"停止",
+    addLayer:"添加轨道",import:"导入",samples:"音效库",
+    generate:"生成",mix:"混音",save:"保存项目",
+    export:"发送到 LocalEdit",settings:"设置",
+    simpleMode:"简单模式",fullMode:"完整模式",
+    volume:"音量",clip:"裁剪",mute:"静音",remove:"删除",layer:"轨道",
+    confirmRemove:"删除此轨道？此操作无法撤销。",
+    yes:"是",no:"否，保留",sampleLib:"音效样本库",
+    beats:"节拍",ambient:"环境音",world:"世界",tones:"音调",fx:"音效",
+    preview:"预览",addToLayer:"添加到轨道",generateTitle:"生成声音",
+    settingsTitle:"设置",language:"语言",textSize:"字体大小",
+    uiScale:"界面缩放",highContrast:"高对比度",
+    aiPlugins:"AI 插件（可选）",about:"关于 LocalBeat",
+    small:"小",medium:"中",large:"大",extraLarge:"特大"},
+  hi:{dir:"ltr",play:"चलाएं",pause:"रोकें",stop:"बंद करें",
+    addLayer:"परत जोड़ें",import:"आयात करें",samples:"नमूने",
+    generate:"बनाएं",mix:"मिक्स",save:"प्रोजेक्ट सहेजें",
+    export:"LocalEdit को भेजें",settings:"सेटिंग्स",
+    simpleMode:"सरल मोड",fullMode:"पूर्ण मोड",
+    volume:"वॉल्यूम",clip:"काटें",mute:"म्यूट",remove:"हटाएं",layer:"परत",
+    confirmRemove:"यह परत हटाएं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+    yes:"हाँ",no:"नहीं, रखें",sampleLib:"सैंपल लाइब्रेरी",
+    beats:"बीट्स",ambient:"परिवेश",world:"विश्व",tones:"स्वर",fx:"प्रभाव",
+    preview:"पूर्वावलोकन",addToLayer:"परत में जोड़ें",generateTitle:"ध्वनि बनाएं",
+    settingsTitle:"सेटिंग्स",language:"भाषा",textSize:"पाठ का आकार",
+    uiScale:"UI स्केल",highContrast:"उच्च कंट्रास्ट",
+    aiPlugins:"AI प्लगइन (वैकल्पिक)",about:"LocalBeat के बारे में",
+    small:"छोटा",medium:"मध्यम",large:"बड़ा",extraLarge:"बहुत बड़ा"}
+};
+let currentLang="en";
+function setLanguage(code){
+  if(!LANGUAGES[code])return;
+  currentLang=code;
+  document.documentElement.lang=code;
+  document.documentElement.dir=LANGUAGES[code].dir;
+  localStorage.setItem("localbeat_lang",code);
+  applyTranslations(LANGUAGES[code]);
+}
+function t(key){ return LANGUAGES[currentLang][key]||LANGUAGES["en"][key]||key; }
+function applyTranslations(lang){
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key=el.getAttribute("data-i18n");
+    if(lang[key])el.textContent=lang[key];
+  });
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved=localStorage.getItem("localbeat_lang")||"en";
+  setLanguage(saved);
+  const sel=document.getElementById("langSelect");
+  if(sel){ sel.value=saved; sel.addEventListener("change",e=>setLanguage(e.target.value)); }
+});`],
+
+['theme.js',`function applyTheme(){
+  document.documentElement.setAttribute("data-theme","dark");
+}
+document.addEventListener("DOMContentLoaded",applyTheme);`],
+
+['app.js',`let appMode="simple";
+function initApp(){
+  const savedMode=localStorage.getItem("localbeat_mode")||"simple";
+  setMode(savedMode);
+  const savedScale=localStorage.getItem("localbeat_scale")||"medium";
+  setScale(savedScale);
+  const savedContrast=localStorage.getItem("localbeat_contrast")||"normal";
+  if(savedContrast==="high") document.documentElement.setAttribute("data-contrast","high");
+  initLayers();
+}
+function setMode(mode){
+  appMode=mode;
+  document.documentElement.setAttribute("data-mode",mode);
+  localStorage.setItem("localbeat_mode",mode);
+  const label=document.getElementById("modeLabel");
+  if(label)label.textContent=mode==="simple"?t("simpleMode"):t("fullMode");
+}
+function setScale(scale){
+  document.documentElement.setAttribute("data-scale",scale);
+  localStorage.setItem("localbeat_scale",scale);
+}
+document.getElementById("modeToggle")?.addEventListener("click",()=>{
+  setMode(appMode==="simple"?"full":"simple");
+});
+document.addEventListener("DOMContentLoaded",initApp);`],
+
+['layers.js',`let layers=[];
+let layerCount=0;
+const MAX_LAYERS=8;
+function initLayers(){ addLayer(); addLayer(); }
+function addLayer(){
+  if(layers.length>=MAX_LAYERS)return;
+  layerCount++;
+  const id=layerCount;
+  const layer={id,name:t("layer")+" "+id,audioBuffer:null,audioFile:null,
+    volume:1,muted:false,clipStart:0,clipEnd:null};
+  layers.push(layer);
+  renderLayer(layer);
+}
+function renderLayer(layer){
+  const container=document.getElementById("layersContainer");
+  const el=document.createElement("div");
+  el.className="layer layer-color-"+layer.id;
+  el.id="layer-"+layer.id;
+  el.setAttribute("role","region");
+  el.setAttribute("aria-label",layer.name);
+  el.innerHTML=\`
+    <span class="layer__icon" aria-hidden="true">🎵</span>
+    <span class="layer__name">\${layer.name}</span>
+    <div class="layer__waveform" aria-label="Waveform for \${layer.name}">
+      <canvas class="waveform-canvas" id="canvas-\${layer.id}"></canvas>
+    </div>
+    <div class="layer__controls">
+      <label class="sr-only" for="vol-\${layer.id}">Volume</label>
+      <input type="range" id="vol-\${layer.id}" class="volume-slider"
+        min="0" max="1" step="0.01" value="1"
+        aria-label="Volume" title="Volume"
+        onchange="setVolume(\${layer.id},this.value)"/>
+      <button class="btn" title="Mute" aria-label="Mute"
+        onclick="toggleMute(\${layer.id})">
+        <span class="icon">🔊</span>
+      </button>
+      <button class="btn" title="Clip" aria-label="Clip"
+        onclick="clipLayer(\${layer.id})">
+        <span class="icon">✂</span><span>Clip</span>
+      </button>
+      <button class="btn" title="Remove" aria-label="Remove"
+        onclick="confirmRemoveLayer(\${layer.id})">
+        <span class="icon">🗑</span>
+      </button>
+    </div>
+  \`;
+  container.appendChild(el);
+}
+function setVolume(id,value){
+  const layer=layers.find(l=>l.id===id);
+  if(layer)layer.volume=parseFloat(value);
+}
+function toggleMute(id){
+  const layer=layers.find(l=>l.id===id);
+  if(!layer)return;
+  layer.muted=!layer.muted;
+  const el=document.getElementById("layer-"+id);
+  if(el)el.classList.toggle("layer--muted",layer.muted);
+}
+function confirmRemoveLayer(id){
+  if(confirm(t("confirmRemove")))removeLayer(id);
+}
+function removeLayer(id){
+  layers=layers.filter(l=>l.id!==id);
+  const el=document.getElementById("layer-"+id);
+  if(el)el.remove();
+}
+function clipLayer(id){ alert("Clip editor coming soon."); }
+function drawWaveform(id,audioBuffer){
+  const canvas=document.getElementById("canvas-"+id);
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  const data=audioBuffer.getChannelData(0);
+  const width=canvas.offsetWidth||300;
+  const height=canvas.offsetHeight||36;
+  canvas.width=width; canvas.height=height;
+  ctx.clearRect(0,0,width,height);
+  ctx.fillStyle="#f5a623";
+  const step=Math.ceil(data.length/width);
+  const amp=height/2;
+  for(let i=0;i<width;i++){
+    let min=1,max=-1;
+    for(let j=0;j<step;j++){
+      const val=data[(i*step)+j]||0;
+      if(val<min)min=val; if(val>max)max=val;
+    }
+    ctx.fillRect(i,(1+min)*amp,1,Math.max(1,(max-min)*amp));
+  }
+}
+document.getElementById("btnAddLayer")?.addEventListener("click",()=>{
+  if(layers.length<MAX_LAYERS)addLayer();
+});`],
+
+['transport.js',`let audioContext=null;
+let isPlaying=false;
+let startTime=0;
+let pauseOffset=0;
+let activeSources=[];
+function getAudioContext(){
+  if(!audioContext)audioContext=new(window.AudioContext||window.webkitAudioContext)();
+  return audioContext;
+}
+function playAll(){
+  if(isPlaying)return;
+  const ctx=getAudioContext();
+  isPlaying=true;
+  startTime=ctx.currentTime-pauseOffset;
+  layers.forEach(layer=>{
+    if(!layer.audioBuffer||layer.muted)return;
+    const source=ctx.createBufferSource();
+    source.buffer=layer.audioBuffer;
+    const gainNode=ctx.createGain();
+    gainNode.gain.value=layer.volume;
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    source.start(0,pauseOffset);
+    activeSources.push(source);
+  });
+  requestAnimationFrame(updateTimer);
+}
+function pauseAll(){
+  if(!isPlaying)return;
+  pauseOffset=getAudioContext().currentTime-startTime;
+  stopSources(); isPlaying=false;
+}
+function stopAll(){
+  stopSources(); isPlaying=false; pauseOffset=0;
+  document.getElementById("currentTime").textContent="00:00";
+  document.getElementById("seekBar").value=0;
+}
+function stopSources(){
+  activeSources.forEach(s=>{try{s.stop();}catch(e){}});
+  activeSources=[];
+}
+function updateTimer(){
+  if(!isPlaying)return;
+  const elapsed=getAudioContext().currentTime-startTime;
+  document.getElementById("currentTime").textContent=formatTime(elapsed);
+  const maxDuration=Math.max(...layers.map(l=>l.audioBuffer?.duration||0));
+  if(maxDuration>0){
+    document.getElementById("seekBar").value=(elapsed/maxDuration)*100;
+    document.getElementById("totalTime").textContent=formatTime(maxDuration);
+  }
+  requestAnimationFrame(updateTimer);
+}
+function formatTime(seconds){
+  const m=Math.floor(seconds/60).toString().padStart(2,"0");
+  const s=Math.floor(seconds%60).toString().padStart(2,"0");
+  return m+":"+s;
+}
+document.getElementById("btnPlay")?.addEventListener("click",playAll);
+document.getElementById("btnPause")?.addEventListener("click",pauseAll);
+document.getElementById("btnStop")?.addEventListener("click",stopAll);`],
+
+['samples.js',`const SAMPLE_LIBRARY={
+  beats:[
+    {name:"Soft Kick",file:"samples/beats/soft-kick.wav",duration:"0:02"},
+    {name:"Street Beat",file:"samples/beats/street-beat.wav",duration:"0:04"},
+    {name:"Simple Hi-Hat",file:"samples/beats/hihat.wav",duration:"0:01"},
+    {name:"Snare Basic",file:"samples/beats/snare.wav",duration:"0:01"}
+  ],
+  ambient:[
+    {name:"Rain Soft",file:"samples/ambient/rain-soft.wav",duration:"0:08"},
+    {name:"Wind Gentle",file:"samples/ambient/wind.wav",duration:"0:06"},
+    {name:"Forest",file:"samples/ambient/forest.wav",duration:"0:10"}
+  ],
+  world:[
+    {name:"Hand Drum",file:"samples/world/hand-drum.wav",duration:"0:04"},
+    {name:"Simple Flute",file:"samples/world/flute.wav",duration:"0:05"},
+    {name:"Shaker",file:"samples/world/shaker.wav",duration:"0:03"}
+  ],
+  tones:[
+    {name:"Low Tone",file:"samples/tones/low.wav",duration:"0:03"},
+    {name:"Mid Tone",file:"samples/tones/mid.wav",duration:"0:03"},
+    {name:"High Tone",file:"samples/tones/high.wav",duration:"0:03"}
+  ],
+  fx:[
+    {name:"Soft Swoosh",file:"samples/fx/swoosh.wav",duration:"0:02"},
+    {name:"Bell",file:"samples/fx/bell.wav",duration:"0:02"},
+    {name:"Fade In",file:"samples/fx/fadein.wav",duration:"0:03"}
+  ]
+};
+function openSamples(){
+  const overlay=document.getElementById("modalOverlay");
+  const content=document.getElementById("modalContent");
+  content.innerHTML=\`<h2 style="color:var(--accent);margin-bottom:var(--space-md)">🥁 Sample Library</h2>
+    <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap;margin-bottom:var(--space-md)">
+      \${["beats","ambient","world","tones","fx"].map(cat=>\`
+        <button class="btn" onclick="showCategory('\${cat}')">
+          \${categoryIcon(cat)} \${cat}
+        </button>\`).join("")}
+    </div>
+    <div id="sampleList"></div>
+    <button class="btn" style="margin-top:var(--space-md);width:100%" onclick="closeModal()">✕ Close</button>\`;
+  overlay.classList.remove("hidden");
+  showCategory("beats");
+}
+function categoryIcon(cat){
+  return{beats:"🥁",ambient:"🌊",world:"🌍",tones:"🎹",fx:"⚡"}[cat]||"🎵";
+}
+function showCategory(cat){
+  const list=document.getElementById("sampleList");
+  const samples=SAMPLE_LIBRARY[cat]||[];
+  list.innerHTML=samples.map(s=>\`
+    <div style="display:flex;align-items:center;gap:var(--space-sm);
+      padding:var(--space-sm);border-bottom:1px solid var(--border)">
+      <span style="flex:1">\${s.name}</span>
+      <span style="color:var(--text-muted);font-size:0.85em">\${s.duration}</span>
+      <button class="btn" onclick="previewSample('\${s.file}')">▶ Preview</button>
+      <button class="btn btn--export" onclick="addSampleToLayer('\${s.file}','\${s.name}')">＋ Add</button>
+    </div>\`).join("");
+}
+let previewSource=null;
+function previewSample(file){
+  if(previewSource){try{previewSource.stop();}catch(e){}}
+  const ctx=getAudioContext();
+  fetch(file).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
+    previewSource=ctx.createBufferSource();
+    previewSource.buffer=decoded;
+    previewSource.connect(ctx.destination);
+    previewSource.start();
+  }).catch(()=>alert("Sample preview not available offline yet."));
+}
+function addSampleToLayer(file,name){
+  const ctx=getAudioContext();
+  fetch(file).then(r=>r.arrayBuffer()).then(buf=>ctx.decodeAudioData(buf)).then(decoded=>{
+    if(layers.length===0)addLayer();
+    const layer=layers[layers.length-1];
+    layer.audioBuffer=decoded; layer.audioFile=name;
+    drawWaveform(layer.id,decoded);
+    closeModal();
+  }).catch(()=>alert("Add .wav files to /samples folder."));
+}
+function closeModal(){
+  document.getElementById("modalOverlay").classList.add("hidden");
+}`],
+
+['generate.js',`function openGenerate(){
+  const overlay=document.getElementById("modalOverlay");
+  const content=document.getElementById("modalContent");
+  content.innerHTML=\`<h2 style="color:var(--accent);margin-bottom:var(--space-md)">🎹 Generate Sound</h2>
+    <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+      <div>
+        <label style="color:var(--text-secondary);display:block;margin-bottom:4px">Frequency (Hz)</label>
+        <input type="range" id="genFreq" min="80" max="1200" value="440"
+          style="width:100%;accent-color:var(--accent)"
+          oninput="document.getElementById('freqVal').textContent=this.value+'Hz'"/>
+        <span id="freqVal" style="color:var(--accent)">440Hz</span>
+      </div>
+      <div>
+        <label style="color:var(--text-secondary);display:block;margin-bottom:4px">Duration (seconds)</label>
+        <input type="range" id="genDur" min="1" max="10" value="2"
+          style="width:100%;accent-color:var(--accent)"
+          oninput="document.getElementById('durVal').textContent=this.value+'s'"/>
+        <span id="durVal" style="color:var(--accent)">2s</span>
+      </div>
+      <div>
+        <label style="color:var(--text-secondary);display:block;margin-bottom:4px">Wave Type</label>
+        <select id="genWave" style="background:var(--bg-elevated);color:var(--text-primary);
+          border:1px solid var(--border);padding:var(--space-sm);border-radius:var(--radius);width:100%">
+          <option value="sine">Sine — smooth, gentle</option>
+          <option value="square">Square — sharp, buzzy</option>
+          <option value="triangle">Triangle — soft, hollow</option>
+          <option value="sawtooth">Sawtooth — bright, harsh</option>
+        </select>
+      </div>
+      <button class="btn btn--export" style="width:100%" onclick="generateTone()">
+        🎹 Generate and Add to Layer
+      </button>
+      <button class="btn" style="width:100%" onclick="closeModal()">✕ Cancel</button>
+    </div>\`;
+  overlay.classList.remove("hidden");
+}
+function generateTone(){
+  const freq=parseFloat(document.getElementById("genFreq").value);
+  const dur=parseFloat(document.getElementById("genDur").value);
+  const wave=document.getElementById("genWave").value;
+  const ctx=getAudioContext();
+  const sampleRate=ctx.sampleRate;
+  const frameCount=sampleRate*dur;
+  const buffer=ctx.createBuffer(1,frameCount,sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<frameCount;i++){
+    const t=i/sampleRate;
+    const phase=2*Math.PI*freq*t;
+    switch(wave){
+      case"sine":data[i]=Math.sin(phase);break;
+      case"square":data[i]=Math.sign(Math.sin(phase));break;
+      case"triangle":data[i]=(2/Math.PI)*Math.asin(Math.sin(phase));break;
+      case"sawtooth":data[i]=2*((freq*t)%1)-1;break;
+    }
+    const fadeLen=sampleRate*0.01;
+    if(i<fadeLen)data[i]*=i/fadeLen;
+    if(i>frameCount-fadeLen)data[i]*=(frameCount-i)/fadeLen;
+  }
+  if(layers.length===0)addLayer();
+  const layer=layers[layers.length-1];
+  layer.audioBuffer=buffer;
+  layer.audioFile="Generated "+wave+" "+freq+"Hz";
+  drawWaveform(layer.id,buffer);
+  closeModal();
+}`],
+
+['import.js',`function openImport(){
+  const overlay=document.getElementById("modalOverlay");
+  const content=document.getElementById("modalContent");
+  content.innerHTML=\`<h2 style="color:var(--accent);margin-bottom:var(--space-md)">📂 Import</h2>
+    <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+      <button class="btn btn--export" style="width:100%" onclick="importFromDevice()">
+        💾 From Your Device
+      </button>
+      <div style="color:var(--text-muted);text-align:center;font-size:0.85em">
+        — or from free libraries (needs internet) —
+      </div>
+      <button class="btn" style="width:100%" onclick="window.open('https://freesound.org','_blank')">
+        🌐 Freesound.org
+      </button>
+      <button class="btn" style="width:100%" onclick="window.open('https://sound-effects.bbcrewind.co.uk','_blank')">
+        🌐 BBC Sound Effects
+      </button>
+      <button class="btn" style="width:100%" onclick="window.open('https://www.nasa.gov/audio-and-ringtones','_blank')">
+        🌐 NASA Audio Library
+      </button>
+      <button class="btn" style="margin-top:var(--space-sm);width:100%" onclick="closeModal()">✕ Cancel</button>
+    </div>\`;
+  overlay.classList.remove("hidden");
+}
+function importFromDevice(){
+  const input=document.createElement("input");
+  input.type="file"; input.accept="audio/*";
+  input.onchange=e=>{
+    const file=e.target.files[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const ctx=getAudioContext();
+      ctx.decodeAudioData(ev.target.result).then(decoded=>{
+        if(layers.length===0)addLayer();
+        const layer=layers[layers.length-1];
+        layer.audioBuffer=decoded; layer.audioFile=file.name;
+        drawWaveform(layer.id,decoded);
+        closeModal();
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  input.click();
+}`],
+
+['export.js',`function saveProject(){
+  const project={
+    version:"1.0",name:"LocalBeat Project",
+    created:new Date().toISOString(),
+    layers:layers.map(l=>({
+      id:l.id,name:l.name,volume:l.volume,muted:l.muted,
+      audioFile:l.audioFile,clipStart:l.clipStart,clipEnd:l.clipEnd
+    }))
+  };
+  const blob=new Blob([JSON.stringify(project,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="localbeat-project.json"; a.click();
+  URL.revokeObjectURL(url);
+}
+function exportToLocalEdit(){
+  const ctx=getAudioContext();
+  const maxDuration=Math.max(...layers.map(l=>l.audioBuffer?.duration||0));
+  if(maxDuration===0){alert("No audio to export. Add some sounds first.");return;}
+  const sampleRate=ctx.sampleRate;
+  const frameCount=Math.ceil(maxDuration*sampleRate);
+  const offline=new OfflineAudioContext(2,frameCount,sampleRate);
+  layers.forEach(layer=>{
+    if(!layer.audioBuffer||layer.muted)return;
+    const source=offline.createBufferSource();
+    source.buffer=layer.audioBuffer;
+    const gain=offline.createGain();
+    gain.gain.value=layer.volume;
+    source.connect(gain); gain.connect(offline.destination);
+    source.start(0,layer.clipStart||0);
+  });
+  offline.startRendering().then(rendered=>{
+    const wav=audioBufferToWav(rendered);
+    const blob=new Blob([wav],{type:"audio/wav"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download="localbeat-export.wav"; a.click();
+    URL.revokeObjectURL(url);
+    alert("Exported! Import localbeat-export.wav into LocalEdit audio track.");
+  });
+}
+function audioBufferToWav(buffer){
+  const numChannels=buffer.numberOfChannels;
+  const sampleRate=buffer.sampleRate;
+  const bitDepth=16;
+  const bytesPerSample=bitDepth/8;
+  const blockAlign=numChannels*bytesPerSample;
+  const byteRate=sampleRate*blockAlign;
+  const dataSize=buffer.length*blockAlign;
+  const ab=new ArrayBuffer(44+dataSize);
+  const view=new DataView(ab);
+  const ws=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};
+  ws(0,"RIFF"); view.setUint32(4,36+dataSize,true); ws(8,"WAVE");
+  ws(12,"fmt "); view.setUint32(16,16,true); view.setUint16(20,1,true);
+  view.setUint16(22,numChannels,true); view.setUint32(24,sampleRate,true);
+  view.setUint32(28,byteRate,true); view.setUint16(32,blockAlign,true);
+  view.setUint16(34,bitDepth,true); ws(36,"data"); view.setUint32(40,dataSize,true);
+  let offset=44;
+  for(let i=0;i<buffer.length;i++){
+    for(let ch=0;ch<numChannels;ch++){
+      const sample=Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]));
+      view.setInt16(offset,sample<0?sample*0x8000:sample*0x7FFF,true);
+      offset+=2;
+    }
+  }
+  return ab;
+}`],
+
+['settings.js',`function openSettings(){
+  const overlay=document.getElementById("modalOverlay");
+  const content=document.getElementById("modalContent");
+  content.innerHTML=\`<h2 style="color:var(--accent);margin-bottom:var(--space-md)">⚙ Settings</h2>
+    <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+      <div>
+        <label style="color:var(--text-secondary);display:block;margin-bottom:4px">🌐 Language</label>
+        <select onchange="setLanguage(this.value)"
+          style="width:100%;background:var(--bg-elevated);color:var(--text-primary);
+          border:1px solid var(--border);padding:var(--space-sm);border-radius:var(--radius);min-height:44px">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="pt">Português</option>
+          <option value="ar">العربية</option>
+          <option value="zh">中文</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+      <div>
+        <label style="color:var(--text-secondary);display:block;margin-bottom:4px">🔠 Text Size</label>
+        <div style="display:flex;gap:var(--space-sm)">
+          <button class="btn" style="flex:1" onclick="setScale('small')">Small</button>
+          <button class="btn" style="flex:1" onclick="setScale('medium')">Medium</button>
+          <button class="btn" style="flex:1" onclick="setScale('large')">Large</button>
+          <button class="btn" style="flex:1" onclick="setScale('xl')">XL</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-sm) 0">
+        <label style="color:var(--text-secondary)">🌑 High Contrast</label>
+        <input type="checkbox" id="contrastToggle"
+          style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer"
+          onchange="toggleContrast(this.checked)"/>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-sm) 0">
+        <label style="color:var(--text-secondary)">🤖 AI Plugins (optional)</label>
+        <input type="checkbox" id="aiToggle"
+          style="width:24px;height:24px;accent-color:var(--accent);cursor:pointer"
+          onchange="localStorage.setItem('localbeat_ai',this.checked?'on':'off')"/>
+      </div>
+      <div style="color:var(--text-muted);font-size:0.8em;text-align:center;padding-top:var(--space-sm)">
+        🎵 LocalBeat v0.1.0 — Part of ImageStream<br/>Free forever. Offline. Private. Yours.
+      </div>
+      <button class="btn" style="width:100%" onclick="closeModal()">✓ Done</button>
+    </div>\`;
+  overlay.classList.remove("hidden");
+  document.getElementById("contrastToggle").checked=localStorage.getItem("localbeat_contrast")==="high";
+  document.getElementById("aiToggle").checked=localStorage.getItem("localbeat_ai")==="on";
+}
+function toggleContrast(on){
+  document.documentElement.setAttribute("data-contrast",on?"high":"normal");
+  localStorage.setItem("localbeat_contrast",on?"high":"normal");
+}`]
+
+  ];
+
+  for(let i=0;i<files.length;i++){
+    status.textContent="Downloading "+files[i][0]+"...";
+    dl(files[i][0], files[i][1]);
+    await sleep(400);
+  }
+
+  status.textContent="✅ All "+files.length+" files downloaded!";
+  btn.textContent="✅ Done";
+}
+</script>
+
+</body>
+</html>
+How to use:
+Save that file as localbeat-installer.html anywhere on your computer
+Open it in any browser
+Click Download All Files
+Each file downloads one by one
+Place them in the correct folders in the repo
+That's it. 🎵
