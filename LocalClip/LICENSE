@@ -1,21 +1,80 @@
-MIT License
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
 
-Copyright (c) 2026 LocalClip Contributors
+Copyright (c) 2026 The Art Medium
+https://github.com/The-ArtMedium/ImageStream
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+PREAMBLE
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The GNU General Public License is a free, copyleft license for software
+and other kinds of works. When we speak of free software, we are
+referring to freedom, not price.
+
+This license guarantees your freedom to share and change all versions
+of a program -- to make sure it remains free software for all its users.
+
+TERMS AND CONDITIONS
+
+0. Definitions.
+
+"This License" refers to version 3 of the GNU General Public License.
+"The Program" refers to LocalBeat and any work licensed under this License.
+
+1. Source Code.
+You may copy and distribute verbatim copies of the Program's source code
+as you receive it, provided you include this license notice.
+
+2. Basic Permissions.
+All rights granted under this License are granted for the term of copyright
+on the Program, and are irrevocable provided the stated conditions are met.
+
+3. Protecting Users Legal Rights From Anti-Circumvention Law.
+No covered work shall be deemed part of an effective technological measure.
+
+4. Conveying Verbatim Copies.
+You may convey verbatim copies of the Program's source code as you receive
+it, in any medium, provided you include a copy of this license.
+
+5. Conveying Modified Source Versions.
+You may convey a work based on the Program provided that:
+- You must carry prominent notices stating that you modified it.
+- You must license the entire work under this License.
+- The work must carry prominent notices stating it is released under
+  this License and any conditions added. You may not impose any further
+  restrictions on the exercise of the rights granted under this License.
+
+6. No Surrender of Others Freedom.
+If conditions are imposed on you that contradict the conditions of this
+License, they do not excuse you from the conditions of this License.
+
+7. Distribution.
+You may not copy, modify, sublicense, or distribute the Program except
+as expressly provided under this License. Any attempt otherwise to copy,
+modify, sublicense or distribute it is void, and will automatically
+terminate your rights under this License.
+
+IMPORTANT:
+Any person or organization that distributes this software, modified or
+unmodified, must do so under the same GPL v3 license and must make the
+full source code freely available. This software may not be sold or
+included in proprietary products without releasing the full source code
+under this same license.
+
+This software is provided free of charge and must remain free.
+It was built for everyone. Especially those with less.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+THE ART MEDIUM SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE USE OF THIS SOFTWARE.
+
+For the full GPL v3 license text visit:
+https://www.gnu.org/licenses/gpl-3.0.en.html
+
+---
+LocalBeat — Sound for Everyone.
+Part of the ImageStream Local Suite by The Art Medium.
+Free forever. Offline. Private. Yours.
+That protects the mission completely.
