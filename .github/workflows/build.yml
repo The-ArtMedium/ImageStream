@@ -10,6 +10,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            LocalBeat
+          sparse-checkout-cone-mode: true
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri CLI
