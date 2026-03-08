@@ -1,5 +1,3 @@
-name: Build LocalBeat
-
 on:
   push:
     branches: [ main ]
@@ -13,7 +11,8 @@ jobs:
         with:
           sparse-checkout: |
             LocalBeat
-          sparse-checkout-cone-mode: true
+            .github
+          sparse-checkout-cone-mode: false
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri CLI
