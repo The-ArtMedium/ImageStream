@@ -1,6 +1,6 @@
-```html
-<!-- PATH: ImageStream/LocalBeat/src/index.html -->
 
+
+```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-theme="dark" data-scale="medium">
 <head>
@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/layout.css"/>
 <link rel="stylesheet" href="css/accessibility.css"/>
 <link rel="stylesheet" href="css/waveform.css"/>
+<link rel="stylesheet" href="css/input.css"/>
 </head>
 <body>
 <header class="topbar" role="banner">
@@ -79,6 +80,10 @@
     aria-label="Generate a sound">
     <span class="icon">🎹</span><span>Generate</span>
   </button>
+  <button class="btn btn--tool" onclick="openInput()"
+    aria-label="Record audio input">
+    <span class="icon">🎙</span><span>Record</span>
+  </button>
   <button class="btn btn--tool full-mode-only" onclick="openMix()"
     aria-label="Mix layers">
     <span class="icon">🎛</span><span>Mix</span>
@@ -107,6 +112,7 @@
 <script src="js/import.js"></script>
 <script src="js/export.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/input.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
