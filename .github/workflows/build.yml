@@ -1,5 +1,3 @@
-
-
 on:
   push:
     branches: [ main ]
@@ -9,10 +7,9 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: Configure git for Windows
+        run: git config --global core.protectNTFS false
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: LocalBeat
-          sparse-checkout-cone-mode: true
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri CLI
