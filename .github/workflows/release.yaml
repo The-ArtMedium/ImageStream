@@ -64,4 +64,3 @@ jobs:
           files: LocalBeat/src-tauri/target/release/bundle/deb/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-All changes:
