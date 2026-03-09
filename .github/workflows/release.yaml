@@ -1,6 +1,3 @@
-
-name: Release LocalBeat
-
 on:
   push:
     tags:
