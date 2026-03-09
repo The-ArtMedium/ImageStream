@@ -1,156 +1,96 @@
-Skip to content
-The-ArtMedium
-ImageStream
-Repository navigation
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-Settings
-ImageStream
-/README.md
-Go to file
-t
-Satdiva
-Satdiva
-Update README.md
-16dd973
- · 
-2 months ago
-132 lines (82 loc) · 5.27 KB
+# ImageStream Local Suite
 
-Preview
+**Tools for everyone. No cloud. No subscriptions. No tracking. Free forever.**
 
-Code
-
-Blame
-ImageStream
-Foundational Image Analytics & Sharpness Recovery
-A sanctuary for creators managing massive archives — no cloud, no subscriptions, no hallucinations.
-
-In a world of expensive, "black-box" AI tools that guess and fabricate,
-ImageStream returns to the physics of light.
-We detect true focus, recover real detail, and enrich archives using only verifiable methods.
-
-Built for:
-
-Photographers with hundreds of thousands of images
-Sports shooters needing fast athlete tagging
-Artists & archivists reclaiming control
-Anyone turning personal drives into income or legacy
-100% local • Offline • Sovereign • Free forever
-
-Available Tools
-Tool	What It Does	Perfect For	Link
-Focus Check	Sorts images by true sharpness using Laplacian Variance (physics-based)	Culling sessions, finding keepers	→ focus_check/
-Athlete Tagger	Scans folders → detects famous athletes → appends names to filename	Sports photography archives, quick organization & sales prep	→ athlete_tagger/
-More tools coming: sharpness recovery, batch metadata export, WooCommerce prep.
-
-Why ImageStream Exists
-Many of us have half a million images sleeping on drives.
-We built this to wake them up — without giving away control, privacy, or profits.
-
-This repo is for the builders.
-For the ones who deserve to turn decades of capture into decades of flow.
-
-The Glow is yours. These tools just help it shine.
-
-🌍⚡ Rssss
-
-Quick Start
-git clone https://github.com/The-ArtMedium/ImageStream.git
-cd ImageStream
-# Try the athlete tagger first
-cd athlete_tagger
-# Add your reference faces → run the script
-python athlete_tagger.py /path/to/your/photos --dry-run
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 📸 imageStream
-**Organization:** The Art Medium  
-**Focus:** Foundational Image Analytics & Sharpness Recovery  
+Built by [The Art Medium](https://github.com/The-ArtMedium) — for the photographer in a village, the editor in a bedroom, the journalist on deadline, and the archivist reclaiming decades of work.
 
 ---
 
-## 👁 The Vision
-In a world of expensive, "black-box" AI tools that often hallucinate details, **imageStream** is a sanctuary for **True Recovery**. We leverage foundational image processing and Data Analytics to detect, score, and manage archives based on the physics of light—not the guesses of a machine.
+## The Suite
 
-## 📐 The Core Engine: The Laplacian Variance
-To build affordable, high-grade tools, we return to the **Second Derivative**. The Laplacian Operator acts as a high-pass filter, highlighting regions of an image with rapid intensity changes—the edges.
-
-### The Logic for Builders
-We calculate a **Focus Score** by taking the Variance ($\sigma^2$) of the Laplacian-transformed image ($L$):
-
-$$Focus Score = \text{Var}(L)$$
-
-* **High Variance:** Sharp edges, crisp details, "In Focus."
-* **Low Variance:** Smooth gradients, spread-out light, "Out of Focus."
-
----
-
-## 🛠 Repository Roadmap
-
-### 1. The Laplacian Sieve (Focus Scoring)
-A lightweight Python engine to rank images by high-frequency edge density. Perfect for sifting through archived photos to find the "keepers" instantly.
-
-### 2. The Triage Engine (Classification)
-We use mathematical thresholds to decide the destiny of every pixel in your archive:
-* **Score < 100 (The Wall):** Heavy physical blur. Flagged for manual review.
-* **Score 100–400 (The Candidate):** The **Sweet Spot**. Images ready for **Deconvolution** (reverse-engineering blur without inventing pixels).
-* **Score > 600 (The Keeper):** High-quality frames ready for the master archive.
-
-### 3. Data-Driven Archiving (SQL Integration)
-Bridging the gap between photography and Data Analytics. We store technical metadata and "Truth Scores" in structured databases. 
-`SELECT filename FROM ImageArchive WHERE classification = 'Repair Candidate';`
+| Tool | What It Does | Platform |
+|------|-------------|----------|
+| 🎵 **LocalBeat** | Audio preparation — record, layer, mix offline | Windows · Mac · Linux |
+| ✂️ **LocalClip** | Video clipping and trimming — no export queue | Windows · Mac · Linux |
+| 🎬 **LocalEdit** | Video editor built for speed and simplicity | Windows · Mac · Linux |
+| 📷 **LocalRAW** | RAW image processing for artists and pros | Windows · Mac · Linux |
+| 📸 **LocalShot** | Image editing for everyone — JPG, PNG, any format | Windows · Mac · Linux |
+| 🌸 **BokehProStudio** | Creative and editorial bokeh simulation | Windows · Mac · Linux |
+| 🔍 **FocusCheck** | Sharpness scoring using Laplacian Variance | Windows · Mac · Linux |
+| 🤖 **FaceTagger** | AI-powered face detection and athlete tagging | Windows · Mac · Linux |
+| 📚 **Darkroom** | SQL and Python crash courses — photography dataset | Web |
 
 ---
 
-## 🌍 A Fair Distribution of Knowledge
-We believe the math of light should be public and accessible. **imageStream** decouples professional quality from high costs, allowing creators everywhere to achieve perfection through the "Flow" of open-source medium.
+## The Philosophy
 
-> "I am not here to be perfect but flow perfection."
+In a world of expensive black-box tools that live in the cloud and charge by the month, ImageStream returns control to the creator.
+
+Every tool in this suite:
+- Runs entirely on your device
+- Works without internet
+- Stores nothing outside your machine
+- Costs nothing — now or ever
+
+We built this for the kid with a cheap laptop and a dream.  
+For the teacher with no WiFi.  
+For the senior discovering creativity for the first time.  
+For the professional who deserves tools that respect their work.
 
 ---
 
-### 🚀 Getting Started
-Run `focus_check.py` to calculate the sharpness of any image archive using foundational Laplacian Vectors.
+## Why Free and Offline Is Not Just About Money
 
-# ImageStream
+Yes, you can get Photoshop for $10 a month. But that $10 comes with conditions nobody talks about.
 
-**Foundational Image Analytics & Sharpness Recovery**
+**🌐 Internet required.**  
+Useless in the field. Useless in the village. Useless in a blackout.
 
-In a world of expensive, "black-box" AI tools that often hallucinate details,  
-ImageStream is a sanctuary for True Recovery. We leverage physics of light—not the guesses of a machine.
+**👁 They see your work.**  
+Every image, every edit, every file passes through their servers. Your work is their data.
 
-## The Vision
-[Your beautiful text here]
+**©️ Copyright grey areas.**  
+Who owns what you create inside their cloud? Read the terms carefully.
 
-## Available Tools
+**🌍 One language.**  
+Most tools assume English. Billions of creators are excluded before they even open the app.
 
-| Tool              | Description                              | Quick Start |
-|-------------------|------------------------------------------|-------------|
-| Focus Check       | Sort images by true sharpness (Laplacian Variance) | → [focus_check/](focus_check/) |
-| Athlete Tagger    | Detect famous players & append names to filename   | → [athlete_tagger/](athlete_tagger/) |
-| [Next Tool]       | Coming soon...                           |             |
+**♿ Not built for everyone.**  
+Small text. Complex interfaces. No high contrast. Designed for one type of user.
 
-## Why ImageStream?
-- 100% local, offline, sovereign
-- No cloud uploads, no subscriptions
-- Built for creators managing massive archives
-- Free forever — for the builders, the grinders, the ones reclaiming their Glow
+**💳 Credit card required.**  
+Excluding the unbanked. Excluding the young. Excluding the majority of the world.
+
+**📱 Heavy system requirements.**  
+Won't run on a $40 laptop. Won't run on an old school computer. Won't run where it's needed most.
+
+ImageStream runs on anything, anywhere, in any language, with no one watching.
+
+That is not a cheaper competitor to Photoshop.  
+**That is a different category entirely.**
+
+---
+
+## Downloads
+
+Each tool has its own download page with installers for Windows, Mac and Linux.
+
+→ [LocalBeat](https://the-artmedium.github.io/ImageStream/LocalBeat/localbeat.html)
+
+More download pages coming as each tool is released.
+
+---
+
+## License
+
+MIT License with Commons Clause.  
+Free to use, modify and share. Cannot be sold or packaged into paid products without written permission from The Art Medium.
+
+See [LICENSE](LICENSE) for full terms.  
+Commercial licensing: theartsmedium@gmail.com
+
+---
+
+## The Glow is yours. These tools just help it shine.
+
+*ImageStream Local Suite — Part of The Art Medium*
