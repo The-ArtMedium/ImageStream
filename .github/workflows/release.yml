@@ -1,3 +1,6 @@
+
+name: Release LocalBeat
+
 on:
   push:
     tags:
@@ -20,10 +23,15 @@ jobs:
       - name: Build Windows
         run: cargo tauri build
         working-directory: LocalBeat
+      - name: Package Windows
+        run: |
+          mkdir LocalBeat-Windows
+          copy LocalBeat\src-tauri\target\release\bundle\msi\*.msi LocalBeat-Windows\
+          Compress-Archive -Path LocalBeat-Windows\* -DestinationPath LocalBeat-v0.2.0-Windows.zip
       - name: Release Windows
         uses: softprops/action-gh-release@v2
         with:
-          files: LocalBeat/src-tauri/target/release/bundle/msi/*.msi
+          files: LocalBeat-v0.2.0-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,10 +46,15 @@ jobs:
       - name: Build Mac
         run: cargo tauri build
         working-directory: LocalBeat
+      - name: Package Mac
+        run: |
+          mkdir LocalBeat-Mac
+          cp LocalBeat/src-tauri/target/release/bundle/dmg/*.dmg LocalBeat-Mac/
+          zip -r LocalBeat-v0.2.0-Mac.zip LocalBeat-Mac/
       - name: Release Mac
         uses: softprops/action-gh-release@v2
         with:
-          files: LocalBeat/src-tauri/target/release/bundle/dmg/*.dmg
+          files: LocalBeat-v0.2.0-Mac.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -61,10 +74,14 @@ jobs:
       - name: Build Linux
         run: cargo tauri build
         working-directory: LocalBeat
+      - name: Package Linux
+        run: |
+          mkdir LocalBeat-Linux
+          cp LocalBeat/src-tauri/target/release/bundle/deb/*.deb LocalBeat-Linux/
+          zip -r LocalBeat-v0.2.0-Linux.zip LocalBeat-Linux/
       - name: Release Linux
         uses: softprops/action-gh-release@v2
         with:
-          files: LocalBeat/src-tauri/target/release/bundle/deb/*.deb
+          files: LocalBeat-v0.2.0-Linux.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
