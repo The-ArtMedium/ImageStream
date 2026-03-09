@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LocalBeat — Download</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #1a1a1a;
+      --accent: #f5a623;
+      --accent2: #ffb940;
+      --text: #f0f0f0;
+      --muted: #888;
+      --border: #222;
+      --win: #0078d4;
+      --mac: #555;
+      --linux: #dd4814;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* GRAIN OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* GLOW */
+    .glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* WAVEFORM ANIMATION */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      height: 40px;
+      margin: 1.5rem 0;
+    }
+
+    .waveform span {
+      display: block;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: wave 1.4s ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    .waveform span:nth-child(1)  { height: 12px; animation-delay: 0s; }
+    .waveform span:nth-child(2)  { height: 24px; animation-delay: 0.1s; }
+    .waveform span:nth-child(3)  { height: 36px; animation-delay: 0.2s; }
+    .waveform span:nth-child(4)  { height: 28px; animation-delay: 0.3s; }
+    .waveform span:nth-child(5)  { height: 16px; animation-delay: 0.4s; }
+    .waveform span:nth-child(6)  { height: 32px; animation-delay: 0.5s; }
+    .waveform span:nth-child(7)  { height: 40px; animation-delay: 0.6s; }
+    .waveform span:nth-child(8)  { height: 28px; animation-delay: 0.7s; }
+    .waveform span:nth-child(9)  { height: 20px; animation-delay: 0.8s; }
+    .waveform span:nth-child(10) { height: 36px; animation-delay: 0.9s; }
+    .waveform span:nth-child(11) { height: 24px; animation-delay: 1.0s; }
+    .waveform span:nth-child(12) { height: 14px; animation-delay: 1.1s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(1); opacity: 0.7; }
+      50% { transform: scaleY(0.3); opacity: 0.3; }
+    }
+
+    /* LAYOUT */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 5rem 0 3rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.1);
+      border: 1px solid rgba(245,166,35,0.3);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-version {
+      font-size: 0.85rem;
+      color: #444;
+      margin-bottom: 0;
+    }
+
+    /* BANNER */
+    .banner-wrap {
+      margin: 2rem 0;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .banner-wrap img {
+      width: 100%;
+      display: block;
+    }
+
+    /* PILLS */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .pill {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+
+    .pill strong { color: var(--text); }
+
+    /* DOWNLOAD SECTION */
+    .download-section {
+      margin: 3rem 0;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    .download-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .download-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      border-radius: 16px;
+    }
+
+    .download-card:hover { transform: translateY(-4px); border-color: #333; }
+    .download-card:hover::before { opacity: 1; }
+
+    .download-card.windows::before { background: radial-gradient(circle at top left, rgba(0,120,212,0.08), transparent 60%); }
+    .download-card.mac::before     { background: radial-gradient(circle at top left, rgba(180,180,180,0.06), transparent 60%); }
+    .download-card.linux::before   { background: radial-gradient(circle at top left, rgba(221,72,20,0.08), transparent 60%); }
+
+    .download-card:hover.windows { border-color: rgba(0,120,212,0.4); }
+    .download-card:hover.mac     { border-color: rgba(180,180,180,0.3); }
+    .download-card:hover.linux   { border-color: rgba(221,72,20,0.4); }
+
+    .card-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .card-os {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .card-format {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.2s ease;
+    }
+
+    .download-card:hover .card-arrow { gap: 0.7rem; }
+
+    .card-arrow.win   { color: var(--win); }
+    .card-arrow.mac   { color: #aaa; }
+    .card-arrow.linux { color: var(--linux); }
+
+    /* FEATURES */
+    .features {
+      margin: 4rem 0;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .features-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .feature-item {
+      background: var(--bg2);
+      padding: 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .feature-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    .feature-text strong {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+
+    .feature-text span {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* LANGUAGES */
+    .languages {
+      text-align: center;
+      margin: 3rem 0;
+      animation: fadeUp 0.8s 0.6s ease both;
+    }
+
+    .lang-flags {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .lang-flag {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      text-align: center;
+      color: #333;
+      font-size: 0.8rem;
+      animation: fadeUp 0.8s 0.7s ease both;
+    }
+
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer strong { color: #555; }
+
+    .no-cloud {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+      font-size: 0.78rem;
+      color: #444;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .no-cloud span::before { content: '✕ '; color: #333; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 0 2rem; }
+      .download-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-badge">Free · Offline · Open</div>
+    <h1>Local<span>Beat</span></h1>
+    <p class="hero-sub">Sound for Everyone</p>
+    <p class="hero-version">v0.2.0 · Part of the ImageStream Local Suite</p>
+    <div class="waveform">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="banner-wrap">
+    <img src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000a9a871f5b1870827001b328a.png" alt="LocalBeat — Sound for Everyone"/>
+  </div>
+
+  <div class="pills">
+    <div class="pill"><strong>8</strong> Audio Layers</div>
+    <div class="pill"><strong>7</strong> Languages</div>
+    <div class="pill">🎤 Record</div>
+    <div class="pill">🔁 Loop</div>
+    <div class="pill">🎹 MIDI</div>
+    <div class="pill">📂 Import</div>
+    <div class="pill">🥁 Samples</div>
+    <div class="pill">♿ Accessible</div>
+  </div>
+
+  <div class="download-section">
+    <p class="download-title">⬇ Choose your platform</p>
+    <div class="download-grid">
+
+      <a class="download-card windows"
+        href="https://github.com/The-ArtMedium/ImageStream/releases/download/v0.2.0/LocalBeat-v0.2.0-Windows.zip"
+        download>
+        <div class="card-icon">🪟</div>
+        <div class="card-os">Windows</div>
+        <div class="card-format">LocalBeat-v0.2.0-Windows.zip</div>
+        <div class="card-arrow win">Download ⟶</div>
+      </a>
+
+      <a class="download-card mac"
+        href="https://github.com/The-ArtMedium/ImageStream/releases/download/v0.2.0/LocalBeat-v0.2.0-Mac.zip"
+        download>
+        <div class="card-icon">🍎</div>
+        <div class="card-os">macOS</div>
+        <div class="card-format">LocalBeat-v0.2.0-Mac.zip</div>
+        <div class="card-arrow mac">Download ⟶</div>
+      </a>
+
+      <a class="download-card linux"
+        href="https://github.com/The-ArtMedium/ImageStream/releases/download/v0.2.0/LocalBeat-v0.2.0-Linux.zip"
+        download>
+        <div class="card-icon">🐧</div>
+        <div class="card-os">Linux</div>
+        <div class="card-format">LocalBeat-v0.2.0-Linux.zip</div>
+        <div class="card-arrow linux">Download ⟶</div>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="features">
+    <p class="features-title">What's inside</p>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🎙</div>
+        <div class="feature-text">
+          <strong>Record</strong>
+          <span>Mic, instrument or loop recording with live preview</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🥁</div>
+        <div class="feature-text">
+          <strong>Sample Library</strong>
+          <span>Beats, Ambient, World, Tones and FX built in</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎹</div>
+        <div class="feature-text">
+          <strong>MIDI Support</strong>
+          <span>Connect any MIDI device and record live</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📂</div>
+        <div class="feature-text">
+          <strong>Import</strong>
+          <span>Bring in any audio file from your device</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎛</div>
+        <div class="feature-text">
+          <strong>8 Layers</strong>
+          <span>Stack and mix up to 8 audio layers</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">♿</div>
+        <div class="feature-text">
+          <strong>Accessible</strong>
+          <span>High contrast, large text, screen reader ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="languages">
+    <p class="features-title">7 Languages</p>
+    <div class="lang-flags">
+      <div class="lang-flag">🇺🇸 English</div>
+      <div class="lang-flag">🇪🇸 Español</div>
+      <div class="lang-flag">🇫🇷 Français</div>
+      <div class="lang-flag">🇵🇹 Português</div>
+      <div class="lang-flag">🇸🇦 العربية</div>
+      <div class="lang-flag">🇨🇳 中文</div>
+      <div class="lang-flag">🇮🇳 हिन्दी</div>
+    </div>
+  </div>
+
+  <div class="no-cloud">
+    <span>No Cloud</span>
+    <span>No Tracking</span>
+    <span>No Subscription</span>
+    <span>Free Forever</span>
+  </div>
+
+  <div class="footer">
+    <p>Part of the <a href="https://the-artmedium.github.io/ImageStream">ImageStream Local Suite</a> by <strong>The Art Medium</strong></p>
+    <p style="margin-top:0.5rem">Built with love for everyone. 🌍</p>
+  </div>
+
+</div>
+
+</body>
+</html>
