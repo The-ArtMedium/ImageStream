@@ -1,5 +1,7 @@
 # 🎵 LocalBeat
-![LocalShot](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000a9a871f5b1870827001b328a.png
+
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000a9a871f5b1870827001b328a.png)
+
 
 **Part of the ImageStream / Local Suite**
 *Sound for Everyone.*
