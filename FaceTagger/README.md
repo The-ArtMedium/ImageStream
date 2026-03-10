@@ -1,5 +1,5 @@
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/1767458151897.jpg)
 
-![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/f1767458151897.jpg)
 # 🏃 ImageStream Athlete Tagger
 
 Automatically detect athletes in your photo archive and rename files for easy searching.
