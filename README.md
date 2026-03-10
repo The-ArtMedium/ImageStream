@@ -1,3 +1,5 @@
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/1766863351801.jpg)
+
 # ImageStream Local Suite
 
 **Tools for everyone. No cloud. No subscriptions. No tracking. Free forever.**
