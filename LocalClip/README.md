@@ -1,6 +1,6 @@
 # 🎬 LocalClip
 
-![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001aa471f58709732daec60611.png
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001aa471f58709732daec60611.png)
 
 **Simple. Local. Yours.**
 
