@@ -1,0 +1,108 @@
+name: Release LocalShot
+
+on:
+  push:
+    tags:
+      - 'localshot-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --windowed --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          Compress-Archive -Path LocalShot.exe -DestinationPath LocalShot-${{ github.ref_name }}-Windows.zip
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalShot/dist/LocalShot-${{ github.ref_name }}-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --windowed --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          zip -r LocalShot-${{ github.ref_name }}-Mac.zip LocalShot.app
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalShot/dist/LocalShot-${{ github.ref_name }}-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk python3-pip
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          zip LocalShot-${{ github.ref_name }}-Linux.zip LocalShot
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalShot/dist/LocalShot-${{ github.ref_name }}-Linux.zip

@@ -1,0 +1,110 @@
+name: Build LocalShot
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'LocalShot/**'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --windowed --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          Compress-Archive -Path LocalShot.exe -DestinationPath LocalShot-Windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Windows
+          path: LocalShot/dist/LocalShot-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --windowed --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          zip -r LocalShot-Mac.zip LocalShot.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Mac
+          path: LocalShot/dist/LocalShot-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk python3-pip
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalShot
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalShot
+          pyinstaller --onefile --name LocalShot src/localshot.py
+
+      - name: Package zip
+        run: |
+          cd LocalShot/dist
+          zip LocalShot-Linux.zip LocalShot
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Linux
+          path: LocalShot/dist/LocalShot-Linux.zip
