@@ -1,5 +1,7 @@
 # LocalRAW v1.0.0
 
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001a1471fd8403e1127c08d013.png)
+
 LocalRAW is a fully offline, privacy-focused RAW image editor designed for photographers who need speed, simplicity, and independence.
 
 No cloud.
