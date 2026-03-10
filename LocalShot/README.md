@@ -1,5 +1,7 @@
 # 📸 LocalShot
 
+![LocalShot](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/LocalShot.png)
+
 **Image Editor for Everyone**
 Part of the ImageStream Local Suite by The Art Medium
 
