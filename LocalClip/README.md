@@ -1,5 +1,7 @@
 # 🎬 LocalClip
 
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001aa471f58709732daec60611.png
+
 **Simple. Local. Yours.**
 
 A lightweight video trimming tool for creators who want to prep clips quickly without uploading to the cloud.
