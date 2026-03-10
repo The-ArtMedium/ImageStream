@@ -1,15 +1,5 @@
-Perfect! I can see you've already committed:
-- ✅ athlete_tagger.py
-- ✅ config.yaml
-- ✅ requirements.txt
 
-Now let's give you a proper **README.md** to explain everything to users!
-
----
-
-## **FILE 4: README.md**
-
-```markdown
+![LocalBeat](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/f1767458151897.jpg)
 # 🏃 ImageStream Athlete Tagger
 
 Automatically detect athletes in your photo archive and rename files for easy searching.
