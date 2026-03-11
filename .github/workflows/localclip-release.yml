@@ -1,0 +1,111 @@
+name: Release LocalClip
+
+on:
+  push:
+    tags:
+      - 'localclip-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip install -r Requirements.txt
+          pip install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --windowed --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          Compress-Archive -Path LocalClip.exe -DestinationPath LocalClip-${{ github.ref_name }}-Windows.zip
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalClip/dist/LocalClip-${{ github.ref_name }}-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip3 install -r Requirements.txt
+          pip3 install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --windowed --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          zip -r LocalClip-${{ github.ref_name }}-Mac.zip LocalClip.app
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalClip/dist/LocalClip-${{ github.ref_name }}-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip ffmpeg
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip3 install -r Requirements.txt
+          pip3 install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          zip LocalClip-${{ github.ref_name }}-Linux.zip LocalClip
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalClip/dist/LocalClip-${{ github.ref_name }}-Linux.zip
