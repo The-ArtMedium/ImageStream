@@ -1,0 +1,19 @@
+LocalClip
+          pip3 install -r Requirements.txt
+          pip3 install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          zip LocalClip-Linux.zip LocalClip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-Linux
+          path: LocalClip/dist/LocalClip-Linux.zip
