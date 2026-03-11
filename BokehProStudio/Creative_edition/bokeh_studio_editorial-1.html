@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bokeh Studio Pro — Editorial Edition</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app { display:flex; height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: #141414;
+  border-right: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.logo {
+  padding: 20px;
+  background: #0f0f0f;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.logo h1 { font-size:1.3em; font-weight:800; color:#f0f0f0; }
+.logo h1 span { color:#f5a623; }
+.logo p { font-size:0.8em; color:#666; margin-top:4px; }
+
+.section {
+  padding: 16px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.section-label {
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* Depth brush controls */
+.depth-palette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.depth-swatch {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.1s;
+  position: relative;
+}
+
+.depth-swatch:hover { transform: scale(1.1); }
+.depth-swatch.active { border-color: #f5a623; }
+
+.depth-swatch span {
+  position: absolute;
+  bottom: 2px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 0.55em;
+  color: rgba(255,255,255,0.7);
+  text-shadow: 0 1px 2px #000;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.row label { font-size:0.85em; color:#999; }
+.row .val { font-size:0.85em; color:#f5a623; font-weight:600; }
+
+input[type=range] {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #2a2a2a;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #f5a623;
+  cursor: pointer;
+}
+
+/* Lens presets */
+.lens-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.lens-btn {
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  color: #ccc;
+  padding: 10px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78em;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+
+.lens-btn:hover { border-color: #f5a623; background: #222; }
+.lens-btn.active { background: #f5a62320; border-color: #f5a623; color: #f5a623; }
+
+/* Tool buttons */
+.tool-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tool-btn {
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  color: #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82em;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover { border-color: #555; background: #222; }
+.tool-btn.active { background: #f5a62320; border-color: #f5a623; color: #f5a623; }
+
+.action-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9em;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.btn-apply {
+  background: #f5a623;
+  color: #0a0a0a;
+}
+
+.btn-apply:hover { background: #ff6b35; transform: translateY(-1px); }
+
+.btn-secondary {
+  background: #1e1e1e;
+  color: #ccc;
+  border: 1px solid #2a2a2a;
+}
+
+.btn-secondary:hover { background: #252525; border-color: #444; }
+
+.btn-download {
+  background: #1a3a1a;
+  color: #52b788;
+  border: 1px solid #2a4a2a;
+}
+
+.btn-download:hover { background: #1e441e; }
+
+/* ── CANVAS AREA ── */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #080808;
+  overflow: hidden;
+}
+
+.toolbar {
+  background: #111;
+  border-bottom: 1px solid #1e1e1e;
+  padding: 10px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tb-btn {
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  color: #ccc;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.tb-btn:hover { border-color: #f5a623; color: #f5a623; }
+.tb-btn.primary { background: #f5a623; color: #0a0a0a; border-color: #f5a623; }
+.tb-btn.primary:hover { background: #ff6b35; }
+
+.status {
+  margin-left: auto;
+  font-size: 0.8em;
+  color: #555;
+}
+
+.canvas-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#dropzone {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: #333;
+  font-size: 1em;
+  cursor: pointer;
+  border: 2px dashed #222;
+  margin: 30px;
+  border-radius: 16px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+#dropzone:hover, #dropzone.over {
+  border-color: #f5a623;
+  color: #f5a623;
+}
+
+#dropzone .icon { font-size: 3em; }
+
+/* Canvases */
+.canvas-stack {
+  position: relative;
+  display: none;
+}
+
+#photoCanvas { display:block; border-radius:4px; }
+
+#depthCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  border-radius: 4px;
+  cursor: crosshair;
+  opacity: 0.55;
+}
+
+#resultCanvas {
+  display: none;
+  border-radius: 4px;
+}
+
+/* comparison */
+.compare-wrap {
+  position: relative;
+  display: none;
+  user-select: none;
+}
+
+.compare-wrap canvas { display: block; border-radius: 4px; }
+
+#compareSlider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 100%;
+  background: #f5a623;
+  cursor: ew-resize;
+  transform: translateX(-50%);
+}
+
+#compareSlider::after {
+  content: '◀ ▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f5a623;
+  color: #0a0a0a;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 0.75em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusbar {
+  background: #0f0f0f;
+  border-top: 1px solid #1a1a1a;
+  padding: 6px 16px;
+  font-size: 0.75em;
+  color: #444;
+  display: flex;
+  justify-content: space-between;
+}
+
+#fileInput { display:none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <h1>Bokeh <span>Editorial</span></h1>
+    <p>Depth Map · Lens Simulation · Free Forever</p>
+  </div>
+
+  <!-- DEPTH PALETTE -->
+  <div class="section">
+    <div class="section-label">Paint Depth Map</div>
+    <div class="depth-palette" id="depthPalette">
+      <!-- filled by JS -->
+    </div>
+    <div class="row">
+      <label>Brush Size</label>
+      <span class="val" id="brushSizeVal">40px</span>
+    </div>
+    <input type="range" id="brushSize" min="5" max="150" value="40">
+    <div class="row">
+      <label>Brush Softness</label>
+      <span class="val" id="brushSoftVal">80%</span>
+    </div>
+    <input type="range" id="brushSoft" min="0" max="100" value="80">
+    <div class="tool-row">
+      <button class="tool-btn active" id="btnPaint">✏️ Paint</button>
+      <button class="tool-btn" id="btnErase">🧹 Erase</button>
+    </div>
+    <button class="action-btn btn-secondary" id="btnClearMap">Clear Depth Map</button>
+  </div>
+
+  <!-- LENS -->
+  <div class="section">
+    <div class="section-label">Lens Simulation</div>
+    <div class="lens-grid">
+      <button class="lens-btn active" data-blur="28" data-edge="60">85mm f/1.4<br>Portrait</button>
+      <button class="lens-btn" data-blur="18" data-edge="50">50mm f/1.8<br>Nifty Fifty</button>
+      <button class="lens-btn" data-blur="38" data-edge="70">50mm f/1.2<br>Dream Lens</button>
+      <button class="lens-btn" data-blur="32" data-edge="80">Sony GM<br>Feathered</button>
+      <button class="lens-btn" data-blur="22" data-edge="40">135mm f/2<br>Telephoto</button>
+      <button class="lens-btn" data-blur="0" data-edge="50">Custom<br>Manual</button>
+    </div>
+  </div>
+
+  <!-- BLUR CONTROLS -->
+  <div class="section">
+    <div class="section-label">Depth of Field</div>
+    <div class="row">
+      <label>Max Blur (far)</label>
+      <span class="val" id="maxBlurVal">28</span>
+    </div>
+    <input type="range" id="maxBlur" min="0" max="60" value="28">
+    <div class="row">
+      <label>Near Blur (foreground)</label>
+      <span class="val" id="nearBlurVal">8</span>
+    </div>
+    <input type="range" id="nearBlur" min="0" max="30" value="8">
+    <div class="row">
+      <label>Transition Smoothness</label>
+      <span class="val" id="transVal">60%</span>
+    </div>
+    <input type="range" id="transSmooth" min="0" max="100" value="60">
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="section">
+    <button class="action-btn btn-apply" id="btnApply">⚙️ Apply Depth of Field</button>
+    <button class="action-btn btn-secondary" id="btnCompare">◀▶ Compare</button>
+    <button class="action-btn btn-download" id="btnDownload">↓ Download Result</button>
+  </div>
+</div>
+
+<!-- CANVAS AREA -->
+<div class="canvas-area">
+  <div class="toolbar">
+    <button class="tb-btn primary" id="btnOpen">📁 Open Photo</button>
+    <button class="tb-btn" id="btnShowMap">Show Depth Map</button>
+    <button class="tb-btn" id="btnShowPhoto">Show Photo</button>
+    <span class="status" id="statusText">Open a photo to begin</span>
+  </div>
+
+  <div class="canvas-wrapper" id="canvasWrapper">
+    <div id="dropzone">
+      <span class="icon">📷</span>
+      <span>Drop a photo here or click Open</span>
+      <span style="font-size:0.8em;color:#333">JPG · PNG · WebP</span>
+    </div>
+
+    <div class="canvas-stack" id="canvasStack">
+      <canvas id="photoCanvas"></canvas>
+      <canvas id="depthCanvas"></canvas>
+    </div>
+
+    <canvas id="resultCanvas"></canvas>
+
+    <div class="compare-wrap" id="compareWrap">
+      <canvas id="beforeCanvas"></canvas>
+      <canvas id="afterCanvas" style="position:absolute;top:0;left:0;clip-path:inset(0 50% 0 0)"></canvas>
+      <div id="compareSlider"></div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span id="imgInfo">No image loaded</span>
+    <span>Bokeh Studio Pro — Editorial Edition — Free Forever</span>
+  </div>
+</div>
+
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script>
+// ── STATE ────────────────────────────────────────────────
+const state = {
+  image: null,
+  imgW: 0, imgH: 0,
+  scale: 1,
+  painting: false,
+  erasing: false,
+  brushSize: 40,
+  brushSoft: 80,
+  currentDepth: 0,   // 0=black=far, 255=white=near
+  maxBlur: 28,
+  nearBlur: 8,
+  transSmooth: 60,
+  mode: 'edit',      // edit | result | compare
+};
+
+// ── CANVASES ─────────────────────────────────────────────
+const photoCanvas  = document.getElementById('photoCanvas');
+const depthCanvas  = document.getElementById('depthCanvas');
+const resultCanvas = document.getElementById('resultCanvas');
+const beforeCanvas = document.getElementById('beforeCanvas');
+const afterCanvas  = document.getElementById('afterCanvas');
+
+const photoCtx  = photoCanvas.getContext('2d');
+const depthCtx  = depthCanvas.getContext('2d');
+const resultCtx = resultCanvas.getContext('2d');
+const beforeCtx = beforeCanvas.getContext('2d');
+const afterCtx  = afterCanvas.getContext('2d');
+
+// ── DEPTH PALETTE ────────────────────────────────────────
+const depthLevels = [
+  { label:'Far',    v:0,   bg:'#000000' },
+  { label:'Deep',   v:64,  bg:'#404040' },
+  { label:'Mid',    v:128, bg:'#808080' },
+  { label:'Near',   v:192, bg:'#c0c0c0' },
+  { label:'Close',  v:255, bg:'#ffffff' },
+];
+
+const palette = document.getElementById('depthPalette');
+depthLevels.forEach(d => {
+  const sw = document.createElement('div');
+  sw.className = 'depth-swatch' + (d.v === 0 ? ' active' : '');
+  sw.style.background = d.bg;
+  sw.innerHTML = `<span>${d.label}</span>`;
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.depth-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    state.currentDepth = d.v;
+    document.getElementById('btnErase').classList.remove('active');
+    document.getElementById('btnPaint').classList.add('active');
+    state.erasing = false;
+  });
+  palette.appendChild(sw);
+});
+
+// ── LENS PRESETS ─────────────────────────────────────────
+document.querySelectorAll('.lens-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lens-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const blur = parseInt(btn.dataset.blur);
+    const edge = parseInt(btn.dataset.edge);
+    if (blur > 0) {
+      document.getElementById('maxBlur').value = blur;
+      document.getElementById('transSmooth').value = edge;
+      updateSliderLabels();
+    }
+  });
+});
+
+// ── SLIDER LABELS ────────────────────────────────────────
+function updateSliderLabels() {
+  state.brushSize = parseInt(document.getElementById('brushSize').value);
+  state.brushSoft = parseInt(document.getElementById('brushSoft').value);
+  state.maxBlur   = parseInt(document.getElementById('maxBlur').value);
+  state.nearBlur  = parseInt(document.getElementById('nearBlur').value);
+  state.transSmooth = parseInt(document.getElementById('transSmooth').value);
+
+  document.getElementById('brushSizeVal').textContent = state.brushSize + 'px';
+  document.getElementById('brushSoftVal').textContent = state.brushSoft + '%';
+  document.getElementById('maxBlurVal').textContent   = state.maxBlur;
+  document.getElementById('nearBlurVal').textContent  = state.nearBlur;
+  document.getElementById('transVal').textContent     = state.transSmooth + '%';
+}
+
+['brushSize','brushSoft','maxBlur','nearBlur','transSmooth'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateSliderLabels);
+});
+
+// ── FILE OPEN ────────────────────────────────────────────
+document.getElementById('btnOpen').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) loadImage(e.target.files[0]);
+});
+
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('click', () => document.getElementById('fileInput').click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('over');
+  if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+});
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      state.image = img;
+      state.imgW  = img.width;
+      state.imgH  = img.height;
+      fitToCanvas();
+      dropzone.style.display = 'none';
+      document.getElementById('canvasStack').style.display = 'block';
+      resultCanvas.style.display = 'none';
+      document.getElementById('compareWrap').style.display = 'none';
+      document.getElementById('imgInfo').textContent = `${file.name} — ${img.width}×${img.height}`;
+      document.getElementById('statusText').textContent = 'Paint your depth map — white = near, black = far';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fitToCanvas() {
+  const wrapper = document.getElementById('canvasWrapper');
+  const maxW = wrapper.clientWidth  - 40;
+  const maxH = wrapper.clientHeight - 40;
+  state.scale = Math.min(1, maxW / state.imgW, maxH / state.imgH);
+  const w = Math.round(state.imgW * state.scale);
+  const h = Math.round(state.imgH * state.scale);
+
+  [photoCanvas, depthCanvas].forEach(c => {
+    c.width = w; c.height = h;
+  });
+  resultCanvas.width = state.imgW; resultCanvas.height = state.imgH;
+  beforeCanvas.width = w; beforeCanvas.height = h;
+  afterCanvas.width  = w; afterCanvas.height  = h;
+
+  photoCtx.drawImage(state.image, 0, 0, w, h);
+  depthCtx.clearRect(0, 0, w, h);
+}
+
+// ── PAINTING ─────────────────────────────────────────────
+depthCanvas.addEventListener('mousedown', e => { state.painting = true; paint(e); });
+depthCanvas.addEventListener('mousemove', e => { if (state.painting) paint(e); });
+depthCanvas.addEventListener('mouseup',   () => { state.painting = false; });
+depthCanvas.addEventListener('mouseleave',() => { state.painting = false; });
+
+depthCanvas.addEventListener('touchstart', e => { e.preventDefault(); state.painting = true; paint(e.touches[0]); });
+depthCanvas.addEventListener('touchmove',  e => { e.preventDefault(); if (state.painting) paint(e.touches[0]); });
+depthCanvas.addEventListener('touchend',   () => { state.painting = false; });
+
+function paint(e) {
+  const rect = depthCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const r = state.brushSize * state.scale;
+  const soft = state.brushSoft / 100;
+
+  const grad = depthCtx.createRadialGradient(x, y, 0, x, y, r);
+
+  if (state.erasing) {
+    depthCtx.globalCompositeOperation = 'destination-out';
+    grad.addColorStop(0,    `rgba(0,0,0,${1})`);
+    grad.addColorStop(soft, `rgba(0,0,0,${0.5})`);
+    grad.addColorStop(1,    `rgba(0,0,0,0)`);
+  } else {
+    depthCtx.globalCompositeOperation = 'source-over';
+    const v = state.currentDepth;
+    grad.addColorStop(0,    `rgba(${v},${v},${v},0.9)`);
+    grad.addColorStop(soft, `rgba(${v},${v},${v},0.4)`);
+    grad.addColorStop(1,    `rgba(${v},${v},${v},0)`);
+  }
+
+  depthCtx.fillStyle = grad;
+  depthCtx.beginPath();
+  depthCtx.arc(x, y, r, 0, Math.PI * 2);
+  depthCtx.fill();
+  depthCtx.globalCompositeOperation = 'source-over';
+}
+
+// ── TOOL BUTTONS ─────────────────────────────────────────
+document.getElementById('btnPaint').addEventListener('click', () => {
+  state.erasing = false;
+  document.getElementById('btnPaint').classList.add('active');
+  document.getElementById('btnErase').classList.remove('active');
+});
+
+document.getElementById('btnErase').addEventListener('click', () => {
+  state.erasing = true;
+  document.getElementById('btnErase').classList.add('active');
+  document.getElementById('btnPaint').classList.remove('active');
+});
+
+document.getElementById('btnClearMap').addEventListener('click', () => {
+  depthCtx.clearRect(0, 0, depthCanvas.width, depthCanvas.height);
+});
+
+document.getElementById('btnShowMap').addEventListener('click', () => {
+  depthCanvas.style.opacity = '1';
+  photoCanvas.style.opacity = '0.3';
+});
+
+document.getElementById('btnShowPhoto').addEventListener('click', () => {
+  depthCanvas.style.opacity = '0.55';
+  photoCanvas.style.opacity = '1';
+});
+
+// ── APPLY BLUR ───────────────────────────────────────────
+document.getElementById('btnApply').addEventListener('click', applyDepthBlur);
+
+async function applyDepthBlur() {
+  if (!state.image) return;
+  document.getElementById('statusText').textContent = 'Applying depth of field...';
+
+  await new Promise(r => setTimeout(r, 20));
+
+  const W = state.imgW, H = state.imgH;
+  resultCanvas.width = W; resultCanvas.height = H;
+
+  // Draw full-res original
+  resultCtx.drawImage(state.image, 0, 0, W, H);
+  const originalData = resultCtx.getImageData(0, 0, W, H);
+
+  // Get depth map at display size then scale to full res
+  const dw = depthCanvas.width, dh = depthCanvas.height;
+  const depthData = depthCtx.getImageData(0, 0, dw, dh).data;
+
+  // Build full-res depth array by nearest-neighbor scaling
+  const depthFull = new Float32Array(W * H);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const sx = Math.round(x * dw / W);
+      const sy = Math.round(y * dh / H);
+      const idx = (sy * dw + sx) * 4;
+      const alpha = depthData[idx + 3] / 255;
+      const gray  = depthData[idx] / 255;  // 0=far/black, 1=near/white
+      depthFull[y * W + x] = alpha > 0.01 ? gray : 0.5; // unpainted = mid
+    }
+  }
+
+  // Smooth depth map
+  const smooth = state.transSmooth / 100;
+  const smoothed = gaussianBlurDepth(depthFull, W, H, Math.round(smooth * 30 + 2));
+
+  // Apply variable blur per pixel
+  const result = new Uint8ClampedArray(originalData.data);
+  const maxB = state.maxBlur;
+  const nearB = state.nearBlur;
+
+  // We do multi-pass: create blurred versions at different radii
+  const blurPasses = 8;
+  const blurredVersions = [];
+  for (let p = 0; p < blurPasses; p++) {
+    const radius = Math.round((p / (blurPasses - 1)) * maxB);
+    if (radius === 0) {
+      blurredVersions.push(new Uint8ClampedArray(originalData.data));
+    } else {
+      blurredVersions.push(gaussianBlur(originalData.data, W, H, radius));
+    }
+  }
+
+  // Also near blur pass
+  const nearBlurred = nearB > 0 ? gaussianBlur(originalData.data, W, H, nearB) : null;
+
+  for (let i = 0; i < W * H; i++) {
+    const depth = smoothed[i]; // 0=far(black), 1=near(white)
+    let blurLevel, srcData;
+
+    if (depth >= 0.5) {
+      // Near side — user defined as foreground/close
+      const t = (depth - 0.5) * 2; // 0..1 within near range
+      if (nearB > 0 && nearBlurred) {
+        // Slight near blur for foreground
+        const px = i * 4;
+        const orig = originalData.data;
+        const near = nearBlurred;
+        result[px]   = orig[px]   * t + near[px]   * (1-t);
+        result[px+1] = orig[px+1] * t + near[px+1] * (1-t);
+        result[px+2] = orig[px+2] * t + near[px+2] * (1-t);
+        result[px+3] = 255;
+      } else {
+        const px = i * 4;
+        result[px]   = originalData.data[px];
+        result[px+1] = originalData.data[px+1];
+        result[px+2] = originalData.data[px+2];
+        result[px+3] = 255;
+      }
+    } else {
+      // Far side — blur increases as depth → 0
+      const t = 1 - depth * 2; // 0 at mid, 1 at far
+      const passIdx = Math.min(blurPasses - 1, Math.round(t * (blurPasses - 1)));
+      const src = blurredVersions[passIdx];
+      const px = i * 4;
+      result[px]   = src[px];
+      result[px+1] = src[px+1];
+      result[px+2] = src[px+2];
+      result[px+3] = 255;
+    }
+  }
+
+  const imgData = new ImageData(result, W, H);
+  resultCtx.putImageData(imgData, 0, 0);
+
+  // Show result
+  document.getElementById('canvasStack').style.display = 'none';
+  resultCanvas.style.display = 'block';
+  document.getElementById('compareWrap').style.display = 'none';
+
+  // Prep compare
+  beforeCtx.drawImage(state.image, 0, 0, beforeCanvas.width, beforeCanvas.height);
+  afterCtx.drawImage(resultCanvas, 0, 0, afterCanvas.width, afterCanvas.height);
+
+  document.getElementById('statusText').textContent = 'Done! Click Compare to see before/after.';
+}
+
+// ── GAUSSIAN BLUR ────────────────────────────────────────
+function gaussianBlur(data, w, h, radius) {
+  if (radius < 1) return new Uint8ClampedArray(data);
+  const out = new Uint8ClampedArray(data.length);
+  const sigma = radius / 2;
+  const kernelSize = radius * 2 + 1;
+  const kernel = [];
+  let sum = 0;
+  for (let i = 0; i < kernelSize; i++) {
+    const x = i - radius;
+    const v = Math.exp(-(x*x) / (2*sigma*sigma));
+    kernel.push(v);
+    sum += v;
+  }
+  for (let i = 0; i < kernelSize; i++) kernel[i] /= sum;
+
+  const tmp = new Float32Array(data.length);
+  // Horizontal
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let r=0,g=0,b=0;
+      for (let k = 0; k < kernelSize; k++) {
+        const sx = Math.min(w-1, Math.max(0, x + k - radius));
+        const idx = (y*w + sx)*4;
+        r += data[idx]   * kernel[k];
+        g += data[idx+1] * kernel[k];
+        b += data[idx+2] * kernel[k];
+      }
+      const oi = (y*w+x)*4;
+      tmp[oi]=r; tmp[oi+1]=g; tmp[oi+2]=b; tmp[oi+3]=255;
+    }
+  }
+  // Vertical
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let r=0,g=0,b=0;
+      for (let k = 0; k < kernelSize; k++) {
+        const sy = Math.min(h-1, Math.max(0, y + k - radius));
+        const idx = (sy*w+x)*4;
+        r += tmp[idx]   * kernel[k];
+        g += tmp[idx+1] * kernel[k];
+        b += tmp[idx+2] * kernel[k];
+      }
+      const oi = (y*w+x)*4;
+      out[oi]=r; out[oi+1]=g; out[oi+2]=b; out[oi+3]=255;
+    }
+  }
+  return out;
+}
+
+function gaussianBlurDepth(data, w, h, radius) {
+  if (radius < 1) return data;
+  const out = new Float32Array(data.length);
+  const tmp = new Float32Array(data.length);
+  const sigma = radius / 2;
+  const kernelSize = radius * 2 + 1;
+  const kernel = [];
+  let sum = 0;
+  for (let i = 0; i < kernelSize; i++) {
+    const x = i - radius;
+    const v = Math.exp(-(x*x) / (2*sigma*sigma));
+    kernel.push(v); sum += v;
+  }
+  for (let i = 0; i < kernelSize; i++) kernel[i] /= sum;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let v = 0;
+      for (let k = 0; k < kernelSize; k++) {
+        const sx = Math.min(w-1, Math.max(0, x+k-radius));
+        v += data[y*w+sx] * kernel[k];
+      }
+      tmp[y*w+x] = v;
+    }
+  }
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let v = 0;
+      for (let k = 0; k < kernelSize; k++) {
+        const sy = Math.min(h-1, Math.max(0, y+k-radius));
+        v += tmp[sy*w+x] * kernel[k];
+      }
+      out[y*w+x] = v;
+    }
+  }
+  return out;
+}
+
+// ── COMPARE ──────────────────────────────────────────────
+let comparing = false;
+document.getElementById('btnCompare').addEventListener('click', () => {
+  if (!state.image) return;
+  comparing = !comparing;
+  if (comparing) {
+    document.getElementById('canvasStack').style.display = 'none';
+    resultCanvas.style.display = 'none';
+    document.getElementById('compareWrap').style.display = 'block';
+    document.getElementById('compareWrap').style.width = beforeCanvas.width + 'px';
+    document.getElementById('compareWrap').style.height = beforeCanvas.height + 'px';
+    document.getElementById('compareWrap').style.position = 'relative';
+  } else {
+    document.getElementById('compareWrap').style.display = 'none';
+    resultCanvas.style.display = 'block';
+  }
+});
+
+const slider = document.getElementById('compareSlider');
+let dragging = false;
+slider.addEventListener('mousedown', () => dragging = true);
+document.addEventListener('mouseup', () => dragging = false);
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const wrap = document.getElementById('compareWrap');
+  const rect = wrap.getBoundingClientRect();
+  let x = Math.max(0, Math.min(wrap.clientWidth, e.clientX - rect.left));
+  slider.style.left = x + 'px';
+  const pct = (x / wrap.clientWidth * 100).toFixed(1);
+  afterCanvas.style.clipPath = `inset(0 ${100-pct}% 0 0)`;
+});
+
+// ── DOWNLOAD ─────────────────────────────────────────────
+document.getElementById('btnDownload').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'bokeh_editorial_result.jpg';
+  link.href = resultCanvas.toDataURL('image/jpeg', 0.95);
+  link.click();
+});
+
+updateSliderLabels();
+</script>
+</body>
+</html>
