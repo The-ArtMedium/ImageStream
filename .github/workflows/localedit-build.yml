@@ -1,0 +1,113 @@
+name: Build LocalEdit
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'LocalEdit/**'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalEdit
+          pip install -r Requirements.txt
+          pip install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalEdit
+          pyinstaller --onefile --windowed --name LocalEdit Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalEdit/dist
+          Compress-Archive -Path LocalEdit.exe -DestinationPath LocalEdit-Windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalEdit-Windows
+          path: LocalEdit/dist/LocalEdit-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalEdit
+          pip3 install -r Requirements.txt
+          pip3 install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalEdit
+          pyinstaller --onefile --windowed --name LocalEdit Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalEdit/dist
+          zip -r LocalEdit-Mac.zip LocalEdit.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalEdit-Mac
+          path: LocalEdit/dist/LocalEdit-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip ffmpeg
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalEdit
+          pip3 install -r Requirements.txt
+          pip3 install pyinstaller PyQt5
+
+      - name: Build executable
+        run: |
+          cd LocalEdit
+          pyinstaller --onefile --name LocalEdit Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalEdit/dist
+          zip LocalEdit-Linux.zip LocalEdit
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalEdit-Linux
+          path: LocalEdit/dist/LocalEdit-Linux.zip
