@@ -1,0 +1,112 @@
+
+name: Release LocalRAW
+
+on:
+  push:
+    tags:
+      - 'localraw-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalRAW
+          pip install -r requirements.txt
+          pip install pyinstaller PySide6
+
+      - name: Build executable
+        run: |
+          cd LocalRAW
+          pyinstaller --onefile --windowed --name LocalRAW app/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalRAW/dist
+          Compress-Archive -Path LocalRAW.exe -DestinationPath LocalRAW-${{ github.ref_name }}-Windows.zip
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalRAW/dist/LocalRAW-${{ github.ref_name }}-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalRAW
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller PySide6
+
+      - name: Build executable
+        run: |
+          cd LocalRAW
+          pyinstaller --onefile --windowed --name LocalRAW app/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalRAW/dist
+          zip -r LocalRAW-${{ github.ref_name }}-Mac.zip LocalRAW.app
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalRAW/dist/LocalRAW-${{ github.ref_name }}-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip libraw-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalRAW
+          pip3 install -r requirements.txt
+          pip3 install pyinstaller PySide6
+
+      - name: Build executable
+        run: |
+          cd LocalRAW
+          pyinstaller --onefile --name LocalRAW app/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalRAW/dist
+          zip LocalRAW-${{ github.ref_name }}-Linux.zip LocalRAW
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalRAW/dist/LocalRAW-${{ github.ref_name }}-Linux.zip
