@@ -26,7 +26,7 @@ jobs:
         run: |
           cd LocalEdit
           pip install -r Requirements.txt
-          pip install pyinstaller PyQt5
+          pip install pyinstaller PyQt5 moviepy
 
       - name: Build executable
         run: |
@@ -57,7 +57,7 @@ jobs:
         run: |
           cd LocalEdit
           pip3 install -r Requirements.txt
-          pip3 install pyinstaller PyQt5
+          pip3 install pyinstaller PyQt5 moviepy
 
       - name: Build executable
         run: |
@@ -93,7 +93,7 @@ jobs:
         run: |
           cd LocalEdit
           pip3 install -r Requirements.txt
-          pip3 install pyinstaller PyQt5
+          pip3 install pyinstaller PyQt5 moviepy
 
       - name: Build executable
         run: |
