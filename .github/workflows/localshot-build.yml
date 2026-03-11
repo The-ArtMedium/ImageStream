@@ -11,6 +11,9 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
       - uses: actions/checkout@v4
 
       - name: Set up Python
