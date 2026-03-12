@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bokeh Studio Pro — Creative Edition</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #f0f0f0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "top    top    top"
+    "left   canvas right"
+    "bottom bottom bottom";
+}
+
+/* ══ TOP ══ */
+.top {
+  grid-area: top;
+  background: #141414;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 0 8px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.top::-webkit-scrollbar { height: 0; }
+
+.app-title {
+  font-size: 0.9em;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  padding-right: 10px;
+  border-right: 1px solid #2a2a2a;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.app-title span { color: #f5a623; }
+
+.style-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: transparent;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  min-width: 52px;
+  height: 44px;
+}
+.style-btn:hover { background: #1e1e1e; }
+.style-btn.active { border-color: #f5a623; background: #f5a62315; }
+.style-btn .icon { font-size: 1.3em; line-height: 1; }
+.style-btn .lbl { font-size: 0.58em; color: #ccc; font-weight: 600; white-space: nowrap; }
+.style-btn.active .lbl { color: #f5a623; }
+
+.top-spacer { flex: 1; }
+
+.tb-open {
+  background: #f5a623;
+  color: #0a0a0a;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 0.85em;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.tb-open:hover { background: #ff6b35; }
+
+/* ══ LEFT ══ */
+.left {
+  grid-area: left;
+  background: #0f0f0f;
+  border-right: 1px solid #1a1a1a;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 6px;
+  overflow-y: auto;
+}
+.left::-webkit-scrollbar { width: 0; }
+
+.side-label {
+  font-size: 0.48em;
+  color: #555;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.color-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+  transition: border-color 0.15s, transform 0.1s;
+}
+.color-dot:hover { transform: scale(1.15); }
+.color-dot.active { border-color: #fff; box-shadow: 0 0 0 1px #f5a623; }
+
+.dot-divider {
+  width: 30px; height: 1px; background: #222; flex-shrink: 0;
+}
+
+/* ══ CANVAS ══ */
+.canvas-wrap {
+  grid-area: canvas;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080808;
+}
+
+#dropzone {
+  position: absolute; inset: 0;
+  display: flex; align-items: center;
+  justify-content: center; flex-direction: column;
+  gap: 10px; color: #bbb; cursor: pointer;
+  border: 2px dashed #222; margin: 16px;
+  border-radius: 14px; transition: all 0.2s;
+}
+#dropzone:hover, #dropzone.over { border-color: #f5a623; color: #f5a623; }
+#dropzone .dz-icon { font-size: 2.8em; }
+#dropzone p { font-size: 1em; font-weight: 500; }
+#dropzone small { font-size: 0.8em; color: #555; }
+
+.canvas-stack { position: relative; display: none; }
+#photoCanvas { display: block; border-radius: 3px; }
+#maskCanvas {
+  position: absolute; top:0; left:0;
+  border-radius: 3px; cursor: crosshair; opacity: 0.55;
+}
+#resultCanvas { display: none; border-radius: 3px; }
+
+.compare-wrap { position: relative; display: none; user-select: none; }
+#compareSlider {
+  position: absolute; top:0; left:50%;
+  width: 3px; height: 100%; background: #f5a623;
+  cursor: ew-resize; transform: translateX(-50%);
+}
+#compareSlider::after {
+  content: '◀▶'; position: absolute; top:50%; left:50%;
+  transform: translate(-50%,-50%);
+  background: #f5a623; color: #0a0a0a;
+  padding: 4px 8px; border-radius: 20px;
+  font-size: 0.7em; font-weight: 700;
+}
+#afterCanvas { position:absolute; top:0; left:0; clip-path:inset(0 50% 0 0); }
+
+/* ══ RIGHT ══ */
+.right {
+  grid-area: right;
+  background: #0f0f0f;
+  border-left: 1px solid #1a1a1a;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 6px;
+  overflow-y: auto;
+}
+.right::-webkit-scrollbar { width: 0; }
+
+.mask-btn {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 1.3em;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  background: #181818;
+}
+.mask-btn:hover { background: #222; }
+.mask-keep.active  { border-color: #52b788; background: #0f2010; }
+.mask-replace.active { border-color: #e07070; background: #200f0f; }
+
+.mask-label {
+  font-size: 0.48em;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.mask-keep-label  { color: #52b788; }
+.mask-rep-label   { color: #e07070; }
+
+/* ══ BOTTOM ══ */
+.bottom {
+  grid-area: bottom;
+  background: #111;
+  border-top: 1px solid #1e1e1e;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Sliders row */
+.sliders-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.sl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sl label {
+  font-size: 0.82em;
+  color: #eee;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sl .val {
+  font-size: 0.82em;
+  color: #f5a623;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: right;
+}
+
+input[type=range] {
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+  border-radius: 3px;
+  background: #2a2a2a;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #f5a623;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(245,166,35,0.5);
+}
+
+/* Actions row */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.act-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 7px;
+  border: none;
+  font-size: 0.82em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+.btn-apply   { background: #f5a623; color: #0a0a0a; }
+.btn-apply:hover { background: #ff6b35; }
+.btn-compare { background: #1e1e1e; color: #eee; border: 1px solid #333; }
+.btn-compare:hover { border-color: #f5a623; color: #f5a623; }
+.btn-clear   { background: #1e1e1e; color: #ddd; border: 1px solid #2a2a2a; }
+.btn-clear:hover { border-color: #666; }
+.btn-dl      { background: #0f2010; color: #52b788; border: 1px solid #1a3a1a; }
+.btn-dl:hover { background: #132813; }
+
+#fileInput { display:none; }
+</style>
+</head>
+<body>
+
+<!-- TOP -->
+<div class="top">
+  <div class="app-title">Bokeh <span>Creative</span></div>
+
+  <div class="style-btn active" data-style="bokeh-warm"><span class="icon">🟠</span><span class="lbl">Warm</span></div>
+  <div class="style-btn" data-style="bokeh-cool"><span class="icon">🔵</span><span class="lbl">Cool</span></div>
+  <div class="style-btn" data-style="bokeh-color"><span class="icon">✨</span><span class="lbl">Color</span></div>
+  <div class="style-btn" data-style="blur-dreamy"><span class="icon">🌙</span><span class="lbl">Dreamy</span></div>
+  <div class="style-btn" data-style="blur-heavy"><span class="icon">💨</span><span class="lbl">Heavy</span></div>
+  <div class="style-btn" data-style="gradient-sunset"><span class="icon">🌅</span><span class="lbl">Sunset</span></div>
+  <div class="style-btn" data-style="gradient-night"><span class="icon">🌃</span><span class="lbl">Night</span></div>
+  <div class="style-btn" data-style="solid-black"><span class="icon">⬛</span><span class="lbl">Dark</span></div>
+  <div class="style-btn" data-style="solid-white"><span class="icon">⬜</span><span class="lbl">Studio</span></div>
+
+  <div class="top-spacer"></div>
+  <button class="tb-open" id="btnOpen">📁 Open</button>
+</div>
+
+<!-- LEFT: bokeh colors -->
+<div class="left">
+  <div class="side-label">Color</div>
+  <div class="color-dot active" data-color="#ffaa44" style="background:#ffaa44"></div>
+  <div class="color-dot" data-color="#ff6644" style="background:#ff6644"></div>
+  <div class="color-dot" data-color="#44aaff" style="background:#44aaff"></div>
+  <div class="color-dot" data-color="#aa44ff" style="background:#aa44ff"></div>
+  <div class="color-dot" data-color="#44ffaa" style="background:#44ffaa"></div>
+  <div class="color-dot" data-color="#ff44aa" style="background:#ff44aa"></div>
+  <div class="color-dot" data-color="#ffffff" style="background:#ddd"></div>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-wrap" id="canvasWrap">
+  <div id="dropzone">
+    <span class="dz-icon">📷</span>
+    <p>Drop photo here or tap Open</p>
+    <small>JPG · PNG · WebP</small>
+  </div>
+
+  <div class="canvas-stack" id="canvasStack">
+    <canvas id="photoCanvas"></canvas>
+    <canvas id="maskCanvas"></canvas>
+  </div>
+
+  <canvas id="resultCanvas"></canvas>
+
+  <div class="compare-wrap" id="compareWrap">
+    <canvas id="beforeCanvas"></canvas>
+    <canvas id="afterCanvas"></canvas>
+    <div id="compareSlider"></div>
+  </div>
+</div>
+
+<!-- RIGHT: mask tools -->
+<div class="right">
+  <div class="side-label">Mask</div>
+
+  <div class="mask-btn mask-keep active" id="btnKeep" title="Keep subject">✅</div>
+  <div class="mask-label mask-keep-label">Keep</div>
+
+  <div class="dot-divider" style="width:30px;height:1px;background:#222;"></div>
+
+  <div class="mask-btn mask-replace" id="btnReplace" title="Replace background">🎨</div>
+  <div class="mask-label mask-rep-label">BG</div>
+
+  <div class="dot-divider" style="width:30px;height:1px;background:#222;margin-top:4px;"></div>
+
+  <div class="mask-btn btn-clear-small" id="btnClear" title="Clear mask" style="background:#181818;border:2px solid transparent;">🧹</div>
+  <div class="mask-label" style="color:#888;">Clear</div>
+</div>
+
+<!-- BOTTOM: sliders + actions -->
+<div class="bottom">
+  <div class="sliders-row">
+    <div class="sl">
+      <label>Count</label>
+      <input type="range" id="bokehCount" min="10" max="200" value="60">
+      <span class="val" id="bokehCountVal">60</span>
+    </div>
+    <div class="sl">
+      <label>Size</label>
+      <input type="range" id="bokehSize" min="10" max="120" value="40">
+      <span class="val" id="bokehSizeVal">40</span>
+    </div>
+    <div class="sl">
+      <label>Glow</label>
+      <input type="range" id="bokehGlow" min="0" max="100" value="70">
+      <span class="val" id="bokehGlowVal">70%</span>
+    </div>
+    <div class="sl">
+      <label>Brush</label>
+      <input type="range" id="brushSize" min="5" max="120" value="30">
+      <span class="val" id="brushSizeVal">30</span>
+    </div>
+    <div class="sl">
+      <label>Blend</label>
+      <input type="range" id="blendEdge" min="0" max="100" value="40">
+      <span class="val" id="blendVal">40%</span>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="act-btn btn-apply"   id="btnApply">✨ Apply</button>
+    <button class="act-btn btn-compare" id="btnCompare">◀▶ Compare</button>
+    <button class="act-btn btn-dl"      id="btnDownload">↓ Download</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script>
+const state = {
+  image:null, imgW:0, imgH:0, scale:1,
+  painting:false, maskMode:'keep',
+  brushSize:30, bgStyle:'bokeh-warm',
+  bokehColor:'#ffaa44',
+  bokehCount:60, bokehSize:40, bokehGlow:70, blendEdge:40,
+};
+
+const photoCanvas  = document.getElementById('photoCanvas');
+const maskCanvas   = document.getElementById('maskCanvas');
+const resultCanvas = document.getElementById('resultCanvas');
+const beforeCanvas = document.getElementById('beforeCanvas');
+const afterCanvas  = document.getElementById('afterCanvas');
+const photoCtx = photoCanvas.getContext('2d');
+const maskCtx  = maskCanvas.getContext('2d');
+const resultCtx= resultCanvas.getContext('2d');
+const beforeCtx= beforeCanvas.getContext('2d');
+const afterCtx = afterCanvas.getContext('2d');
+
+// Style buttons
+document.querySelectorAll('.style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.bgStyle = btn.dataset.style;
+  });
+});
+
+// Color dots
+document.querySelectorAll('.color-dot').forEach(d => {
+  d.addEventListener('click', () => {
+    document.querySelectorAll('.color-dot').forEach(x => x.classList.remove('active'));
+    d.classList.add('active');
+    state.bokehColor = d.dataset.color;
+  });
+});
+
+// Sliders
+function updateSliders() {
+  state.bokehCount = parseInt(document.getElementById('bokehCount').value);
+  state.bokehSize  = parseInt(document.getElementById('bokehSize').value);
+  state.bokehGlow  = parseInt(document.getElementById('bokehGlow').value);
+  state.brushSize  = parseInt(document.getElementById('brushSize').value);
+  state.blendEdge  = parseInt(document.getElementById('blendEdge').value);
+  document.getElementById('bokehCountVal').textContent = state.bokehCount;
+  document.getElementById('bokehSizeVal').textContent  = state.bokehSize;
+  document.getElementById('bokehGlowVal').textContent  = state.bokehGlow + '%';
+  document.getElementById('brushSizeVal').textContent  = state.brushSize;
+  document.getElementById('blendVal').textContent      = state.blendEdge + '%';
+}
+['bokehCount','bokehSize','bokehGlow','brushSize','blendEdge'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateSliders)
+);
+
+// Mask mode
+document.getElementById('btnKeep').addEventListener('click', () => {
+  state.maskMode='keep';
+  document.getElementById('btnKeep').classList.add('active');
+  document.getElementById('btnReplace').classList.remove('active');
+});
+document.getElementById('btnReplace').addEventListener('click', () => {
+  state.maskMode='replace';
+  document.getElementById('btnReplace').classList.add('active');
+  document.getElementById('btnKeep').classList.remove('active');
+});
+document.getElementById('btnClear').addEventListener('click', () =>
+  maskCtx.clearRect(0,0,maskCanvas.width,maskCanvas.height)
+);
+
+// Open
+document.getElementById('btnOpen').addEventListener('click', () =>
+  document.getElementById('fileInput').click()
+);
+document.getElementById('fileInput').addEventListener('change', e => {
+  if(e.target.files[0]) loadImage(e.target.files[0]);
+});
+
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('click', () => document.getElementById('fileInput').click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('over');
+  if(e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+});
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      state.image=img; state.imgW=img.width; state.imgH=img.height;
+      fitToCanvas();
+      dropzone.style.display='none';
+      document.getElementById('canvasStack').style.display='block';
+      resultCanvas.style.display='none';
+      document.getElementById('compareWrap').style.display='none';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fitToCanvas() {
+  const wrap = document.getElementById('canvasWrap');
+  const maxW = wrap.clientWidth - 8, maxH = wrap.clientHeight - 8;
+  state.scale = Math.min(1, maxW/state.imgW, maxH/state.imgH);
+  const w = Math.round(state.imgW * state.scale);
+  const h = Math.round(state.imgH * state.scale);
+  [photoCanvas, maskCanvas].forEach(c => { c.width=w; c.height=h; });
+  resultCanvas.width=state.imgW; resultCanvas.height=state.imgH;
+  beforeCanvas.width=w; beforeCanvas.height=h;
+  afterCanvas.width=w; afterCanvas.height=h;
+  photoCtx.drawImage(state.image,0,0,w,h);
+  maskCtx.clearRect(0,0,w,h);
+}
+
+// Paint
+maskCanvas.addEventListener('mousedown', e=>{state.painting=true;paint(e);});
+maskCanvas.addEventListener('mousemove', e=>{if(state.painting)paint(e);});
+maskCanvas.addEventListener('mouseup',   ()=>state.painting=false);
+maskCanvas.addEventListener('mouseleave',()=>state.painting=false);
+maskCanvas.addEventListener('touchstart',e=>{e.preventDefault();state.painting=true;paint(e.touches[0]);},{passive:false});
+maskCanvas.addEventListener('touchmove', e=>{e.preventDefault();if(state.painting)paint(e.touches[0]);},{passive:false});
+maskCanvas.addEventListener('touchend',  ()=>state.painting=false);
+
+function paint(e) {
+  const rect=maskCanvas.getBoundingClientRect();
+  const x=e.clientX-rect.left, y=e.clientY-rect.top;
+  const r=state.brushSize*state.scale;
+  const grad=maskCtx.createRadialGradient(x,y,0,x,y,r);
+  const col=state.maskMode==='keep'?'80,200,120':'220,80,80';
+  grad.addColorStop(0,   `rgba(${col},0.85)`);
+  grad.addColorStop(0.6, `rgba(${col},0.4)`);
+  grad.addColorStop(1,   `rgba(${col},0)`);
+  maskCtx.fillStyle=grad;
+  maskCtx.beginPath(); maskCtx.arc(x,y,r,0,Math.PI*2); maskCtx.fill();
+}
+
+// Apply
+document.getElementById('btnApply').addEventListener('click', applyCreative);
+
+function applyCreative() {
+  if(!state.image) return;
+  const W=state.imgW, H=state.imgH;
+  resultCanvas.width=W; resultCanvas.height=H;
+
+  const bgC=document.createElement('canvas');
+  bgC.width=W; bgC.height=H;
+  drawBackground(bgC.getContext('2d'),W,H);
+
+  const dw=maskCanvas.width, dh=maskCanvas.height;
+  const md=maskCtx.getImageData(0,0,dw,dh).data;
+  const km=new Float32Array(W*H);
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+    const sx=Math.round(x*dw/W), sy=Math.round(y*dh/H);
+    const i=(sy*dw+sx)*4;
+    km[y*W+x]=md[i+3]<10?0.5:(md[i+1]>md[i]?1:0);
+  }
+
+  const sm=gaussianBlurF(km,W,H,Math.round(state.blendEdge/100*30+2));
+  resultCtx.drawImage(state.image,0,0,W,H);
+  const od=resultCtx.getImageData(0,0,W,H);
+  const bd=bgC.getContext('2d').getImageData(0,0,W,H);
+  const res=new Uint8ClampedArray(od.data.length);
+  for(let i=0;i<W*H;i++){
+    const k=sm[i],p=i*4;
+    res[p]  =od.data[p]  *k+bd.data[p]  *(1-k);
+    res[p+1]=od.data[p+1]*k+bd.data[p+1]*(1-k);
+    res[p+2]=od.data[p+2]*k+bd.data[p+2]*(1-k);
+    res[p+3]=255;
+  }
+  resultCtx.putImageData(new ImageData(res,W,H),0,0);
+  document.getElementById('canvasStack').style.display='none';
+  resultCanvas.style.display='block';
+  document.getElementById('compareWrap').style.display='none';
+  beforeCtx.drawImage(state.image,0,0,beforeCanvas.width,beforeCanvas.height);
+  afterCtx.drawImage(resultCanvas,0,0,afterCanvas.width,afterCanvas.height);
+}
+
+function drawBackground(ctx,W,H){
+  const s=state.bgStyle, c=state.bokehColor;
+  const gs={'bokeh-warm':['#0a0500','#1a0800'],'bokeh-cool':['#00050a','#000f1a'],
+    'bokeh-color':['#050008','#0f0020'],'blur-heavy':['#080808','#111'],
+    'blur-dreamy':['#0d0a14','#160f20'],'solid-black':['#000','#000'],
+    'solid-white':['#e8e8e8','#d0d0d0'],'gradient-sunset':['#8b1a1a','#c0602b'],
+    'gradient-night':['#0a0a2e','#16213e']};
+  const [c1,c2]=gs[s]||['#0a0a0a','#111'];
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,c1); g.addColorStop(1,c2);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  if(s.startsWith('bokeh')||s==='blur-dreamy'){
+    const cnt=state.bokehCount, mr=state.bokehSize*(W/800), gl=state.bokehGlow/100;
+    const hx=c.replace('#','');
+    const br=parseInt(hx.slice(0,2),16),bg_=parseInt(hx.slice(2,4),16),bb=parseInt(hx.slice(4,6),16);
+    for(let i=0;i<cnt;i++){
+      const x=Math.random()*W,y=Math.random()*H,r=(Math.random()*0.7+0.3)*mr;
+      const u=Math.random()>0.7;
+      const lr=u?Math.min(255,255-br+80):br,lg=u?Math.min(255,255-bg_+80):bg_,lb=u?Math.min(255,255-bb+80):bb;
+      const bg=ctx.createRadialGradient(x,y,0,x,y,r);
+      bg.addColorStop(0,`rgba(${lr},${lg},${lb},${gl*0.9})`);
+      bg.addColorStop(0.3,`rgba(${lr},${lg},${lb},${gl*0.5})`);
+      bg.addColorStop(1,`rgba(${lr},${lg},${lb},0)`);
+      ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      const cg=ctx.createRadialGradient(x,y,0,x,y,r*0.18);
+      cg.addColorStop(0,`rgba(255,255,255,${gl*0.5})`);
+      cg.addColorStop(1,`rgba(255,255,255,0)`);
+      ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(x,y,r*0.18,0,Math.PI*2); ctx.fill();
+    }
+  }
+}
+
+function gaussianBlurF(data,w,h,radius){
+  if(radius<1)return data;
+  const out=new Float32Array(data.length),tmp=new Float32Array(data.length);
+  const sigma=radius/2,ks=radius*2+1,kernel=[];let sum=0;
+  for(let i=0;i<ks;i++){const x=i-radius;const v=Math.exp(-(x*x)/(2*sigma*sigma));kernel.push(v);sum+=v;}
+  for(let i=0;i<ks;i++)kernel[i]/=sum;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=0;k<ks;k++){const sx=Math.min(w-1,Math.max(0,x+k-radius));v+=data[y*w+sx]*kernel[k];}tmp[y*w+x]=v;}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=0;k<ks;k++){const sy=Math.min(h-1,Math.max(0,y+k-radius));v+=tmp[sy*w+x]*kernel[k];}out[y*w+x]=v;}
+  return out;
+}
+
+// Compare
+let dragging=false;
+document.getElementById('btnCompare').addEventListener('click',()=>{
+  if(!state.image)return;
+  const cw=document.getElementById('compareWrap');
+  if(cw.style.display==='block'){
+    cw.style.display='none'; resultCanvas.style.display='block';
+  } else {
+    document.getElementById('canvasStack').style.display='none';
+    resultCanvas.style.display='none';
+    cw.style.display='block';
+  }
+});
+
+document.getElementById('compareSlider').addEventListener('mousedown',()=>dragging=true);
+document.addEventListener('mouseup',()=>dragging=false);
+document.addEventListener('mousemove',e=>{
+  if(!dragging)return;
+  const w=document.getElementById('compareWrap');
+  const r=w.getBoundingClientRect();
+  const x=Math.max(0,Math.min(w.clientWidth,e.clientX-r.left));
+  document.getElementById('compareSlider').style.left=x+'px';
+  afterCanvas.style.clipPath=`inset(0 ${(100-x/w.clientWidth*100).toFixed(1)}% 0 0)`;
+});
+
+document.getElementById('btnDownload').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.download='bokeh_creative_result.jpg';
+  a.href=resultCanvas.toDataURL('image/jpeg',0.95);
+  a.click();
+});
+
+updateSliders();
+</script>
+</body>
+</html>
