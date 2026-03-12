@@ -1,0 +1,110 @@
+name: Build FocusCheck
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'FocusCheck/**'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd FocusCheck
+          pip install opencv-python Pillow pyinstaller
+
+      - name: Build executable
+        run: |
+          cd FocusCheck
+          pyinstaller --onefile --windowed --name FocusCheck focus_check.py
+
+      - name: Package zip
+        run: |
+          cd FocusCheck/dist
+          Compress-Archive -Path FocusCheck.exe -DestinationPath FocusCheck-Windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FocusCheck-Windows
+          path: FocusCheck/dist/FocusCheck-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd FocusCheck
+          pip3 install opencv-python Pillow pyinstaller
+
+      - name: Build executable
+        run: |
+          cd FocusCheck
+          pyinstaller --onefile --windowed --name FocusCheck focus_check.py
+
+      - name: Package zip
+        run: |
+          cd FocusCheck/dist
+          zip -r FocusCheck-Mac.zip FocusCheck.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FocusCheck-Mac
+          path: FocusCheck/dist/FocusCheck-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-tk
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd FocusCheck
+          pip3 install opencv-python Pillow pyinstaller
+
+      - name: Build executable
+        run: |
+          cd FocusCheck
+          pyinstaller --onefile --name FocusCheck focus_check.py
+
+      - name: Package zip
+        run: |
+          cd FocusCheck/dist
+          zip FocusCheck-Linux.zip FocusCheck
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FocusCheck-Linux
+          path: FocusCheck/dist/FocusCheck-Linux.zip
