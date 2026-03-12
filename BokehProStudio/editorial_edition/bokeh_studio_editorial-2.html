@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bokeh Studio Pro — Editorial Edition</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #f0f0f0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "top    top    top"
+    "left   canvas right"
+    "bottom bottom bottom";
+}
+
+/* ══ TOP ══ */
+.top {
+  grid-area: top;
+  background: #141414;
+  border-bottom: 1px solid #222;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 0 8px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.top::-webkit-scrollbar { height: 0; }
+
+.app-title {
+  font-size: 0.9em;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  padding-right: 10px;
+  border-right: 1px solid #2a2a2a;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.app-title span { color: #f5a623; }
+
+/* Depth tone swatches in top bar */
+.depth-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: transparent;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  min-width: 52px;
+  height: 44px;
+}
+.depth-btn:hover { background: #1e1e1e; }
+.depth-btn.active { border-color: #f5a623; background: #f5a62315; }
+
+.depth-swatch {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1px solid #333;
+  flex-shrink: 0;
+}
+.depth-btn .lbl { font-size: 0.58em; color: #ccc; font-weight: 600; white-space: nowrap; }
+.depth-btn.active .lbl { color: #f5a623; }
+
+.top-div {
+  width: 1px; height: 30px;
+  background: #2a2a2a;
+  flex-shrink: 0;
+  margin: 0 6px;
+}
+
+/* Lens preset buttons in top bar */
+.lens-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: transparent;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  min-width: 52px;
+  height: 44px;
+}
+.lens-btn:hover { background: #1e1e1e; }
+.lens-btn.active { border-color: #f5a623; background: #f5a62315; }
+.lens-btn .lens-name { font-size: 0.62em; color: #eee; font-weight: 700; white-space: nowrap; }
+.lens-btn .lens-sub  { font-size: 0.54em; color: #888; white-space: nowrap; }
+.lens-btn.active .lens-sub { color: #f5a623; }
+
+.top-spacer { flex: 1; }
+
+.tb-open {
+  background: #f5a623;
+  color: #0a0a0a;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 0.85em;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.tb-open:hover { background: #ff6b35; }
+
+/* ══ LEFT — depth tones legend ══ */
+.left {
+  grid-area: left;
+  background: #0f0f0f;
+  border-right: 1px solid #1a1a1a;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 5px;
+  overflow-y: auto;
+}
+.left::-webkit-scrollbar { width: 0; }
+
+.side-label {
+  font-size: 0.48em;
+  color: #666;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+/* Clickable depth tone dots on left */
+.tone-btn {
+  width: 32px; height: 32px;
+  border-radius: 7px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tone-btn:hover { transform: scale(1.1); }
+.tone-btn.active { border-color: #f5a623; box-shadow: 0 0 0 1px #f5a623; }
+
+.tone-lbl {
+  font-size: 0.46em;
+  text-align: center;
+  color: #888;
+  font-weight: 600;
+}
+
+/* ══ CANVAS ══ */
+.canvas-wrap {
+  grid-area: canvas;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080808;
+}
+
+#dropzone {
+  position: absolute; inset: 0;
+  display: flex; align-items: center;
+  justify-content: center; flex-direction: column;
+  gap: 10px; color: #bbb; cursor: pointer;
+  border: 2px dashed #222; margin: 16px;
+  border-radius: 14px; transition: all 0.2s;
+}
+#dropzone:hover, #dropzone.over { border-color: #f5a623; color: #f5a623; }
+#dropzone .dz-icon { font-size: 2.8em; }
+#dropzone p { font-size: 1em; font-weight: 500; }
+#dropzone small { font-size: 0.8em; color: #555; }
+
+.canvas-stack { position: relative; display: none; }
+#photoCanvas { display: block; border-radius: 3px; }
+#depthCanvas {
+  position: absolute; top:0; left:0;
+  border-radius: 3px; cursor: crosshair; opacity: 0.55;
+}
+#resultCanvas { display: none; border-radius: 3px; }
+
+.compare-wrap { position: relative; display: none; user-select: none; }
+#compareSlider {
+  position: absolute; top:0; left:50%;
+  width: 3px; height: 100%; background: #f5a623;
+  cursor: ew-resize; transform: translateX(-50%);
+}
+#compareSlider::after {
+  content: '◀▶'; position: absolute; top:50%; left:50%;
+  transform: translate(-50%,-50%);
+  background: #f5a623; color: #0a0a0a;
+  padding: 4px 8px; border-radius: 20px;
+  font-size: 0.7em; font-weight: 700;
+}
+#afterCanvas { position:absolute; top:0; left:0; clip-path:inset(0 50% 0 0); }
+
+/* ══ RIGHT — paint tools ══ */
+.right {
+  grid-area: right;
+  background: #0f0f0f;
+  border-left: 1px solid #1a1a1a;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  gap: 5px;
+  overflow-y: auto;
+}
+.right::-webkit-scrollbar { width: 0; }
+
+.tool-btn {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 1.3em;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  background: #181818;
+}
+.tool-btn:hover { background: #222; }
+.tool-btn.active { border-color: #f5a623; background: #f5a62318; }
+
+.tool-lbl {
+  font-size: 0.48em;
+  text-align: center;
+  color: #aaa;
+  font-weight: 600;
+}
+
+.right-div {
+  width: 30px; height: 1px;
+  background: #222; flex-shrink: 0;
+}
+
+/* ══ BOTTOM ══ */
+.bottom {
+  grid-area: bottom;
+  background: #111;
+  border-top: 1px solid #1e1e1e;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sliders-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sl label {
+  font-size: 0.82em;
+  color: #eee;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sl .val {
+  font-size: 0.82em;
+  color: #f5a623;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 28px;
+  text-align: right;
+}
+
+input[type=range] {
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+  border-radius: 3px;
+  background: #2a2a2a;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #f5a623;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(245,166,35,0.5);
+}
+
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.act-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border-radius: 7px;
+  border: none;
+  font-size: 0.82em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  text-align: center;
+}
+.btn-apply   { background: #f5a623; color: #0a0a0a; }
+.btn-apply:hover { background: #ff6b35; }
+.btn-compare { background: #1e1e1e; color: #eee; border: 1px solid #333; }
+.btn-compare:hover { border-color: #f5a623; color: #f5a623; }
+.btn-dl      { background: #0f2010; color: #52b788; border: 1px solid #1a3a1a; }
+.btn-dl:hover { background: #132813; }
+
+#fileInput { display:none; }
+</style>
+</head>
+<body>
+
+<!-- TOP: depth swatches + lens presets + open -->
+<div class="top">
+  <div class="app-title">Bokeh <span>Editorial</span></div>
+
+  <!-- Depth tones -->
+  <div class="depth-btn active" data-v="0">
+    <div class="depth-swatch" style="background:#000"></div>
+    <span class="lbl">Far</span>
+  </div>
+  <div class="depth-btn" data-v="64">
+    <div class="depth-swatch" style="background:#404040"></div>
+    <span class="lbl">Deep</span>
+  </div>
+  <div class="depth-btn" data-v="128">
+    <div class="depth-swatch" style="background:#808080"></div>
+    <span class="lbl">Mid</span>
+  </div>
+  <div class="depth-btn" data-v="192">
+    <div class="depth-swatch" style="background:#c0c0c0"></div>
+    <span class="lbl">Near</span>
+  </div>
+  <div class="depth-btn" data-v="255">
+    <div class="depth-swatch" style="background:#fff"></div>
+    <span class="lbl">Close</span>
+  </div>
+
+  <div class="top-div"></div>
+
+  <!-- Lens presets -->
+  <div class="lens-btn active" data-blur="28" data-near="8" data-trans="60">
+    <span class="lens-name">85mm</span>
+    <span class="lens-sub">f/1.4 Portrait</span>
+  </div>
+  <div class="lens-btn" data-blur="18" data-near="5" data-trans="50">
+    <span class="lens-name">50mm</span>
+    <span class="lens-sub">f/1.8 Nifty</span>
+  </div>
+  <div class="lens-btn" data-blur="38" data-near="10" data-trans="70">
+    <span class="lens-name">50mm</span>
+    <span class="lens-sub">f/1.2 Dream</span>
+  </div>
+  <div class="lens-btn" data-blur="32" data-near="8" data-trans="80">
+    <span class="lens-name">Sony GM</span>
+    <span class="lens-sub">Feathered</span>
+  </div>
+  <div class="lens-btn" data-blur="22" data-near="6" data-trans="40">
+    <span class="lens-name">135mm</span>
+    <span class="lens-sub">f/2 Tele</span>
+  </div>
+
+  <div class="top-spacer"></div>
+  <button class="tb-open" id="btnOpen">📁 Open</button>
+</div>
+
+<!-- LEFT: depth tones quick-select -->
+<div class="left">
+  <div class="side-label">Depth</div>
+  <div class="tone-btn active" data-v="0"   style="background:#000"></div>
+  <div class="tone-lbl">Far</div>
+  <div class="tone-btn" data-v="64"  style="background:#404040"></div>
+  <div class="tone-lbl">Deep</div>
+  <div class="tone-btn" data-v="128" style="background:#808080"></div>
+  <div class="tone-lbl">Mid</div>
+  <div class="tone-btn" data-v="192" style="background:#c0c0c0"></div>
+  <div class="tone-lbl">Near</div>
+  <div class="tone-btn" data-v="255" style="background:#ffffff"></div>
+  <div class="tone-lbl">Close</div>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-wrap" id="canvasWrap">
+  <div id="dropzone">
+    <span class="dz-icon">📷</span>
+    <p>Drop photo here or tap Open</p>
+    <small>JPG · PNG · WebP · White = near · Black = far</small>
+  </div>
+
+  <div class="canvas-stack" id="canvasStack">
+    <canvas id="photoCanvas"></canvas>
+    <canvas id="depthCanvas"></canvas>
+  </div>
+
+  <canvas id="resultCanvas"></canvas>
+
+  <div class="compare-wrap" id="compareWrap">
+    <canvas id="beforeCanvas"></canvas>
+    <canvas id="afterCanvas"></canvas>
+    <div id="compareSlider"></div>
+  </div>
+</div>
+
+<!-- RIGHT: paint tools -->
+<div class="right">
+  <div class="side-label">Tools</div>
+
+  <div class="tool-btn active" id="btnPaint" title="Paint depth">✏️</div>
+  <div class="tool-lbl">Paint</div>
+
+  <div class="right-div"></div>
+
+  <div class="tool-btn" id="btnErase" title="Erase depth">🧹</div>
+  <div class="tool-lbl">Erase</div>
+
+  <div class="right-div"></div>
+
+  <div class="tool-btn" id="btnClear" title="Clear all" style="font-size:1em;">CLR</div>
+  <div class="tool-lbl">Clear</div>
+
+  <div class="right-div"></div>
+
+  <div class="tool-btn" id="btnMapView" title="Preview depth map" style="font-size:0.8em;color:#aaa;">MAP</div>
+  <div class="tool-lbl">Map</div>
+</div>
+
+<!-- BOTTOM: sliders + actions -->
+<div class="bottom">
+  <div class="sliders-row">
+    <div class="sl">
+      <label>Far Blur</label>
+      <input type="range" id="maxBlur" min="0" max="60" value="28">
+      <span class="val" id="maxBlurVal">28</span>
+    </div>
+    <div class="sl">
+      <label>Near Blur</label>
+      <input type="range" id="nearBlur" min="0" max="30" value="8">
+      <span class="val" id="nearBlurVal">8</span>
+    </div>
+    <div class="sl">
+      <label>Smooth</label>
+      <input type="range" id="transSmooth" min="0" max="100" value="60">
+      <span class="val" id="transSmoothVal">60%</span>
+    </div>
+    <div class="sl">
+      <label>Brush</label>
+      <input type="range" id="brushSize" min="5" max="150" value="40">
+      <span class="val" id="brushSizeVal">40</span>
+    </div>
+    <div class="sl">
+      <label>Softness</label>
+      <input type="range" id="brushSoft" min="0" max="100" value="80">
+      <span class="val" id="brushSoftVal">80%</span>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="act-btn btn-apply"   id="btnApply">⚙️ Apply Depth of Field</button>
+    <button class="act-btn btn-compare" id="btnCompare">◀▶ Compare</button>
+    <button class="act-btn btn-dl"      id="btnDownload">↓ Download</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script>
+const state = {
+  image:null, imgW:0, imgH:0, scale:1,
+  painting:false, erasing:false,
+  currentDepth:0,
+  brushSize:40, brushSoft:80,
+  maxBlur:28, nearBlur:8, transSmooth:60,
+  showingMap:false,
+};
+
+const photoCanvas  = document.getElementById('photoCanvas');
+const depthCanvas  = document.getElementById('depthCanvas');
+const resultCanvas = document.getElementById('resultCanvas');
+const beforeCanvas = document.getElementById('beforeCanvas');
+const afterCanvas  = document.getElementById('afterCanvas');
+const photoCtx = photoCanvas.getContext('2d');
+const depthCtx = depthCanvas.getContext('2d');
+const resultCtx= resultCanvas.getContext('2d');
+const beforeCtx= beforeCanvas.getContext('2d');
+const afterCtx = afterCanvas.getContext('2d');
+
+// Sync top depth buttons + left tone buttons
+function syncDepth(v) {
+  state.currentDepth = v;
+  document.querySelectorAll('.depth-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.v)===v));
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.v)===v));
+  state.erasing = false;
+  document.getElementById('btnPaint').classList.add('active');
+  document.getElementById('btnErase').classList.remove('active');
+}
+
+document.querySelectorAll('.depth-btn').forEach(b =>
+  b.addEventListener('click', () => syncDepth(parseInt(b.dataset.v)))
+);
+document.querySelectorAll('.tone-btn').forEach(b =>
+  b.addEventListener('click', () => syncDepth(parseInt(b.dataset.v)))
+);
+
+// Lens presets
+document.querySelectorAll('.lens-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lens-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('maxBlur').value    = btn.dataset.blur;
+    document.getElementById('nearBlur').value   = btn.dataset.near;
+    document.getElementById('transSmooth').value= btn.dataset.trans;
+    updateSliders();
+  });
+});
+
+// Sliders
+function updateSliders() {
+  state.maxBlur    = parseInt(document.getElementById('maxBlur').value);
+  state.nearBlur   = parseInt(document.getElementById('nearBlur').value);
+  state.transSmooth= parseInt(document.getElementById('transSmooth').value);
+  state.brushSize  = parseInt(document.getElementById('brushSize').value);
+  state.brushSoft  = parseInt(document.getElementById('brushSoft').value);
+  document.getElementById('maxBlurVal').textContent    = state.maxBlur;
+  document.getElementById('nearBlurVal').textContent   = state.nearBlur;
+  document.getElementById('transSmoothVal').textContent= state.transSmooth + '%';
+  document.getElementById('brushSizeVal').textContent  = state.brushSize;
+  document.getElementById('brushSoftVal').textContent  = state.brushSoft + '%';
+}
+['maxBlur','nearBlur','transSmooth','brushSize','brushSoft'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateSliders)
+);
+
+// Tools
+document.getElementById('btnPaint').addEventListener('click', () => {
+  state.erasing=false;
+  document.getElementById('btnPaint').classList.add('active');
+  document.getElementById('btnErase').classList.remove('active');
+});
+document.getElementById('btnErase').addEventListener('click', () => {
+  state.erasing=true;
+  document.getElementById('btnErase').classList.add('active');
+  document.getElementById('btnPaint').classList.remove('active');
+});
+document.getElementById('btnClear').addEventListener('click', () =>
+  depthCtx.clearRect(0,0,depthCanvas.width,depthCanvas.height)
+);
+document.getElementById('btnMapView').addEventListener('click', () => {
+  state.showingMap = !state.showingMap;
+  if(state.showingMap){
+    depthCanvas.style.opacity='1'; photoCanvas.style.opacity='0.2';
+    document.getElementById('btnMapView').style.borderColor='#f5a623';
+  } else {
+    depthCanvas.style.opacity='0.55'; photoCanvas.style.opacity='1';
+    document.getElementById('btnMapView').style.borderColor='transparent';
+  }
+});
+
+// Open
+document.getElementById('btnOpen').addEventListener('click', () =>
+  document.getElementById('fileInput').click()
+);
+document.getElementById('fileInput').addEventListener('change', e => {
+  if(e.target.files[0]) loadImage(e.target.files[0]);
+});
+
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('click', () => document.getElementById('fileInput').click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('over');
+  if(e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+});
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      state.image=img; state.imgW=img.width; state.imgH=img.height;
+      fitToCanvas();
+      dropzone.style.display='none';
+      document.getElementById('canvasStack').style.display='block';
+      resultCanvas.style.display='none';
+      document.getElementById('compareWrap').style.display='none';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fitToCanvas() {
+  const wrap = document.getElementById('canvasWrap');
+  const maxW = wrap.clientWidth-8, maxH = wrap.clientHeight-8;
+  state.scale = Math.min(1, maxW/state.imgW, maxH/state.imgH);
+  const w = Math.round(state.imgW*state.scale);
+  const h = Math.round(state.imgH*state.scale);
+  [photoCanvas,depthCanvas].forEach(c=>{c.width=w;c.height=h;});
+  resultCanvas.width=state.imgW; resultCanvas.height=state.imgH;
+  beforeCanvas.width=w; beforeCanvas.height=h;
+  afterCanvas.width=w; afterCanvas.height=h;
+  photoCtx.drawImage(state.image,0,0,w,h);
+  depthCtx.clearRect(0,0,w,h);
+}
+
+// Paint
+depthCanvas.addEventListener('mousedown', e=>{state.painting=true;paint(e);});
+depthCanvas.addEventListener('mousemove', e=>{if(state.painting)paint(e);});
+depthCanvas.addEventListener('mouseup',   ()=>state.painting=false);
+depthCanvas.addEventListener('mouseleave',()=>state.painting=false);
+depthCanvas.addEventListener('touchstart',e=>{e.preventDefault();state.painting=true;paint(e.touches[0]);},{passive:false});
+depthCanvas.addEventListener('touchmove', e=>{e.preventDefault();if(state.painting)paint(e.touches[0]);},{passive:false});
+depthCanvas.addEventListener('touchend',  ()=>state.painting=false);
+
+function paint(e) {
+  const rect=depthCanvas.getBoundingClientRect();
+  const x=e.clientX-rect.left, y=e.clientY-rect.top;
+  const r=state.brushSize*state.scale;
+  const soft=Math.max(0.1, state.brushSoft/100);
+
+  if(state.erasing){
+    depthCtx.globalCompositeOperation='destination-out';
+    const g=depthCtx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,`rgba(0,0,0,1)`);
+    g.addColorStop(soft,`rgba(0,0,0,0.5)`);
+    g.addColorStop(1,`rgba(0,0,0,0)`);
+    depthCtx.fillStyle=g;
+  } else {
+    depthCtx.globalCompositeOperation='source-over';
+    const v=state.currentDepth;
+    const g=depthCtx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,    `rgba(${v},${v},${v},0.9)`);
+    g.addColorStop(soft, `rgba(${v},${v},${v},0.4)`);
+    g.addColorStop(1,    `rgba(${v},${v},${v},0)`);
+    depthCtx.fillStyle=g;
+  }
+  depthCtx.beginPath(); depthCtx.arc(x,y,r,0,Math.PI*2); depthCtx.fill();
+  depthCtx.globalCompositeOperation='source-over';
+}
+
+// Apply
+document.getElementById('btnApply').addEventListener('click', applyDepthBlur);
+
+async function applyDepthBlur() {
+  if(!state.image) return;
+  await new Promise(r=>setTimeout(r,20));
+
+  const W=state.imgW, H=state.imgH;
+  resultCanvas.width=W; resultCanvas.height=H;
+  resultCtx.drawImage(state.image,0,0,W,H);
+  const origData=resultCtx.getImageData(0,0,W,H);
+
+  const dw=depthCanvas.width, dh=depthCanvas.height;
+  const dd=depthCtx.getImageData(0,0,dw,dh).data;
+  const depthFull=new Float32Array(W*H);
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+    const sx=Math.round(x*dw/W),sy=Math.round(y*dh/H);
+    const idx=(sy*dw+sx)*4;
+    const alpha=dd[idx+3]/255, gray=dd[idx]/255;
+    depthFull[y*W+x]=alpha>0.01?gray:0.5;
+  }
+
+  const smooth=state.transSmooth/100;
+  const smoothed=gaussianBlurDepth(depthFull,W,H,Math.round(smooth*30+2));
+
+  const maxB=state.maxBlur, nearB=state.nearBlur;
+  const blurPasses=8;
+  const blurred=[];
+  for(let p=0;p<blurPasses;p++){
+    const radius=Math.round((p/(blurPasses-1))*maxB);
+    blurred.push(radius===0?new Uint8ClampedArray(origData.data):gaussianBlur(origData.data,W,H,radius));
+  }
+  const nearBlurred=nearB>0?gaussianBlur(origData.data,W,H,nearB):null;
+
+  const result=new Uint8ClampedArray(origData.data.length);
+  for(let i=0;i<W*H;i++){
+    const depth=smoothed[i], px=i*4;
+    if(depth>=0.5){
+      const t=(depth-0.5)*2;
+      if(nearB>0&&nearBlurred){
+        result[px]  =origData.data[px]  *t+nearBlurred[px]  *(1-t);
+        result[px+1]=origData.data[px+1]*t+nearBlurred[px+1]*(1-t);
+        result[px+2]=origData.data[px+2]*t+nearBlurred[px+2]*(1-t);
+      } else {
+        result[px]=origData.data[px]; result[px+1]=origData.data[px+1]; result[px+2]=origData.data[px+2];
+      }
+    } else {
+      const t=1-depth*2;
+      const pi=Math.min(blurPasses-1,Math.round(t*(blurPasses-1)));
+      const src=blurred[pi];
+      result[px]=src[px]; result[px+1]=src[px+1]; result[px+2]=src[px+2];
+    }
+    result[px+3]=255;
+  }
+
+  resultCtx.putImageData(new ImageData(result,W,H),0,0);
+  document.getElementById('canvasStack').style.display='none';
+  resultCanvas.style.display='block';
+  document.getElementById('compareWrap').style.display='none';
+  beforeCtx.drawImage(state.image,0,0,beforeCanvas.width,beforeCanvas.height);
+  afterCtx.drawImage(resultCanvas,0,0,afterCanvas.width,afterCanvas.height);
+}
+
+function gaussianBlur(data,w,h,radius){
+  if(radius<1)return new Uint8ClampedArray(data);
+  const out=new Uint8ClampedArray(data.length),tmp=new Float32Array(data.length);
+  const sigma=radius/2,ks=radius*2+1,kernel=[];let sum=0;
+  for(let i=0;i<ks;i++){const x=i-radius;const v=Math.exp(-(x*x)/(2*sigma*sigma));kernel.push(v);sum+=v;}
+  for(let i=0;i<ks;i++)kernel[i]/=sum;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    let r=0,g=0,b=0;
+    for(let k=0;k<ks;k++){const sx=Math.min(w-1,Math.max(0,x+k-radius));const idx=(y*w+sx)*4;r+=data[idx]*kernel[k];g+=data[idx+1]*kernel[k];b+=data[idx+2]*kernel[k];}
+    const oi=(y*w+x)*4;tmp[oi]=r;tmp[oi+1]=g;tmp[oi+2]=b;tmp[oi+3]=255;
+  }
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    let r=0,g=0,b=0;
+    for(let k=0;k<ks;k++){const sy=Math.min(h-1,Math.max(0,y+k-radius));const idx=(sy*w+x)*4;r+=tmp[idx]*kernel[k];g+=tmp[idx+1]*kernel[k];b+=tmp[idx+2]*kernel[k];}
+    const oi=(y*w+x)*4;out[oi]=r;out[oi+1]=g;out[oi+2]=b;out[oi+3]=255;
+  }
+  return out;
+}
+
+function gaussianBlurDepth(data,w,h,radius){
+  if(radius<1)return data;
+  const out=new Float32Array(data.length),tmp=new Float32Array(data.length);
+  const sigma=radius/2,ks=radius*2+1,kernel=[];let sum=0;
+  for(let i=0;i<ks;i++){const x=i-radius;const v=Math.exp(-(x*x)/(2*sigma*sigma));kernel.push(v);sum+=v;}
+  for(let i=0;i<ks;i++)kernel[i]/=sum;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=0;k<ks;k++){const sx=Math.min(w-1,Math.max(0,x+k-radius));v+=data[y*w+sx]*kernel[k];}tmp[y*w+x]=v;}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=0;k<ks;k++){const sy=Math.min(h-1,Math.max(0,y+k-radius));v+=tmp[sy*w+x]*kernel[k];}out[y*w+x]=v;}
+  return out;
+}
+
+// Compare
+let dragging=false;
+document.getElementById('btnCompare').addEventListener('click',()=>{
+  if(!state.image)return;
+  const cw=document.getElementById('compareWrap');
+  if(cw.style.display==='block'){
+    cw.style.display='none'; resultCanvas.style.display='block';
+  } else {
+    document.getElementById('canvasStack').style.display='none';
+    resultCanvas.style.display='none';
+    cw.style.display='block';
+  }
+});
+
+document.getElementById('compareSlider').addEventListener('mousedown',()=>dragging=true);
+document.addEventListener('mouseup',()=>dragging=false);
+document.addEventListener('mousemove',e=>{
+  if(!dragging)return;
+  const w=document.getElementById('compareWrap');
+  const r=w.getBoundingClientRect();
+  const x=Math.max(0,Math.min(w.clientWidth,e.clientX-r.left));
+  document.getElementById('compareSlider').style.left=x+'px';
+  afterCanvas.style.clipPath=`inset(0 ${(100-x/w.clientWidth*100).toFixed(1)}% 0 0)`;
+});
+
+document.getElementById('btnDownload').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.download='bokeh_editorial_result.jpg';
+  a.href=resultCanvas.toDataURL('image/jpeg',0.95);
+  a.click();
+});
+
+updateSliders();
+</script>
+</body>
+</html>
