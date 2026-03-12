@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Photography Course — Satdiva Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Source+Code+Pro:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1a14; --bg2: #232318; --bg3: #2c2c20; --border: #3a3a2a;
+    --border2: #4a4a38; --text: #f5f0e3; --text2: #d4ccb8; --text3: #9a9278;
+    --gold: #e8b84b; --green: #6bcf8a; --blue: #7eb8f7; --purple: #c4a0f0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.8; overflow-x: hidden; }
+
+  /* --- SIDEBAR --- */
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--bg2); border-right: 1px solid var(--border2); overflow-y: auto; z-index: 1000; }
+  .sidebar-header { padding: 30px 24px; border-bottom: 1px solid var(--border2); }
+  .nav-item { display: block; padding: 12px 24px; color: var(--text2); text-decoration: none; cursor: pointer; font-size: 15px; border-left: 4px solid transparent; transition: 0.2s; }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg3); color: var(--green); border-left-color: var(--green); font-weight: 700; }
+  .nav-section { padding: 20px 24px 8px; font-size: 11px; text-transform: uppercase; color: var(--text3); letter-spacing: 0.1em; }
+
+  /* --- MAIN --- */
+  .main { margin-left: 280px; min-height: 100vh; padding-bottom: 120px; }
+
+  /* --- LESSONS --- */
+  .lesson { display: none; padding: 60px; max-width: 1000px; animation: fadeIn 0.3s ease-out; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* --- DATASET BADGE — compact, inside lesson only when needed --- */
+  .dataset-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.78em;
+    color: var(--text3);
+    margin-bottom: 28px;
+    font-family: 'Source Code Pro', monospace;
+  }
+  .dataset-badge span { color: var(--gold); font-weight: 600; }
+
+  /* --- CODE --- */
+  .code-block { background: #000; padding: 25px; border-radius: 12px; font-family: 'Source Code Pro', monospace; font-size: 16px; border: 1px solid var(--border2); margin: 25px 0; overflow-x: auto; line-height: 1.7; }
+  .kw { color: var(--blue); } .fn { color: var(--green); } .str { color: var(--gold); } .cmt { color: #555; font-style: italic; }
+
+  /* --- TIP --- */
+  .tip { background: var(--bg2); border-left: 4px solid var(--gold); padding: 20px 24px; margin: 24px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; color: var(--text2); }
+
+  /* --- HERO inside lesson-0 only --- */
+  .lesson-hero { margin-bottom: 40px; }
+  .lesson-hero h1 { font-family: Lora; font-size: 48px; margin-bottom: 15px; }
+  .lesson-hero p { color: var(--text2); font-size: 20px; max-width: 600px; }
+
+  /* --- FOOTER NAV --- */
+  .footer-nav { position: fixed; bottom: 0; right: 0; left: 280px; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
+  .btn { padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; border: none; font-size: 16px; transition: 0.2s; }
+  .btn-next { background: var(--green); color: var(--bg); }
+  .btn-prev { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+  .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  h2 { font-family: Lora; font-size: 32px; margin-bottom: 20px; color: var(--text); }
+  h3 { font-family: Lora; font-size: 22px; margin: 30px 0 12px; color: var(--gold); }
+  p { margin-bottom: 16px; color: var(--text2); }
+
+  @media (max-width: 900px) { .sidebar { display: none; } .main { margin-left: 0; } .footer-nav { left: 0; padding: 16px 24px; } .lesson { padding: 30px 24px; } }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div style="font-family:Lora; font-size:20px;">Python Foundation</div>
+    <div style="color:var(--green); font-size:12px; font-weight:700; margin-top:4px;">PHOTO DATA EDITION</div>
+  </div>
+  <div id="sidebar-nav">
+    <a class="nav-item active" onclick="jumpTo(0)">✦ Course Overview</a>
+    <div class="nav-section">The Basics</div>
+    <a class="nav-item" onclick="jumpTo(1)">1. Variables & Data Types</a>
+    <a class="nav-item" onclick="jumpTo(2)">2. Lists & Dictionaries</a>
+    <a class="nav-item" onclick="jumpTo(3)">3. Loops & Logic</a>
+    <a class="nav-item" onclick="jumpTo(4)">4. Functions</a>
+    <div class="nav-section">Data Analysis</div>
+    <a class="nav-item" onclick="jumpTo(5)">5. Reading CSV Files</a>
+    <a class="nav-item" onclick="jumpTo(6)">6. Pandas DataFrames</a>
+    <a class="nav-item" onclick="jumpTo(7)">7. Filtering Shoots</a>
+    <a class="nav-item" onclick="jumpTo(8)">8. Visualisation</a>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- LESSON 0: Overview -->
+  <section class="lesson active" id="lesson-0">
+    <div class="lesson-hero">
+      <h1>Learn Python with<br><em style="color:var(--green); font-style:normal;">Photography Data</em></h1>
+      <p>A foundation course built for clarity, high contrast, and real-world preservation of your archives.</p>
+    </div>
+    <h2>Course Roadmap</h2>
+    <p>We will use a real dataset of photographers, shoots and equipment to learn how to automate, organise, and protect your lifetime of work.</p>
+    <p>Each lesson builds on the last. By the end you will be able to query, filter and visualise your own archive data.</p>
+    <div class="tip"><strong>How to use this course:</strong> Read each lesson, study the code examples, then press Next Lesson to continue. Use the sidebar to jump to any lesson at any time.</div>
+  </section>
+
+  <!-- LESSON 1: Variables -->
+  <section class="lesson" id="lesson-1">
+    <h2>1. Variables & Data Types</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>photographers.csv</span></div>
+    <p>Think of a Variable as the label on a film canister. It tells Python what is inside.</p>
+    <div class="code-block">
+<span class="cmt"># Defining our first photo data variables</span>
+photo_name = <span class="str">"World_Cup_Final_001.jpg"</span>
+shutter_speed = <span class="str">"1/1000"</span>
+iso = <span class="kw">800</span>
+camera_body = <span class="str">"Canon R5"</span>
+
+<span class="cmt"># Print them out</span>
+<span class="fn">print</span>(photo_name)
+<span class="fn">print</span>(<span class="str">"ISO was:"</span>, iso)
+    </div>
+    <p>Python stores three main types of data you will use constantly:</p>
+    <div class="code-block">
+<span class="cmt"># Text (called a string)</span>
+photographer = <span class="str">"Satdiva"</span>
+
+<span class="cmt"># Number (called an integer)</span>
+total_shots = <span class="kw">750000</span>
+
+<span class="cmt"># True / False (called a boolean)</span>
+is_raw = <span class="kw">True</span>
+    </div>
+    <div class="tip"><strong>When you are foundationed, all becomes obvious.</strong> Variables are the foundation. Everything else in Python builds on this.</div>
+  </section>
+
+  <!-- LESSON 2: Lists & Dicts -->
+  <section class="lesson" id="lesson-2">
+    <h2>2. Lists & Dictionaries</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>photographers.csv · shoots.csv</span></div>
+    <p>A List is like a contact sheet. It holds many items in one place in a specific order.</p>
+    <div class="code-block">
+equestrian_events = [<span class="str">"Show Jumping"</span>, <span class="str">"Dressage"</span>, <span class="str">"Polo"</span>]
+
+<span class="cmt"># Get the first item (Python counts from 0)</span>
+<span class="fn">print</span>(equestrian_events[<span class="kw">0</span>])  <span class="cmt"># → "Show Jumping"</span>
+<span class="fn">print</span>(equestrian_events[<span class="kw">2</span>])  <span class="cmt"># → "Polo"</span>
+
+<span class="cmt"># How many items?</span>
+<span class="fn">print</span>(<span class="fn">len</span>(equestrian_events))   <span class="cmt"># → 3</span>
+    </div>
+    <p>A Dictionary is like a camera bag. Each item has a name (key) and a value.</p>
+    <div class="code-block">
+photographer = {
+    <span class="str">"name"</span>:       <span class="str">"Satdiva"</span>,
+    <span class="str">"credential"</span>: <span class="str">"USA06591"</span>,
+    <span class="str">"speciality"</span>: <span class="str">"Equestrian"</span>,
+    <span class="str">"total_shoots"</span>: <span class="kw">4200</span>
+}
+
+<span class="cmt"># Access by key name</span>
+<span class="fn">print</span>(photographer[<span class="str">"name"</span>])       <span class="cmt"># → "Satdiva"</span>
+<span class="fn">print</span>(photographer[<span class="str">"speciality"</span>]) <span class="cmt"># → "Equestrian"</span>
+    </div>
+    <div class="tip"><strong>Think of it this way:</strong> A List is ordered like a film roll. A Dictionary is labelled like a file cabinet.</div>
+  </section>
+
+  <!-- LESSON 3: Loops -->
+  <section class="lesson" id="lesson-3">
+    <h2>3. Loops & Logic</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv</span></div>
+    <p>A Loop lets Python repeat a task automatically — like processing every photo in a folder without doing it one by one.</p>
+    <div class="code-block">
+shots = [<span class="str">"IMG_001.jpg"</span>, <span class="str">"IMG_002.jpg"</span>, <span class="str">"IMG_003.jpg"</span>]
+
+<span class="kw">for</span> shot <span class="kw">in</span> shots:
+    <span class="fn">print</span>(<span class="str">"Processing:"</span>, shot)
+
+<span class="cmt"># Output:</span>
+<span class="cmt"># Processing: IMG_001.jpg</span>
+<span class="cmt"># Processing: IMG_002.jpg</span>
+<span class="cmt"># Processing: IMG_003.jpg</span>
+    </div>
+    <p>Logic (if / else) lets Python make decisions based on data.</p>
+    <div class="code-block">
+iso = <span class="kw">3200</span>
+
+<span class="kw">if</span> iso > <span class="kw">1600</span>:
+    <span class="fn">print</span>(<span class="str">"High ISO — check for noise"</span>)
+<span class="kw">elif</span> iso > <span class="kw">800</span>:
+    <span class="fn">print</span>(<span class="str">"Medium ISO — acceptable"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Clean ISO — excellent quality"</span>)
+    </div>
+    <div class="tip"><strong>Combined power:</strong> Loop through every shoot. For each one, check the ISO. Flag the noisy ones automatically.</div>
+  </section>
+
+  <!-- LESSON 4: Functions -->
+  <section class="lesson" id="lesson-4">
+    <h2>4. Functions</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv · equipment.csv</span></div>
+    <p>A Function is a reusable tool you build once and use forever. Like a lens — you buy it once, you use it on any camera body.</p>
+    <div class="code-block">
+<span class="cmt"># Define the function once</span>
+<span class="kw">def</span> <span class="fn">describe_shoot</span>(event, location, shots_taken):
+    <span class="fn">print</span>(<span class="str">f"Event: {event}"</span>)
+    <span class="fn">print</span>(<span class="str">f"Location: {location}"</span>)
+    <span class="fn">print</span>(<span class="str">f"Total shots: {shots_taken}"</span>)
+
+<span class="cmt"># Use it as many times as you need</span>
+<span class="fn">describe_shoot</span>(<span class="str">"Wellington Polo"</span>, <span class="str">"Florida"</span>, <span class="kw">840</span>)
+<span class="fn">describe_shoot</span>(<span class="str">"Grand Prix Jumping"</span>, <span class="str">"Geneva"</span>, <span class="kw">1200</span>)
+    </div>
+    <p>Functions can also return a value — like a calculation result.</p>
+    <div class="code-block">
+<span class="kw">def</span> <span class="fn">keeper_rate</span>(total, keepers):
+    rate = (keepers / total) * <span class="kw">100</span>
+    <span class="kw">return</span> <span class="fn">round</span>(rate, <span class="kw">1</span>)
+
+result = <span class="fn">keeper_rate</span>(<span class="kw">840</span>, <span class="kw">92</span>)
+<span class="fn">print</span>(<span class="str">f"Keeper rate: {result}%"</span>)  <span class="cmt"># → Keeper rate: 11.0%</span>
+    </div>
+    <div class="tip"><strong>Rule of thumb:</strong> If you write the same code twice, make it a function.</div>
+  </section>
+
+  <!-- LESSON 5: CSV Files -->
+  <section class="lesson" id="lesson-5">
+    <h2>5. Reading CSV Files</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>photographers.csv</span></div>
+    <p>CSV stands for Comma-Separated Values. Your archive data lives in CSV files. This lesson shows you how to open and read them with Python.</p>
+    <div class="code-block">
+<span class="kw">import</span> csv
+
+<span class="cmt"># Open the photographers dataset</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
+    reader = csv.<span class="fn">DictReader</span>(file)
+    <span class="kw">for</span> row <span class="kw">in</span> reader:
+        <span class="fn">print</span>(row[<span class="str">"name"</span>], <span class="str">"—"</span>, row[<span class="str">"speciality"</span>])
+    </div>
+    <h3>photographers.csv structure</h3>
+    <div class="code-block" style="font-size:14px;">
+<span class="cmt">id, name,         credential, speciality,   country</span>
+<span class="str"> 1, Satdiva,       USA06591,   Equestrian,   USA</span>
+<span class="str"> 2, David,         USA00234,   Polo,         USA</span>
+<span class="str"> 3, Snoopy,        USA00089,   Equestrian,   USA</span>
+    </div>
+    <div class="tip"><strong>DictReader</strong> reads each row as a dictionary — so you access columns by name, not by position. Much easier to read.</div>
+  </section>
+
+  <!-- LESSON 6: Pandas -->
+  <section class="lesson" id="lesson-6">
+    <h2>6. Pandas DataFrames</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>photographers.csv · shoots.csv</span></div>
+    <p>Pandas is a Python library that turns your CSV into a powerful table you can query like a database.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cmt"># Load the dataset</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># See the first 5 rows</span>
+<span class="fn">print</span>(df.<span class="fn">head</span>())
+
+<span class="cmt"># How many rows and columns?</span>
+<span class="fn">print</span>(df.shape)   <span class="cmt"># → (750000, 8)</span>
+
+<span class="cmt"># Column names</span>
+<span class="fn">print</span>(df.columns)
+    </div>
+    <h3>shoots.csv structure</h3>
+    <div class="code-block" style="font-size:14px;">
+<span class="cmt">id, photographer_id, event,          location,  year, shots, keepers</span>
+<span class="str"> 1, 1,               Wellington Polo, Florida,   2019, 840,   92</span>
+<span class="str"> 2, 1,               Grand Prix,      Geneva,    2022, 1200,  140</span>
+<span class="str"> 3, 3,               Dressage Cup,    Aachen,    2021, 600,   78</span>
+    </div>
+    <div class="tip"><strong>750,000 rows</strong> — that is your full archive. Pandas handles it instantly. Python without Pandas would take minutes.</div>
+  </section>
+
+  <!-- LESSON 7: Filtering -->
+  <section class="lesson" id="lesson-7">
+    <h2>7. Filtering Shoots</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv</span></div>
+    <p>Filtering lets you ask questions of your data. Which shoots were in Florida? Which year had the most shots? Find them in one line.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># All shoots in Florida</span>
+florida = df[df[<span class="str">"location"</span>] == <span class="str">"Florida"</span>]
+<span class="fn">print</span>(florida)
+
+<span class="cmt"># All shoots after 2020</span>
+recent = df[df[<span class="str">"year"</span>] > <span class="kw">2020</span>]
+<span class="fn">print</span>(recent.<span class="fn">head</span>())
+
+<span class="cmt"># Shoots with more than 1000 shots taken</span>
+heavy = df[df[<span class="str">"shots"</span>] > <span class="kw">1000</span>]
+<span class="fn">print</span>(<span class="str">f"Heavy shoots: {len(heavy)}"</span>)
+    </div>
+    <p>Combine filters using & (and) or | (or):</p>
+    <div class="code-block">
+<span class="cmt"># Florida AND after 2020</span>
+filtered = df[(df[<span class="str">"location"</span>] == <span class="str">"Florida"</span>) & (df[<span class="str">"year"</span>] > <span class="kw">2020</span>)]
+<span class="fn">print</span>(filtered)
+    </div>
+    <div class="tip"><strong>This is the power.</strong> 750,000 records. One line of code. The answer is instant.</div>
+  </section>
+
+  <!-- LESSON 8: Visualisation -->
+  <section class="lesson" id="lesson-8">
+    <h2>8. Visualisation</h2>
+    <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv · photographers.csv</span></div>
+    <p>Matplotlib turns your data into charts. See your archive at a glance — shoots per year, locations, keeper rates.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># Count shoots per year</span>
+by_year = df.<span class="fn">groupby</span>(<span class="str">"year"</span>)[<span class="str">"id"</span>].<span class="fn">count</span>()
+
+<span class="cmt"># Plot it</span>
+by_year.<span class="fn">plot</span>(kind=<span class="str">"bar"</span>, color=<span class="str">"#6bcf8a"</span>)
+plt.<span class="fn">title</span>(<span class="str">"Shoots Per Year"</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">"Year"</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">"Number of Shoots"</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()
+    </div>
+    <div class="tip"><strong>You have completed the foundation.</strong> Variables → Lists → Loops → Functions → CSV → Pandas → Filter → Visualise. That is the full pipeline. Your archive is now programmable.</div>
+  </section>
+
+  <div class="footer-nav">
+    <button class="btn btn-prev" id="prevBtn" onclick="changeLesson(-1)">← Previous</button>
+    <div id="progress" style="font-weight:700; color:var(--green);">0 / 8</div>
+    <button class="btn btn-next" id="nextBtn" onclick="changeLesson(1)">Next Lesson →</button>
+  </div>
+</div>
+
+<script>
+  let current = 0;
+  const total = 8;
+
+  function jumpTo(index) {
+    current = index;
+
+    // Show correct lesson
+    document.querySelectorAll('.lesson').forEach((l, i) => {
+      l.classList.toggle('active', i === index);
+    });
+
+    // Update sidebar — skip nav-section dividers
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach((item, i) => {
+      item.classList.toggle('active', i === index);
+    });
+
+    // Progress counter
+    document.getElementById('progress').innerText = index + ' / ' + total;
+
+    // Prev button
+    document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+
+    // Next button label
+    document.getElementById('nextBtn').innerText = index === total ? '✓ Finished' : 'Next Lesson →';
+
+    // Scroll to top of main content
+    document.querySelector('.main').scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function changeLesson(dir) {
+    const next = current + dir;
+    if (next >= 0 && next <= total) jumpTo(next);
+  }
+
+  window.onload = () => jumpTo(0);
+</script>
+
+</body>
+</html>
