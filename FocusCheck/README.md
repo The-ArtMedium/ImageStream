@@ -1,98 +1,165 @@
-![ImageStream Local Suite](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000ea7071fda42e44e6fb676956.png)
+![FocusCheck](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000079871fd8d89be264c45c681.png)
 
-# ImageStream Local Suite
+# FocusCheck
 
-**Tools for everyone. No cloud. No subscriptions. No tracking. Free forever.**
+**Scan. Score. Recover. Keep the sharp. Drop the rest.**
 
-Built by [The Art Medium](https://github.com/The-ArtMedium) — for the photographer in a village, the editor in a bedroom, the journalist on deadline, and the archivist reclaiming decades of work.
+FocusCheck is a free, offline photo culling and sharpness recovery tool built for photographers who shoot volume — sports, equestrian, events. It scans your folder, scores every image, sorts them automatically, reads your EXIF data to understand *why* an image is soft, and gives you targeted recovery tools driven by the Laplacian score itself.
 
----
-
-## The Suite
-
-| Tool | What It Does | Platform |
-|------|-------------|----------|
-| 🎵 **LocalBeat** | Audio preparation — record, layer, mix offline | Windows · Mac · Linux |
-| ✂️ **LocalClip** | Video clipping and trimming — no export queue | Windows · Mac · Linux |
-| 🎬 **LocalEdit** | Video editor built for speed and simplicity | Windows · Mac · Linux |
-| 📷 **LocalRAW** | RAW image processing for artists and pros | Windows · Mac · Linux |
-| 📸 **LocalShot** | Image editing for everyone — JPG, PNG, any format | Windows · Mac · Linux |
-| 🌸 **BokehProStudio** | Creative and editorial bokeh simulation | Windows · Mac · Linux |
-| 🔍 **FocusCheck** | Sharpness culling, EXIF blur detection, Laplacian-guided recovery | Windows · Mac · Linux |
-| 🤖 **FaceTagger** | AI-powered face detection and athlete tagging | Windows · Mac · Linux |
-| 📚 **Darkroom** | SQL and Python crash courses — photography dataset | Web |
+Part of the [ImageStream Local Suite](https://the-artmedium.github.io/ImageStream/).
 
 ---
 
-## The Philosophy
+## How It Works
 
-In a world of expensive black-box tools that live in the cloud and charge by the month, ImageStream returns control to the creator.
+FocusCheck uses Laplacian variance — a proven computer vision technique — to measure the sharpness of every image in your folder. It then copies each image into a sorted output folder.
 
-Every tool in this suite:
-- Runs entirely on your device
-- Works without internet
-- Stores nothing outside your machine
-- Costs nothing — now or ever
+| Folder | What it means |
+|--------|--------------|
+| ✅ `sharp/` | In focus. Keepers. Ready to edit. |
+| 🔧 `fixable/` | Soft but worth recovering. |
+| 🗑️ `rejected/` | Too soft to rescue. Delete in one click. |
 
-We built this for the kid with a cheap laptop and a dream.  
-For the teacher with no WiFi.  
-For the senior discovering creativity for the first time.  
-For the professional who deserves tools that respect their work.
+Your originals are **never touched**. Everything is copied. You decide what to remove.
 
 ---
 
-## Why Free and Offline Is Not Just About Money
+## Features
 
-Yes, you can get Photoshop for $10 a month. But that $10 comes with conditions nobody talks about.
+### Scoring & Sorting
+- Laplacian variance scoring — fast, accurate, proven
+- **Auto-calibrated thresholds** — thresholds are set relative to your actual shoot, not a fixed global number. A dark arena shoot and a bright outdoor shoot are judged on their own terms
+- Images copied into `sharp/` `fixable/` `rejected/` automatically on scan
+- Visual list with score displayed per image
 
-**🌐 Internet required.**  
-Useless in the field. Useless in the village. Useless in a blackout.
+### EXIF Blur Detection
+- Reads shutter speed from EXIF on every image
+- **Distinguishes motion blur from focus error** — a critical difference for recovery
+  - Shot at 1/250s or slower → flagged as **Motion Blur** — directional sharpening strategy
+  - Shot faster → flagged as **Focus Error** — radial unsharp mask strategy
+- Shutter speed and blur type shown in the info bar for every image
+- List shows blur type marker: `〜` motion · `⊙` focus
 
-**👁 They see your work.**  
-Every image, every edit, every file passes through their servers. Your work is their data.
+### Recovery Panel
+- Recovery panel pre-loaded for every fixable and rejected image
+- **Strength slider auto-set from the score deficit** — the further below sharp threshold, the higher the starting point
+- Three recovery tiers (Gentle / Medium / Strong) driven by the Laplacian score
+- **Preview** — see the recovered result before committing
+- **Split Compare** — left half original, right half recovered, white divider, judge instantly
+- **Apply & Save to Sharp** — recovered file saved into `sharp/` folder, auto-advances to next
+- **Batch Recovery** — apply to all fixable images in one click, each using its own calibrated parameters, runs in background
 
-**©️ Copyright grey areas.**  
-Who owns what you create inside their cloud? Read the terms carefully.
+### Workflow
+- **Open Results Folder** button — opens `FocusCheck_Results/` directly in your file manager
+- Delete individual files or wipe the entire rejected folder in one click
+- Recovered images marked with ✓ in the list
 
-**🌍 One language.**  
-Most tools assume English. Billions of creators are excluded before they even open the app.
+### Languages
+7 languages built in — switch from the topbar, no restart needed. Arabic switches the full interface to right-to-left automatically.
 
-**♿ Not built for everyone.**  
-Small text. Complex interfaces. No high contrast. Designed for one type of user.
+🇺🇸 English · 🇪🇸 Español · 🇫🇷 Français · 🇵🇹 Português · 🇸🇦 العربية · 🇨🇳 中文 · 🇮🇳 हिन्दी
+- Auto-jumps to first fixable image after scan
 
-**💳 Credit card required.**  
-Excluding the unbanked. Excluding the young. Excluding the majority of the world.
-
-**📱 Heavy system requirements.**  
-Won't run on a $40 laptop. Won't run on an old school computer. Won't run where it's needed most.
-
-ImageStream runs on anything, anywhere, in any language, with no one watching.
-
-That is not a cheaper competitor to Photoshop.  
-**That is a different category entirely.**
+### Formats
+- JPG · JPEG · PNG · TIFF · BMP · WebP
+- RAW: CR2 · NEF · ARW · DNG · RAF · ORF · RW2 · CR3 *(requires rawpy)*
 
 ---
 
-## Downloads
+## Install
 
-Each tool has its own download page with installers for Windows, Mac and Linux.
+### Windows
+1. Download `FocusCheck-focuscheck-v0.1.0-Windows.zip`
+2. Unzip
+3. Double-click `FocusCheck.exe`
 
-→ [LocalBeat](https://the-artmedium.github.io/ImageStream/LocalBeat/localbeat.html)
+### Mac
+1. Download `FocusCheck-focuscheck-v0.1.0-Mac.zip`
+2. Unzip
+3. Open `FocusCheck.app`
+   - If blocked: System Preferences → Security → Open Anyway
 
-More download pages coming as each tool is released.
+### Linux
+1. Download `FocusCheck-focuscheck-v0.1.0-Linux.zip`
+2. Unzip
+3. Run in terminal:
+```bash
+chmod +x FocusCheck
+./FocusCheck
+```
+
+---
+
+## Run from Source
+
+```bash
+# Core dependencies (required)
+pip install opencv-python Pillow
+
+# RAW support (optional — enables CR2, NEF, ARW, DNG, etc.)
+pip install rawpy
+
+# Run
+python focus_check.py
+```
+
+**Requirements:** Python 3.8+
+
+---
+
+## Output Structure
+
+```
+YourShootFolder/
+└── FocusCheck_Results/
+    ├── sharp/
+    │   ├── IMG_001.jpg
+    │   └── IMG_005_recovered.jpg    ← recovered fixable
+    ├── fixable/
+    │   └── IMG_003.jpg
+    └── rejected/
+        └── IMG_002.jpg
+```
+
+---
+
+## Understanding the Recovery
+
+FocusCheck does not just apply a generic sharpening filter. Every recovery is guided by three pieces of data:
+
+**1. The Laplacian score deficit**
+How far below the sharp threshold is this image? The larger the deficit, the stronger the recovery pass. The strength slider is pre-set from this deficit automatically.
+
+**2. The blur type (from EXIF)**
+Motion blur and focus error respond to different techniques. Motion blur benefits from directional edge enhancement. Focus error responds better to radial unsharp mask. FocusCheck reads your shutter speed and picks the right strategy.
+
+**3. Your manual strength override**
+The slider lets you push harder or softer. Use Split Compare to judge whether the recovery is helping or adding noise before you commit.
+
+---
+
+## Part of the ImageStream Local Suite
+
+| Tool | What it does |
+|------|-------------|
+| [LocalBeat](../LocalBeat/) | Audio preparation |
+| [LocalShot](../LocalShot/) | Offline image editor — tone, color, crop, dehaze |
+| [LocalClip](../LocalClip/) | Video clipping |
+| [LocalEdit](../LocalEdit/) | Video editor |
+| [LocalRAW](../LocalRAW/) | RAW file processor |
+| **FocusCheck** | Sharpness scoring, culling and recovery |
+| [BokehProStudio](../BokehProStudio/) | Depth-of-field effects |
+
+All tools are free forever. All run offline. No subscriptions, no accounts, no tracking.
 
 ---
 
 ## License
 
-MIT License with Commons Clause.  
-Free to use, modify and share. Cannot be sold or packaged into paid products without written permission from The Art Medium.
-
-See [LICENSE](LICENSE) for full terms.  
-Commercial licensing: theartsmedium@gmail.com
+GPL v3 — Free to use, modify and distribute.
+Cannot be resold or bundled into commercial products.
+See [LICENSE](../LICENSE) for full terms.
 
 ---
 
-## The Glow is yours. These tools just help it shine.
-
-*ImageStream Local Suite — Part of The Art Medium*
+Built by [The Art Medium](https://github.com/The-ArtMedium) · theartsmedium@gmail.com
