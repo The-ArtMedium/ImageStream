@@ -3,229 +3,446 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FocusCheck — Sharpness Scoring for Photographers</title>
+<title>FocusCheck — Culling & Sharpness Recovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:      #0f0f0f;
     --bg2:     #161616;
     --bg3:     #1f1f1f;
+    --bg4:     #252525;
     --accent:  #f5a623;
     --accent2: #ff6b35;
+    --green:   #52b788;
+    --yellow:  #f4d35e;
+    --blue:    #7eb8f7;
+    --purple:  #c084fc;
+    --red:     #e63946;
     --text:    #f0f0f0;
     --text2:   #999;
     --text3:   #555;
     --radius:  14px;
-    --sharp:   #6bcf8a;
-    --fixable: #7eb8f7;
-    --reject:  #f08060;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
+  /* HERO */
   .hero { position: relative; text-align: center; padding: 0 0 60px; overflow: hidden; }
-  .hero-banner { width: 100%; max-height: 520px; object-fit: cover; display: block; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+  .hero-banner { width: 100%; max-height: 520px; object-fit: cover; display: block;
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
   .hero-content { position: relative; margin-top: -80px; z-index: 2; padding: 0 20px; }
-  .hero-content h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 800; letter-spacing: -1px; color: var(--text); }
+  .hero-content h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 800; letter-spacing: -1px; }
   .hero-content h1 span { color: var(--accent); }
-  .tagline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--text2); margin: 14px auto 0; max-width: 560px; line-height: 1.5; font-weight: 300; }
+  .tagline { font-size: clamp(1rem, 2.5vw, 1.3rem); color: var(--text2); margin: 14px auto 0; max-width: 580px; line-height: 1.6; font-weight: 300; }
+  .badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .badge { background: var(--bg3); color: var(--text2); font-size: 0.82rem; font-weight: 500; padding: 5px 14px; border-radius: 999px; border: 1px solid #2a2a2a; }
+  .badge.gold   { background: #f5a62318; color: var(--accent);  border-color: #f5a62340; }
+  .badge.green  { background: #52b78818; color: var(--green);   border-color: #52b78840; }
+  .badge.blue   { background: #7eb8f718; color: var(--blue);    border-color: #7eb8f740; }
+  .badge.purple { background: #c084fc18; color: var(--purple);  border-color: #c084fc40; }
 
-  .badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
-  .badge { background: var(--bg3); color: var(--text2); font-size: 0.85rem; font-weight: 500; padding: 6px 16px; border-radius: 999px; border: 1px solid #2a2a2a; }
-  .badge.gold { background: #f5a62318; color: var(--accent); border-color: #f5a62340; }
+  /* SECTIONS */
+  .section { padding: 60px 20px; max-width: 960px; margin: 0 auto; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); text-align: center; margin-bottom: 32px; }
+  .section-heading { font-family: 'Syne', sans-serif; font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800; margin-bottom: 14px; }
 
-  .downloads { padding: 20px 20px 60px; max-width: 900px; margin: 0 auto; }
-  .section-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); text-align: center; margin-bottom: 28px; }
-
+  /* DOWNLOADS */
   .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .download-card { background: var(--bg2); border: 1px solid #222; border-radius: var(--radius); padding: 28px 24px; text-align: center; transition: border-color 0.2s, transform 0.2s; }
+  .download-card { background: var(--bg2); border: 1px solid #222; border-radius: var(--radius);
+    padding: 28px 24px; text-align: center; transition: border-color .2s, transform .2s; }
   .download-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .platform-icon { font-size: 2.4rem; margin-bottom: 12px; display: block; }
-  .platform-name { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
-  .platform-info { font-size: 0.85rem; color: var(--text3); margin-bottom: 20px; }
-  .download-btn { display: inline-block; background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; transition: background 0.2s, transform 0.15s; }
+  .platform-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
+  .platform-name { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+  .platform-info { font-size: 0.82rem; color: var(--text3); margin-bottom: 20px; }
+  .download-btn { display: inline-block; background: var(--accent); color: #0f0f0f;
+    font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700;
+    padding: 11px 26px; border-radius: 8px; text-decoration: none; transition: background .2s, transform .15s; }
   .download-btn:hover { background: var(--accent2); transform: scale(1.04); }
 
-  /* HOW IT WORKS */
-  .how { padding: 60px 20px; max-width: 900px; margin: 0 auto; }
-  .sort-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 32px; }
+  /* SORT CARDS */
+  .sort-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
   .sort-card { background: var(--bg2); border-radius: var(--radius); padding: 28px 24px; border: 1px solid #222; }
-  .sort-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
-  .sort-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-  .sort-desc { font-size: 0.95rem; color: var(--text2); line-height: 1.6; }
-  .sort-card.sharp  { border-top: 3px solid var(--sharp); }
-  .sort-card.fixable{ border-top: 3px solid var(--fixable); }
-  .sort-card.reject { border-top: 3px solid var(--reject); }
-  .sort-title.sharp  { color: var(--sharp); }
-  .sort-title.fixable{ color: var(--fixable); }
-  .sort-title.reject { color: var(--reject); }
+  .sort-card.sharp   { border-top: 3px solid var(--green);  }
+  .sort-card.fixable { border-top: 3px solid var(--yellow); }
+  .sort-card.reject  { border-top: 3px solid var(--red);    }
+  .sort-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+  .sort-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .sort-title.sharp   { color: var(--green);  }
+  .sort-title.fixable { color: var(--yellow); }
+  .sort-title.reject  { color: var(--red);    }
+  .sort-desc { font-size: 0.92rem; color: var(--text2); line-height: 1.6; }
 
-  .features { background: var(--bg2); padding: 60px 20px; }
-  .features-inner { max-width: 900px; margin: 0 auto; }
-  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 36px; }
-  .feature-card { background: var(--bg); border: 1px solid #1e1e1e; border-radius: var(--radius); padding: 28px 24px; transition: border-color 0.2s; }
-  .feature-card:hover { border-color: #333; }
-  .feature-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
-  .feature-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
-  .feature-desc { font-size: 1rem; color: var(--text2); line-height: 1.65; }
+  /* FEATURE GRID */
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 24px; }
+  .feature-card { background: var(--bg2); border: 1px solid #222; border-radius: var(--radius); padding: 24px; }
+  .feature-icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+  .feature-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+  .feature-desc { font-size: 0.92rem; color: var(--text2); line-height: 1.65; }
+  .feature-desc strong { color: var(--text); }
 
-  .why { padding: 60px 20px; max-width: 760px; margin: 0 auto; text-align: center; }
-  .why h2 { font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; margin-bottom: 20px; line-height: 1.2; }
-  .why h2 span { color: var(--accent); }
-  .why p { font-size: 1.1rem; color: var(--text2); line-height: 1.8; margin-bottom: 16px; }
+  /* BLUR TYPE PANEL */
+  .blur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+  .blur-card { background: var(--bg2); border-radius: var(--radius); padding: 24px; border: 1px solid #222; }
+  .blur-card.motion { border-top: 3px solid var(--yellow); }
+  .blur-card.focus  { border-top: 3px solid var(--blue);   }
+  .blur-symbol { font-size: 2rem; margin-bottom: 8px; display: block; }
+  .blur-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .blur-name.motion { color: var(--yellow); }
+  .blur-name.focus  { color: var(--blue);   }
+  .blur-desc { font-size: 0.9rem; color: var(--text2); line-height: 1.6; }
 
-  footer { background: var(--bg2); border-top: 1px solid #1e1e1e; text-align: center; padding: 32px 20px; color: var(--text3); font-size: 0.9rem; }
-  footer a { color: var(--accent); text-decoration: none; }
-  .divider { height: 1px; background: linear-gradient(to right, transparent, #2a2a2a, transparent); max-width: 600px; margin: 0 auto; }
+  /* WORKFLOW STEPS */
+  .steps { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .step { display: flex; align-items: flex-start; gap: 16px; background: var(--bg2);
+    border-radius: var(--radius); padding: 20px 24px; border: 1px solid #222; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800;
+    color: var(--accent); min-width: 36px; line-height: 1; }
+  .step-content { flex: 1; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 0.98rem; font-weight: 700; margin-bottom: 4px; }
+  .step-desc { font-size: 0.9rem; color: var(--text2); line-height: 1.6; }
+
+  /* DEPS */
+  .deps { background: var(--bg2); border-radius: var(--radius); padding: 28px 32px; margin-top: 24px; border: 1px solid #222; }
+  .deps h4 { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 16px; }
+  .dep-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #222; }
+  .dep-row:last-child { border-bottom: none; }
+  .dep-name { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; min-width: 140px; }
+  .dep-desc { font-size: 0.88rem; color: var(--text2); }
+  .dep-badge { font-size: 0.75rem; padding: 2px 10px; border-radius: 999px; margin-left: auto; font-weight: 600; }
+  .dep-badge.req { background: #f5a62320; color: var(--accent); }
+  .dep-badge.opt { background: #52b78820; color: var(--green);  }
+
+  code { background: var(--bg3); color: var(--accent); padding: 2px 8px; border-radius: 5px; font-size: 0.88rem; }
+  pre { background: var(--bg3); border-radius: 10px; padding: 20px 24px; margin-top: 14px; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: var(--text2); font-size: 0.88rem; line-height: 1.7; }
+
+  /* SUITE TABLE */
+  .suite-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+  .suite-table th { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+    padding: 10px 16px; text-align: left; border-bottom: 1px solid #222; }
+  .suite-table td { padding: 14px 16px; font-size: 0.92rem; border-bottom: 1px solid #1a1a1a; }
+  .suite-table tr:last-child td { border-bottom: none; }
+  .suite-table tr.active td { background: #f5a62308; }
+  .suite-table a { color: var(--blue); text-decoration: none; }
+  .suite-table a:hover { text-decoration: underline; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: #1e1e1e; max-width: 960px; margin: 0 auto; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 0.85rem; }
+  footer a { color: var(--text2); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .blur-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<section class="hero">
+<!-- HERO -->
+<div class="hero">
   <img class="hero-banner"
        src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000079871fd8d89be264c45c681.png"
        alt="FocusCheck">
   <div class="hero-content">
     <h1>Focus<span>Check</span></h1>
-    <p class="tagline">Scan a folder. Score every shot.<br>Keep the sharp. Drop the rest.</p>
+    <p class="tagline">Scan. Score. Recover. Keep the sharp. Drop the rest.</p>
     <div class="badges">
       <span class="badge gold">Free Forever</span>
-      <span class="badge">100% Offline</span>
-      <span class="badge">Non-Destructive</span>
-      <span class="badge">JPG · PNG · TIFF · RAW</span>
+      <span class="badge">Offline</span>
+      <span class="badge green">RAW Support</span>
+      <span class="badge blue">EXIF Blur Detection</span>
+      <span class="badge purple">Batch Recovery</span>
+      <span class="badge">Split Compare</span>
       <span class="badge">Windows · Mac · Linux</span>
     </div>
   </div>
-</section>
+</div>
 
-<section class="downloads">
+<!-- DOWNLOADS -->
+<div class="section">
   <p class="section-title">Download</p>
   <div class="download-grid">
-
     <div class="download-card">
       <span class="platform-icon">🪟</span>
       <div class="platform-name">Windows</div>
       <div class="platform-info">Windows 10 / 11 · 64-bit</div>
       <a class="download-btn"
          href="https://github.com/The-ArtMedium/ImageStream/releases/download/focuscheck-v0.1.0/FocusCheck-focuscheck-v0.1.0-Windows.zip">
-        ↓ Download
+        Download .zip
       </a>
     </div>
-
     <div class="download-card">
       <span class="platform-icon">🍎</span>
       <div class="platform-name">Mac</div>
-      <div class="platform-info">macOS 12+ · Apple & Intel</div>
+      <div class="platform-info">macOS 11+ · Apple Silicon &amp; Intel</div>
       <a class="download-btn"
          href="https://github.com/The-ArtMedium/ImageStream/releases/download/focuscheck-v0.1.0/FocusCheck-focuscheck-v0.1.0-Mac.zip">
-        ↓ Download
+        Download .zip
       </a>
     </div>
-
     <div class="download-card">
       <span class="platform-icon">🐧</span>
       <div class="platform-name">Linux</div>
-      <div class="platform-info">Ubuntu 20.04+ · Debian</div>
+      <div class="platform-info">Ubuntu 20.04+ · Debian · Arch</div>
       <a class="download-btn"
          href="https://github.com/The-ArtMedium/ImageStream/releases/download/focuscheck-v0.1.0/FocusCheck-focuscheck-v0.1.0-Linux.zip">
-        ↓ Download
+        Download .zip
       </a>
     </div>
-
   </div>
-</section>
+</div>
 
 <div class="divider"></div>
 
-<section class="how">
+<!-- HOW IT WORKS -->
+<div class="section">
   <p class="section-title">How It Works</p>
-  <p style="text-align:center; color:var(--text2); max-width:560px; margin:0 auto 8px;">Point FocusCheck at any folder. It scores every image automatically and sorts them into three groups.</p>
   <div class="sort-grid">
-
     <div class="sort-card sharp">
       <span class="sort-icon">✅</span>
-      <div class="sort-title sharp">Sharp</div>
-      <p class="sort-desc">Keepers. In focus, ready to use. Copied into <code>FocusCheck_Results/sharp/</code></p>
+      <div class="sort-title sharp">sharp/</div>
+      <div class="sort-desc">In focus. Keepers. Ready to edit. Recovered images land here too.</div>
     </div>
-
     <div class="sort-card fixable">
       <span class="sort-icon">🔧</span>
-      <div class="sort-title fixable">Fixable</div>
-      <p class="sort-desc">Soft but salvageable. Worth sharpening in LocalRAW or LocalShot. Copied into <code>fixable/</code></p>
+      <div class="sort-title fixable">fixable/</div>
+      <div class="sort-desc">Soft but worth recovering. The recovery panel opens automatically for these.</div>
     </div>
-
     <div class="sort-card reject">
-      <span class="sort-icon">🗑️</span>
-      <div class="sort-title reject">Rejected</div>
-      <p class="sort-desc">Too soft to rescue. Copied into <code>rejected/</code> so you can review before deleting.</p>
+      <span class="sort-icon">🗑</span>
+      <div class="sort-title reject">rejected/</div>
+      <div class="sort-desc">Too soft to rescue. Try recovery first — then delete the whole folder in one click.</div>
+    </div>
+  </div>
+  <p style="margin-top:20px; color:var(--text3); font-size:0.9rem; text-align:center;">
+    Your originals are never touched. Everything is copied. You decide what to remove.
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- EXIF BLUR DETECTION -->
+<div class="section">
+  <p class="section-title">EXIF Blur Detection</p>
+  <h2 class="section-heading">Motion blur ≠ focus error</h2>
+  <p style="color:var(--text2); line-height:1.7; max-width:680px;">
+    Most culling tools treat all soft images the same. FocusCheck reads the shutter speed from your EXIF data and applies a different recovery strategy depending on what actually caused the softness.
+  </p>
+  <div class="blur-grid">
+    <div class="blur-card motion">
+      <span class="blur-symbol">〜</span>
+      <div class="blur-name motion">Motion Blur</div>
+      <div class="blur-desc">
+        Shot at <strong>1/250s or slower</strong>. The subject moved faster than the shutter.
+        FocusCheck uses <strong>directional edge enhancement</strong> — better suited to recover
+        movement smear than a radial filter.
+      </div>
+    </div>
+    <div class="blur-card focus">
+      <span class="blur-symbol">⊙</span>
+      <div class="blur-name focus">Focus Error</div>
+      <div class="blur-desc">
+        Shot at <strong>faster than 1/250s</strong>. The subject was still but the focus missed.
+        FocusCheck uses <strong>radial unsharp mask</strong> — the right tool for pulling
+        detail back from a soft focus plane.
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:16px; color:var(--text3); font-size:0.88rem;">
+    Shutter speed and blur type shown in the info bar for every image. List shows 〜 for motion · ⊙ for focus.
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<div class="section">
+  <p class="section-title">Features</p>
+  <div class="feature-grid">
+
+    <div class="feature-card">
+      <span class="feature-icon">📐</span>
+      <div class="feature-title">Auto-Calibrated Thresholds</div>
+      <div class="feature-desc">
+        No fixed global number. FocusCheck scores your whole folder first,
+        then <strong>sets sharp / fixable / rejected thresholds relative to your actual shoot</strong>.
+        A dark arena shoot and a bright outdoor shoot are judged on their own terms.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🎚</span>
+      <div class="feature-title">Laplacian-Guided Recovery</div>
+      <div class="feature-desc">
+        The recovery strength slider is <strong>pre-set from the score deficit</strong> —
+        how far below the sharp threshold this image sits.
+        Three tiers: Gentle · Medium · Strong.
+        Each driven by the actual numbers, not a guess.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">⧉</span>
+      <div class="feature-title">Split Compare</div>
+      <div class="feature-desc">
+        Left half original · right half recovered · white divider.
+        <strong>Judge instantly</strong> whether the recovery helped or added noise
+        before you commit to saving.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-title">Batch Recovery</div>
+      <div class="feature-desc">
+        Apply recovery to <strong>all fixable images in one click</strong>.
+        Each image uses its own score-calibrated parameters.
+        Runs in the background — UI stays live.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">👁</span>
+      <div class="feature-title">Preview Before Commit</div>
+      <div class="feature-desc">
+        Preview recovery on the full image before saving.
+        Then switch to Split Compare for side-by-side judgment.
+        Apply only when you are satisfied.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">📁</span>
+      <div class="feature-title">Open Results Folder</div>
+      <div class="feature-desc">
+        One button opens <code>FocusCheck_Results/</code> in your file manager.
+        Drag your <code>sharp/</code> folder straight into your editor.
+        No hunting through the original folder.
+      </div>
     </div>
 
   </div>
-</section>
+</div>
 
 <div class="divider"></div>
 
-<section class="features">
-  <div class="features-inner">
-    <p class="section-title">What FocusCheck Does</p>
-    <div class="feature-grid">
-
-      <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <div class="feature-title">Instant Scoring</div>
-        <p class="feature-desc">Scores every image using Laplacian variance — the same method used by professional focus detection systems. Runs in seconds.</p>
+<!-- WORKFLOW -->
+<div class="section">
+  <p class="section-title">The Workflow</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Open your shoot folder</div>
+        <div class="step-desc">FocusCheck scores every image. Auto-calibrates thresholds to this shoot. Copies everything into sharp / fixable / rejected.</div>
       </div>
-
-      <div class="feature-card">
-        <span class="feature-icon">🖼️</span>
-        <div class="feature-title">Visual Preview</div>
-        <p class="feature-desc">See thumbnails of each category before you delete anything. The GUI shows you exactly what is sharp, fixable and rejected.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Review fixable images</div>
+        <div class="step-desc">Auto-jumps to first fixable. Recovery panel is pre-loaded with the right strength and strategy for each image based on its score and EXIF data.</div>
       </div>
-
-      <div class="feature-card">
-        <span class="feature-icon">🛡️</span>
-        <div class="feature-title">Non-Destructive</div>
-        <p class="feature-desc">FocusCheck never deletes or modifies your originals. Everything is copied. You decide what to remove.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Preview · Split · Apply or Batch</div>
+        <div class="step-desc">Preview individually. Use Split Compare to judge. Apply one at a time or hit Batch to process all fixable images at once.</div>
       </div>
-
-      <div class="feature-card">
-        <span class="feature-icon">📊</span>
-        <div class="feature-title">Summary Report</div>
-        <p class="feature-desc">After each scan you get a count per category, the single sharpest image and the softest image in the folder.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Delete rejected in one click</div>
+        <div class="step-desc">Delete All Rejected wipes the rejected folder. Space freed instantly.</div>
       </div>
-
-      <div class="feature-card">
-        <span class="feature-icon">📁</span>
-        <div class="feature-title">Any Format</div>
-        <p class="feature-desc">Works with JPG, PNG, TIFF and RAW files. Drop in a folder straight off the card — no conversion needed first.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Open Results Folder — start editing</div>
+        <div class="step-desc">Your sharp/ folder contains keepers and recovered images. Open it straight from FocusCheck and drag into LocalShot, LocalRAW, or any editor.</div>
       </div>
-
-      <div class="feature-card">
-        <span class="feature-icon">✈️</span>
-        <div class="feature-title">Works in the Field</div>
-        <p class="feature-desc">Runs on any laptop, even old hardware. No internet, no account, no cloud. Built for the field — from stadium to stable.</p>
-      </div>
-
     </div>
   </div>
-</section>
+</div>
 
 <div class="divider"></div>
 
-<section class="why">
-  <h2>You shoot <span>500 frames</span>.<br>You keep 50.<br>FocusCheck finds them.</h2>
-  <p>Every sports photographer knows the drill. You come back from a shoot with 800 frames. You spend an hour culling them one by one just to find the keepers.</p>
-  <p>FocusCheck does that cull in seconds. Point it at the folder, walk away, come back to three sorted piles.</p>
-  <p style="color: var(--accent); font-weight: 500;">Your shots. Sorted. Instantly. Free.</p>
-</section>
+<!-- RUN FROM SOURCE -->
+<div class="section">
+  <p class="section-title">Run from Source</p>
+  <div class="deps">
+    <h4>Dependencies</h4>
+    <div class="dep-row">
+      <div class="dep-name">opencv-python</div>
+      <div class="dep-desc">Laplacian variance scoring</div>
+      <span class="dep-badge req">Required</span>
+    </div>
+    <div class="dep-row">
+      <div class="dep-name">Pillow</div>
+      <div class="dep-desc">Image loading, preview, recovery, EXIF reading</div>
+      <span class="dep-badge req">Required</span>
+    </div>
+    <div class="dep-row">
+      <div class="dep-name">rawpy</div>
+      <div class="dep-desc">RAW format support — CR2, NEF, ARW, DNG, RAF, ORF, RW2, CR3</div>
+      <span class="dep-badge opt">Optional</span>
+    </div>
+  </div>
+<pre><code># Required
+pip install opencv-python Pillow
+
+# Optional — enables RAW support
+pip install rawpy
+
+# Run
+python focus_check.py</code></pre>
+  <p style="margin-top:14px; color:var(--text3); font-size:0.88rem;">Python 3.8+  ·  tkinter included in standard Python</p>
+</div>
 
 <div class="divider"></div>
 
+<!-- SUITE TABLE -->
+<div class="section">
+  <p class="section-title">ImageStream Local Suite</p>
+  <table class="suite-table">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>What it does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="../LocalBeat/localbeat.html">🎵 LocalBeat</a></td><td>Audio preparation — record, layer, mix offline</td></tr>
+      <tr><td><a href="../LocalShot/localshot.html">📸 LocalShot</a></td><td>Image editor — tone, color, crop, dehaze, sharpening</td></tr>
+      <tr><td><a href="../LocalClip/localclip.html">✂️ LocalClip</a></td><td>Video clipping and trimming</td></tr>
+      <tr><td><a href="../LocalEdit/localedit.html">🎬 LocalEdit</a></td><td>Video editor</td></tr>
+      <tr><td><a href="../LocalRAW/localraw.html">📷 LocalRAW</a></td><td>RAW image processing</td></tr>
+      <tr class="active"><td>🔍 <strong>FocusCheck</strong></td><td>Sharpness culling, EXIF blur detection, recovery</td></tr>
+      <tr><td><a href="../BokehProStudio/bokeh.html">🌸 BokehProStudio</a></td><td>Creative and editorial bokeh simulation</td></tr>
+      <tr><td><a href="../Darkroom/darkroom.html">📚 Darkroom</a></td><td>SQL and Python crash courses — photography dataset</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:20px; color:var(--text3); font-size:0.88rem; text-align:center;">
+    All tools are free forever · All run offline · No subscriptions · No accounts · No tracking
+  </p>
+</div>
+
+<!-- FOOTER -->
 <footer>
-  <p>FocusCheck is part of the <a href="https://the-artmedium.github.io/ImageStream/">ImageStream Local Suite</a></p>
-  <p style="margin-top:8px;">Built by <a href="https://github.com/The-ArtMedium">The Art Medium</a> · Free forever · No cloud · No tracking</p>
-  <p style="margin-top:8px; font-size:0.8rem;">MIT License with Commons Clause · theartsmedium@gmail.com</p>
+  <p>FocusCheck · Part of <a href="https://the-artmedium.github.io/ImageStream/">ImageStream Local Suite</a></p>
+  <p style="margin-top:6px;">Built by <a href="https://github.com/The-ArtMedium">The Art Medium</a> · theartsmedium@gmail.com</p>
+  <p style="margin-top:6px;">GPL v3 · Free to use, modify and distribute · Cannot be resold</p>
 </footer>
 
 </body>
