@@ -1,136 +1,98 @@
-![FocusCheck](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000079871fd8d89be264c45c681.png)
+![ImageStream Local Suite](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000ea7071fda42e44e6fb676956.png)
 
-# FocusCheck
+# ImageStream Local Suite
 
-**Scan a folder. Score every shot. Keep the sharp. Drop the rest.**
+**Tools for everyone. No cloud. No subscriptions. No tracking. Free forever.**
 
-FocusCheck is a free, offline photo culling tool built for photographers who shoot volume — sports, equestrian, events. It scans a folder of images, scores every one for sharpness, and sorts them automatically into three groups so you spend minutes culling instead of hours.
-
-Part of the [ImageStream Local Suite](https://the-artmedium.github.io/ImageStream/).
+Built by [The Art Medium](https://github.com/The-ArtMedium) — for the photographer in a village, the editor in a bedroom, the journalist on deadline, and the archivist reclaiming decades of work.
 
 ---
 
-## How It Works
+## The Suite
 
-FocusCheck uses Laplacian variance — a proven computer vision technique — to measure the sharpness of every image in a folder. It then copies each image into a sorted output folder.
-
-| Folder | What it means |
-|--------|--------------|
-| ✅ `sharp/` | In focus. Keepers. Ready to use. |
-| 🔧 `fixable/` | Soft but salvageable. Worth sharpening. |
-| 🗑️ `rejected/` | Too soft to rescue. Review before deleting. |
-
-Your originals are **never touched**. Everything is copied. You decide what to remove.
-
----
-
-## Features
-
-- Scores every image using Laplacian variance focus detection
-- Visual GUI — see thumbnails of each category before you delete anything
-- Summary report after each scan — count per category, sharpest image, softest image
-- Non-destructive — originals never modified or deleted
-- Works on JPG, JPEG, PNG, TIFF, BMP, WebP
-- Runs fully offline — no internet, no account, no cloud
-- Works on old hardware — built for field use
+| Tool | What It Does | Platform |
+|------|-------------|----------|
+| 🎵 **LocalBeat** | Audio preparation — record, layer, mix offline | Windows · Mac · Linux |
+| ✂️ **LocalClip** | Video clipping and trimming — no export queue | Windows · Mac · Linux |
+| 🎬 **LocalEdit** | Video editor built for speed and simplicity | Windows · Mac · Linux |
+| 📷 **LocalRAW** | RAW image processing for artists and pros | Windows · Mac · Linux |
+| 📸 **LocalShot** | Image editing for everyone — JPG, PNG, any format | Windows · Mac · Linux |
+| 🌸 **BokehProStudio** | Creative and editorial bokeh simulation | Windows · Mac · Linux |
+| 🔍 **FocusCheck** | Sharpness culling, EXIF blur detection, Laplacian-guided recovery | Windows · Mac · Linux |
+| 🤖 **FaceTagger** | AI-powered face detection and athlete tagging | Windows · Mac · Linux |
+| 📚 **Darkroom** | SQL and Python crash courses — photography dataset | Web |
 
 ---
 
-## Install
+## The Philosophy
 
-### Windows
-1. Download `FocusCheck-focuscheck-v0.1.0-Windows.zip`
-2. Unzip
-3. Double-click `FocusCheck.exe`
+In a world of expensive black-box tools that live in the cloud and charge by the month, ImageStream returns control to the creator.
 
-### Mac
-1. Download `FocusCheck-focuscheck-v0.1.0-Mac.zip`
-2. Unzip
-3. Open `FocusCheck.app`
-   - If blocked: System Preferences → Security → Open Anyway
+Every tool in this suite:
+- Runs entirely on your device
+- Works without internet
+- Stores nothing outside your machine
+- Costs nothing — now or ever
 
-### Linux
-1. Download `FocusCheck-focuscheck-v0.1.0-Linux.zip`
-2. Unzip
-3. Run in terminal:
-```bash
-chmod +x FocusCheck
-./FocusCheck
-```
+We built this for the kid with a cheap laptop and a dream.  
+For the teacher with no WiFi.  
+For the senior discovering creativity for the first time.  
+For the professional who deserves tools that respect their work.
 
 ---
 
-## Run from Source
+## Why Free and Offline Is Not Just About Money
 
-If you prefer to run the Python script directly:
+Yes, you can get Photoshop for $10 a month. But that $10 comes with conditions nobody talks about.
 
-```bash
-# Install dependencies
-pip install opencv-python Pillow
+**🌐 Internet required.**  
+Useless in the field. Useless in the village. Useless in a blackout.
 
-# Run
-python focus_check.py
-```
+**👁 They see your work.**  
+Every image, every edit, every file passes through their servers. Your work is their data.
 
-**Requirements:** Python 3.8+, opencv-python, Pillow
+**©️ Copyright grey areas.**  
+Who owns what you create inside their cloud? Read the terms carefully.
 
----
+**🌍 One language.**  
+Most tools assume English. Billions of creators are excluded before they even open the app.
 
-## Sharpness Thresholds
+**♿ Not built for everyone.**  
+Small text. Complex interfaces. No high contrast. Designed for one type of user.
 
-FocusCheck uses two thresholds based on Laplacian variance scores:
+**💳 Credit card required.**  
+Excluding the unbanked. Excluding the young. Excluding the majority of the world.
 
-| Score | Category |
-|-------|----------|
-| 150 and above | Sharp ✅ |
-| 50 – 149 | Fixable 🔧 |
-| Below 50 | Rejected 🗑️ |
+**📱 Heavy system requirements.**  
+Won't run on a $40 laptop. Won't run on an old school computer. Won't run where it's needed most.
 
-These values work well for most camera systems. If you shoot with a very soft lens or want stricter culling, you can adjust `SHARP_THRESHOLD` and `FIXABLE_THRESHOLD` at the top of `focus_check.py`.
+ImageStream runs on anything, anywhere, in any language, with no one watching.
 
----
-
-## Output Structure
-
-After each scan, FocusCheck creates a `FocusCheck_Results/` folder next to your source images:
-
-```
-FocusCheck_Results/
-├── sharp/
-│   ├── IMG_001.jpg
-│   └── IMG_005.jpg
-├── fixable/
-│   ├── IMG_003.jpg
-│   └── IMG_009.jpg
-└── rejected/
-    ├── IMG_002.jpg
-    └── IMG_007.jpg
-```
+That is not a cheaper competitor to Photoshop.  
+**That is a different category entirely.**
 
 ---
 
-## Part of the ImageStream Local Suite
+## Downloads
 
-| Tool | What it does |
-|------|-------------|
-| [LocalBeat](../LocalBeat/) | Audio preparation |
-| [LocalShot](../LocalShot/) | Screenshot capture |
-| [LocalClip](../LocalClip/) | Video clipping |
-| [LocalEdit](../LocalEdit/) | Video editor |
-| [LocalRAW](../LocalRAW/) | RAW file processor |
-| **FocusCheck** | Sharpness scoring and culling |
-| [BokehProStudio](../BokehProStudio/) | Depth-of-field effects |
+Each tool has its own download page with installers for Windows, Mac and Linux.
 
-All tools are free forever. All run offline. No subscriptions, no accounts, no tracking.
+→ [LocalBeat](https://the-artmedium.github.io/ImageStream/LocalBeat/localbeat.html)
+
+More download pages coming as each tool is released.
 
 ---
 
 ## License
 
-MIT License with Commons Clause.
-Free to use, modify and distribute personally.
-May not be bundled into commercial products or used as a promotional feature without written permission from The Art Medium.
+MIT License with Commons Clause.  
+Free to use, modify and share. Cannot be sold or packaged into paid products without written permission from The Art Medium.
+
+See [LICENSE](LICENSE) for full terms.  
+Commercial licensing: theartsmedium@gmail.com
 
 ---
 
-Built by [The Art Medium](https://github.com/The-ArtMedium) · theartsmedium@gmail.com
+## The Glow is yours. These tools just help it shine.
+
+*ImageStream Local Suite — Part of The Art Medium*
