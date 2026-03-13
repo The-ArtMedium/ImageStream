@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd FocusCheck
-          pip install opencv-python Pillow pyinstaller
+          pip install opencv-python Pillow rawpy pyinstaller
 
       - name: Build executable
         run: |
@@ -55,7 +55,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd FocusCheck
-          pip3 install opencv-python Pillow pyinstaller
+          pip3 install opencv-python Pillow rawpy pyinstaller
 
       - name: Build executable
         run: |
@@ -90,7 +90,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd FocusCheck
-          pip3 install opencv-python Pillow pyinstaller
+          pip3 install opencv-python Pillow rawpy pyinstaller
 
       - name: Build executable
         run: |
