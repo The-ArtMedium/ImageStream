@@ -3,49 +3,635 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="0; url=Darkroom/Before_You_Start.html">
-<title>ImageStream — Redirecting to Darkroom</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,700;1,700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<title>ImageStream Local Suite — Free Tools for Every Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #080808;
+    --bg2:     #0f0f0f;
+    --bg3:     #161616;
+    --bg4:     #1e1e1e;
+    --bg5:     #252525;
+    --accent:  #f5a623;
+    --accent2: #e8941a;
+    --text:    #f0f0f0;
+    --text2:   #888;
+    --text3:   #444;
+    --radius:  12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
-    background: #1a1a14;
-    color: #f5f0e3;
-    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .hero-banner {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    display: block;
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    margin-top: -120px;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px 80px;
+  }
+
+  .suite-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.3s;
+  }
+
+  .hero-title span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--text2);
+    margin: 20px auto 0;
+    max-width: 520px;
+    line-height: 1.7;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .hero-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .badge {
+    background: var(--bg3);
+    border: 1px solid #2a2a2a;
+    color: var(--text2);
+    font-size: 0.75rem;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .badge.gold { background: #f5a62315; color: var(--accent); border-color: #f5a62335; }
+
+  /* ── TOOLS GRID ── */
+  .tools-section {
+    padding: 20px 20px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text3);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── TOOL CARD ── */
+  .tool-card {
+    background: var(--bg2);
+    border: 1px solid #1a1a1a;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px #f5a62320;
+  }
+
+  /* Staggered animation delays */
+  .tool-card:nth-child(1) { animation-delay: 0.1s; }
+  .tool-card:nth-child(2) { animation-delay: 0.15s; }
+  .tool-card:nth-child(3) { animation-delay: 0.2s; }
+  .tool-card:nth-child(4) { animation-delay: 0.25s; }
+  .tool-card:nth-child(5) { animation-delay: 0.3s; }
+  .tool-card:nth-child(6) { animation-delay: 0.35s; }
+  .tool-card:nth-child(7) { animation-delay: 0.4s; }
+  .tool-card:nth-child(8) { animation-delay: 0.45s; }
+
+  .card-banner {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85);
+    transition: filter 0.25s ease;
+  }
+
+  .tool-card:hover .card-banner {
+    filter: brightness(1);
+  }
+
+  .card-body {
+    padding: 20px 22px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-top {
     display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    text-align: center;
-    padding: 32px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
-  .wrap { max-width: 480px; }
-  .logo {
-    font-family: 'Lora', serif;
-    font-size: 48px;
-    font-weight: 700;
-    font-style: italic;
-    color: #e8b84b;
-    margin-bottom: 12px;
+
+  .card-icon {
+    font-size: 1.4rem;
+    line-height: 1;
   }
-  p { color: #9a9278; font-size: 16px; margin-bottom: 28px; }
-  a {
-    display: inline-block;
-    background: #e8b84b;
-    color: #1a1a14;
-    padding: 14px 32px;
-    border-radius: 8px;
+
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
     font-weight: 700;
-    font-size: 16px;
+    color: var(--text);
+  }
+
+  .card-name span { color: var(--accent); }
+
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--text2);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  .card-platforms {
+    font-size: 0.72rem;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  .card-btn {
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 6px;
     text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .card-btn:hover { background: var(--accent2); }
+
+  .card-tag {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: 10px;
+  }
+
+  .tag-new  { background: #f5a62320; color: var(--accent); border: 1px solid #f5a62340; }
+  .tag-web  { background: #60a5fa20; color: #60a5fa;        border: 1px solid #60a5fa40; }
+  .tag-edu  { background: #4ade8020; color: #4ade80;        border: 1px solid #4ade8040; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #2a2a2a, transparent);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── PHILOSOPHY ── */
+  .philosophy {
+    padding: 80px 20px;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .phil-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  .phil-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 32px;
+    color: var(--text);
+  }
+
+  .phil-body {
+    font-size: 0.95rem;
+    color: var(--text2);
+    line-height: 1.85;
+    text-align: left;
+  }
+
+  .phil-body p { margin-bottom: 16px; }
+
+  .phil-body strong { color: var(--text); font-weight: 500; }
+
+  .phil-quote {
+    border-left: 3px solid var(--accent);
+    padding: 16px 24px;
+    margin: 32px 0;
+    background: var(--bg3);
+    border-radius: 0 8px 8px 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--text);
+    font-style: italic;
+    text-align: left;
+  }
+
+  /* ── WHY FREE ── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .why-card {
+    background: var(--bg2);
+    border: 1px solid #1a1a1a;
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .why-icon { font-size: 1.4rem; margin-bottom: 8px; display: block; }
+  .why-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .why-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid #1a1a1a;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 0.8rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  footer a { color: var(--text2); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .tools-grid { grid-template-columns: 1fr; }
+    .card-banner { height: 130px; }
+    .why-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="logo">🌑 Darkroom</div>
-    <p>Taking you to the ImageStream Darkroom…</p>
-    <a href="Darkroom/Before_You_Start.html">Enter the Darkroom →</a>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-banner"
+       src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000ea7071fda42e44e6fb676956.png"
+       alt="ImageStream Local Suite">
+  <div class="hero-content">
+    <p class="suite-label">The Art Medium · Free Forever</p>
+    <h1 class="hero-title">Image<span>Stream</span><br>Local Suite</h1>
+    <p class="hero-sub">Eight tools. No cloud. No subscriptions. No tracking. Built for the photographer in a village, the editor in a bedroom, and the journalist on deadline.</p>
+    <div class="hero-badges">
+      <span class="badge gold">Free Forever</span>
+      <span class="badge">100% Offline</span>
+      <span class="badge">No Account</span>
+      <span class="badge">No Tracking</span>
+      <span class="badge">7 Languages</span>
+      <span class="badge">Windows · Mac · Linux</span>
+      <span class="badge">Open Source · GPL v3</span>
+    </div>
   </div>
+</div>
+
+<!-- TOOLS -->
+<div class="tools-section">
+  <p class="section-label">The Suite — 8 Tools</p>
+  <div class="tools-grid">
+
+    <!-- FocusCheck -->
+    <a class="tool-card" href="FocusCheck/focuscheck.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000db6471fd80cf4807d128341a.png"
+           alt="FocusCheck">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">🔍</span>
+          <span class="card-name">Focus<span>Check</span></span>
+        </div>
+        <p class="card-desc">Sharpness culling with EXIF blur detection. Scores every image, auto-copies sharp ones, then opens a contact sheet so you choose what's worth your storage before anything is copied. Recovery guided by the Laplacian score itself.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-tag tag-new">v0.3.0</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- LocalBeat -->
+    <a class="tool-card" href="LocalBeat/localbeat.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000a9a871f5b1870827001b328a.png"
+           alt="LocalBeat">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">🎵</span>
+          <span class="card-name">Local<span>Beat</span></span>
+        </div>
+        <p class="card-desc">Audio preparation tool. Record, layer and mix audio entirely offline. Multi-language, accessible, no cloud required. Built for creators who work in the field without reliable internet.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- LocalShot -->
+    <a class="tool-card" href="LocalShot/localshot.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_0000000014c0722fbb97b36eaf9e700b.png"
+           alt="LocalShot">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">📸</span>
+          <span class="card-name">Local<span>Shot</span></span>
+        </div>
+        <p class="card-desc">Offline image editor for everyone. Tone, color, white balance, sharpening, dehaze, crop, resize, rotate. Simple and Advanced mode. Works on JPG, PNG and all common formats. No subscription, no watermark.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- LocalClip -->
+    <a class="tool-card" href="LocalClip/localclip.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001aa471f58709732daec60611.png"
+           alt="LocalClip">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">✂️</span>
+          <span class="card-name">Local<span>Clip</span></span>
+        </div>
+        <p class="card-desc">Video trimming without the export queue. Cut any clip to exactly the length you need. No re-encoding, no waiting, no watermark. Perfect for trimming Reels and Stories entirely offline.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- LocalEdit -->
+    <a class="tool-card" href="LocalEdit/localedit.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000958071f5bca5dff8ac36475a.png"
+           alt="LocalEdit">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">🎬</span>
+          <span class="card-name">Local<span>Edit</span></span>
+        </div>
+        <p class="card-desc">Layer-based video editor. Video, audio, image and text layers on a timeline. Clean renderer with no watermarks. Built for speed and simplicity on any machine.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- LocalRAW -->
+    <a class="tool-card" href="LocalRAW/localraw.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001a1471fd8403e1127c08d013.png"
+           alt="LocalRAW">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">📷</span>
+          <span class="card-name">Local<span>RAW</span></span>
+        </div>
+        <p class="card-desc">RAW image processing for artists and professionals. Supports CR2, NEF, ARW, DNG and more. Full tone and color controls. Non-destructive. Runs offline on any machine.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Windows · Mac · Linux</span>
+          <span class="card-btn">Download</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- BokehProStudio -->
+    <a class="tool-card" href="BokehProStudio/bokeh.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/copilot_image_1770505565806.jpeg"
+           alt="BokehProStudio">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">🌸</span>
+          <span class="card-name">Bokeh<span>Pro</span>Studio</span>
+        </div>
+        <p class="card-desc">Creative and editorial depth-of-field simulation. Applies professional bokeh effects to your images directly in the browser. No install required — runs on any device with a browser.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Any browser</span>
+          <span class="card-tag tag-web">Web</span>
+          <span class="card-btn">Open</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Darkroom -->
+    <a class="tool-card" href="Darkroom/darkroom.html">
+      <img class="card-banner"
+           src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000ea7071fda42e44e6fb676956.png"
+           alt="ImageStream Darkroom">
+      <div class="card-body">
+        <div class="card-top">
+          <span class="card-icon">📚</span>
+          <span class="card-name">Image<span>Stream</span> Darkroom</span>
+        </div>
+        <p class="card-desc">Free SQL, Python and Excel crash courses built entirely around a photography dataset. Learn data skills through work you already understand. No prior experience required.</p>
+        <div class="card-footer">
+          <span class="card-platforms">Any browser</span>
+          <span class="card-tag tag-edu">Education</span>
+          <span class="card-btn">Learn</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PHILOSOPHY -->
+<div class="philosophy">
+  <p class="phil-label">Why We Built This</p>
+  <h2 class="phil-title">A different category entirely.</h2>
+  <div class="phil-body">
+    <p>Yes, you can get Photoshop for $10 a month. But that $10 comes with conditions nobody talks about.</p>
+    <p><strong>Internet required.</strong> Useless in the field. Useless in the village. Useless in a blackout.</p>
+    <p><strong>They see your work.</strong> Every image, every edit, every file passes through their servers. Your work is their data.</p>
+    <p><strong>One language.</strong> Most tools assume English. Billions of creators are excluded before they even open the app.</p>
+    <p><strong>Credit card required.</strong> Excluding the unbanked. Excluding the young. Excluding the majority of the world.</p>
+    <div class="phil-quote">
+      "ImageStream runs on anything, anywhere, in any language, with no one watching. That is not a cheaper competitor to Photoshop. That is a different category entirely."
+    </div>
+    <p>We built this for the kid with a cheap laptop and a dream. For the teacher with no WiFi. For the senior discovering creativity for the first time. For the professional who deserves tools that respect their work.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- WHY FREE AND OFFLINE -->
+<div style="padding: 60px 0 20px; text-align:center; position:relative; z-index:1;">
+  <p class="section-label">What Free and Offline Really Means</p>
+</div>
+<div class="why-grid">
+  <div class="why-card">
+    <span class="why-icon">🌐</span>
+    <div class="why-title">Works Offline</div>
+    <div class="why-desc">No internet needed. Works in the field, the village, the classroom, the blackout.</div>
+  </div>
+  <div class="why-card">
+    <span class="why-icon">🔒</span>
+    <div class="why-title">Private</div>
+    <div class="why-desc">Nothing leaves your device. Your images, your edits, your data — nobody else's.</div>
+  </div>
+  <div class="why-card">
+    <span class="why-icon">💳</span>
+    <div class="why-title">No Card Required</div>
+    <div class="why-desc">Free means free. No trial. No freemium. No credit card. No expiry.</div>
+  </div>
+  <div class="why-card">
+    <span class="why-icon">🌍</span>
+    <div class="why-title">7 Languages</div>
+    <div class="why-desc">English · Español · Français · Português · العربية · 中文 · हिन्दी</div>
+  </div>
+  <div class="why-card">
+    <span class="why-icon">♿</span>
+    <div class="why-title">Accessible</div>
+    <div class="why-desc">WCAG standards. High contrast. Large text support. Built for everyone.</div>
+  </div>
+  <div class="why-card">
+    <span class="why-icon">💻</span>
+    <div class="why-title">Any Machine</div>
+    <div class="why-desc">Runs on old hardware. The $40 laptop. The school computer. Whatever you have.</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--text2); margin-bottom:12px;">
+    The Glow is yours. These tools just help it shine.
+  </p>
+  <p>Built by <a href="https://github.com/The-ArtMedium">The Art Medium</a> · <a href="mailto:theartsmedium@gmail.com">theartsmedium@gmail.com</a></p>
+  <p style="margin-top:8px;">GPL v3 · Free to use, modify and distribute · Cannot be resold</p>
+  <p style="margin-top:8px;"><a href="https://github.com/The-ArtMedium/ImageStream">GitHub Repository</a></p>
+</footer>
+
 </body>
 </html>
