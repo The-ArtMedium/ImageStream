@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImageStream Darkroom — Data Courses</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,700;1,700&family=Source+Code+Pro:wght@400;600&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #1a1a14;
+    --bg2:    #232318;
+    --bg3:    #2c2c20;
+    --border: #3a3a2a;
+    --border2:#4a4a38;
+    --text:   #f5f0e3;
+    --text2:  #d4ccb8;
+    --text3:  #9a9278;
+    --gold:   #e8b84b;
+    --py:     #6bcf8a;
+    --sql:    #e8b84b;
+    --xl:     #21a366;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 80px 24px 60px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .eyebrow {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  header h1 em {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  header p {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--text2);
+    max-width: 560px;
+    margin: 0 auto 36px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  /* ── DATASET STRIP ── */
+  .dataset-strip {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ds-pill {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .ds-pill span { color: var(--gold); }
+
+  /* ── MAIN GRID ── */
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 24px 100px;
+  }
+
+  .section-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text3);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 80px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 40px 36px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: var(--card-accent);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  /* ── CARD GLOW ── */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, var(--card-glow) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .card:hover::after { opacity: 1; }
+
+  .card--py  { --card-accent: var(--py);  --card-glow: rgba(107,207,138,0.06); }
+  .card--sql { --card-accent: var(--sql); --card-glow: rgba(232,184,75,0.06); }
+  .card--xl  { --card-accent: var(--xl);  --card-glow: rgba(33,163,102,0.06); }
+
+  .card-icon {
+    font-size: 36px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .card-tag {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--card-accent);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .card h2 {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card p {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  /* ── LESSON PILLS ── */
+  .lesson-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+
+  .lp {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'Source Code Pro', monospace;
+  }
+
+  /* ── ENTER BUTTON ── */
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-accent);
+    color: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .card-btn:hover { opacity: 0.88; transform: scale(1.03); }
+
+  /* ── BOTTOM — Three paths ── */
+  .paths {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 40px 48px;
+    text-align: center;
+  }
+
+  .paths h3 {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .paths p {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 600px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .path-row {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+  }
+
+  .path-item {
+    padding: 10px 20px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  .path-item:first-child { border-radius: 8px 0 0 8px; }
+  .path-item:last-child  { border-radius: 0 8px 8px 0; }
+
+  .path-item.py  { color: var(--py);  border-color: var(--py);  background: rgba(107,207,138,0.07); }
+  .path-item.sql { color: var(--sql); border-color: var(--sql); background: rgba(232,184,75,0.07); }
+  .path-item.xl  { color: var(--xl);  border-color: var(--xl);  background: rgba(33,163,102,0.07); }
+
+  .arrow {
+    padding: 10px 8px;
+    color: var(--text3);
+    border-top: 1px solid var(--border2);
+    border-bottom: 1px solid var(--border2);
+    background: var(--bg3);
+    font-size: 13px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  footer a { color: var(--gold); text-decoration: none; }
+
+  /* ── STAGGER ANIMATION ── */
+  .card { opacity: 0; transform: translateY(24px); animation: rise 0.5s ease forwards; }
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.22s; }
+  .card:nth-child(3) { animation-delay: 0.34s; }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header { opacity: 0; animation: rise 0.5s ease 0.05s forwards; }
+  .paths { opacity: 0; animation: rise 0.5s ease 0.45s forwards; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/image_1773505455459.jpeg"
+       alt="ImageStream Darkroom"
+       style="width:100%; max-height:420px; object-fit:cover; display:block; margin-bottom:32px;
+              mask-image:linear-gradient(to bottom,black 60%,transparent 100%);
+              -webkit-mask-image:linear-gradient(to bottom,black 60%,transparent 100%);">
+  <div class="eyebrow">ImageStream · The Art Medium</div>
+  <h1>The <em>Darkroom</em><br>Data Courses</h1>
+  <p>Three ways to work with your photography archive. Same data. Same tables. Choose your weapon.</p>
+  <div class="dataset-strip">
+    <div class="ds-pill">📂 <span>photographers.csv</span></div>
+    <div class="ds-pill">📂 <span>shoots.csv</span></div>
+    <div class="ds-pill">📂 <span>equipment.csv</span></div>
+    <div class="ds-pill">🗃 <span>750,000 records</span></div>
+  </div>
+</header>
+
+<main>
+  <p class="section-label">Choose your course</p>
+
+  <div class="cards">
+
+    <!-- PYTHON -->
+    <a class="card card--py" href="darkroom_python.html">
+      <span class="card-icon">🐍</span>
+      <div class="card-tag">Python Foundation</div>
+      <h2>Learn Python with Photo Data</h2>
+      <p>Variables, loops, functions — then Pandas, filtering and visualisation. Full automation of your archive.</p>
+      <div class="lesson-list">
+        <span class="lp">Variables</span>
+        <span class="lp">Lists</span>
+        <span class="lp">Loops</span>
+        <span class="lp">Functions</span>
+        <span class="lp">CSV Files</span>
+        <span class="lp">Pandas</span>
+        <span class="lp">Filtering</span>
+        <span class="lp">Visualisation</span>
+      </div>
+      <span class="card-btn">Enter Course →</span>
+    </a>
+
+    <!-- SQL -->
+    <a class="card card--sql" href="darkroom_sql.html">
+      <span class="card-icon">🗄️</span>
+      <div class="card-tag">SQL Crash Course</div>
+      <h2>Learn SQL with Photo Data</h2>
+      <p>Query your database directly. SELECT, WHERE, JOIN — ask any question of 750,000 records in one line.</p>
+      <div class="lesson-list">
+        <span class="lp">SELECT</span>
+        <span class="lp">WHERE</span>
+        <span class="lp">ORDER BY</span>
+        <span class="lp">LIMIT</span>
+        <span class="lp">GROUP BY</span>
+        <span class="lp">JOIN</span>
+        <span class="lp">Aggregates</span>
+        <span class="lp">Subqueries</span>
+        <span class="lp">Real Queries</span>
+      </div>
+      <span class="card-btn">Enter Course →</span>
+    </a>
+
+    <!-- EXCEL -->
+    <a class="card card--xl" href="darkroom_excel.html">
+      <span class="card-icon">📊</span>
+      <div class="card-tag">Excel Foundation</div>
+      <h2>Master Excel for Your Archives</h2>
+      <p>No code required. Formulas, pivot tables, charts and VLOOKUP — the visual way to understand your data.</p>
+      <div class="lesson-list">
+        <span class="lp">Cells & Rows</span>
+        <span class="lp">Formulas</span>
+        <span class="lp">Formatting</span>
+        <span class="lp">Sort & Filter</span>
+        <span class="lp">SUM/AVG</span>
+        <span class="lp">VLOOKUP</span>
+        <span class="lp">Pivot Tables</span>
+        <span class="lp">Charts</span>
+      </div>
+      <span class="card-btn">Enter Course →</span>
+    </a>
+
+  </div>
+
+  <div class="paths">
+    <h3>Three weapons. Same data.</h3>
+    <p>Each course uses identical datasets — photographers, shoots and equipment. Learn one, and the others will feel familiar immediately.</p>
+    <div class="path-row">
+      <div class="path-item xl">📊 Excel — visual, no code</div>
+      <div class="arrow">→</div>
+      <div class="path-item sql">🗄️ SQL — query language</div>
+      <div class="arrow">→</div>
+      <div class="path-item py">🐍 Python — full automation</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Part of the <a href="https://the-artmedium.github.io/ImageStream/">ImageStream Local Suite</a> · Built by <a href="https://github.com/The-ArtMedium">The Art Medium</a> · Free forever</p>
+</footer>
+
+</body>
+</html>
