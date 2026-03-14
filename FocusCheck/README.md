@@ -1,10 +1,10 @@
-![FocusCheck](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000079871fd8d89be264c45c681.png)
+![FocusCheck](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000db6471fd80cf4807d128341a.png)
 
 # FocusCheck
 
-**Scan. Score. Recover. Keep the sharp. Drop the rest.**
+**Scan. Score. Select. Recover. Keep the sharp. Drop the rest.**
 
-FocusCheck is a free, offline photo culling and sharpness recovery tool built for photographers who shoot volume — sports, equestrian, events. It scans your folder, scores every image, sorts them automatically, reads your EXIF data to understand *why* an image is soft, and gives you targeted recovery tools driven by the Laplacian score itself.
+FocusCheck is a free, offline photo culling and sharpness recovery tool built for photographers who shoot volume — sports, equestrian, events. It scores every image, auto-copies the sharp ones, then opens a contact sheet of fixable and rejected images so you decide what is worth your storage — before anything is copied.
 
 Part of the [ImageStream Local Suite](https://the-artmedium.github.io/ImageStream/).
 
@@ -25,6 +25,16 @@ Your originals are **never touched**. Everything is copied. You decide what to r
 ---
 
 ## Features
+
+### Contact Sheet — Select Before You Copy
+Sharp images copy automatically. Fixable and rejected images go to a **contact sheet first** — a tap-to-select grid where you decide what is worth keeping before anything touches your storage.
+
+- 6-column thumbnail grid — fixable section first, rejected below
+- Every image pre-selected by default
+- Click or tap to deselect — bad composition, wrong moment, not worth recovering
+- **Select All / Deselect All** per section
+- **Copy Selected** shows the count before you commit
+- Non-selected images are never copied — storage saved instantly
 
 ### Scoring & Sorting
 - Laplacian variance scoring — fast, accurate, proven
