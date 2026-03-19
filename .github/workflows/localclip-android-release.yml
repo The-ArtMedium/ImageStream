@@ -1,0 +1,148 @@
+name: Release LocalClip Android (Signed)
+
+on:
+  push:
+    tags:
+      - 'localclip-android-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-signed-apk:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            python3-pip autoconf libtool \
+            pkg-config zlib1g-dev libncurses5-dev \
+            libncursesw5-dev libtinfo5 cmake \
+            libffi-dev libssl-dev ffmpeg
+
+      - name: Install buildozer and dependencies
+        run: |
+          pip install buildozer cython
+
+      # ── GENERATE KEYSTORE ──────────────────────────────
+      # Runs only if KEYSTORE_BASE64 secret is not set yet.
+      # On first run it creates the keystore, prints the
+      # base64 value — you then add it as a GitHub Secret
+      # called KEYSTORE_BASE64. After that this step is skipped.
+      - name: Generate keystore (first run only)
+        if: env.KEYSTORE_BASE64 == ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          keytool -genkey -v \
+            -keystore localclip.keystore \
+            -alias localclip \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass localclip2024 \
+            -keypass localclip2024 \
+            -dname "CN=LocalClip, OU=TheArtMedium, O=TheArtMedium, L=Unknown, S=Unknown, C=US"
+
+          echo "================================================================"
+          echo "KEYSTORE GENERATED — copy the value below and add it as a"
+          echo "GitHub Secret named KEYSTORE_BASE64"
+          echo "================================================================"
+          base64 -w 0 localclip.keystore
+          echo ""
+          echo "================================================================"
+          echo "Then re-run this workflow. The keystore will be used automatically."
+          echo "================================================================"
+
+      # ── RESTORE KEYSTORE FROM SECRET ──────────────────
+      - name: Restore keystore from secret
+        if: env.KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > localclip.keystore
+
+      # ── BUILD RELEASE APK ─────────────────────────────
+      - name: Build release APK
+        run: |
+          cd LocalClipAndroid
+          buildozer android release
+
+      # ── SIGN THE APK ──────────────────────────────────
+      - name: Sign APK
+        if: env.KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          cd LocalClipAndroid/bin
+
+          # Find the unsigned APK
+          UNSIGNED=$(ls *-unsigned.apk 2>/dev/null || ls *.apk | head -1)
+
+          # Align
+          zipalign -v 4 "$UNSIGNED" localclip-aligned.apk
+
+          # Sign
+          apksigner sign \
+            --ks ../../localclip.keystore \
+            --ks-key-alias localclip \
+            --ks-pass pass:localclip2024 \
+            --key-pass pass:localclip2024 \
+            --out LocalClip-${{ github.ref_name }}-Android.apk \
+            localclip-aligned.apk
+
+          # Verify
+          apksigner verify LocalClip-${{ github.ref_name }}-Android.apk
+          echo "✓ APK signed and verified"
+
+      # ── RENAME UNSIGNED (if no secret yet) ────────────
+      - name: Rename APK (unsigned fallback)
+        if: env.KEYSTORE_BASE64 == ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          cd LocalClipAndroid/bin
+          mv *.apk LocalClip-${{ github.ref_name }}-Android-UNSIGNED.apk
+          echo "⚠️ APK is unsigned. Add KEYSTORE_BASE64 secret and re-run."
+
+      # ── UPLOAD TO RELEASE ─────────────────────────────
+      - name: Upload signed APK to release
+        if: env.KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalClipAndroid/bin/LocalClip-${{ github.ref_name }}-Android.apk
+          body: |
+            LocalClip Android ${{ github.ref_name }}
+
+            Signed release APK — ready for Play Store upload.
+
+            Non-destructive lossless video trimming.
+            Drag handles + manual time input.
+            7 languages · Offline · Free forever.
+
+      - name: Upload unsigned APK to release (fallback)
+        if: env.KEYSTORE_BASE64 == ''
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalClipAndroid/bin/LocalClip-${{ github.ref_name }}-Android-UNSIGNED.apk
+          body: |
+            ⚠️ UNSIGNED BUILD — not ready for Play Store.
+
+            To get a signed APK:
+            1. Check the Actions log for the KEYSTORE_BASE64 value
+            2. Add it as a GitHub Secret named KEYSTORE_BASE64
+            3. Re-push the tag to trigger a new signed build
