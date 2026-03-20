@@ -1,6 +1,97 @@
-LocalClip
-          pip3 install -r Requirements.txt
-          pip3 install pyinstaller PyQt5
+name: Build LocalClip
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'LocalClip/**'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Fix Windows path issue
+        run: git config --global core.protectNTFS false
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip install opencv-python Pillow PyQt5 moviepy pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --windowed --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          Compress-Archive -Path LocalClip.exe -DestinationPath LocalClip-Windows.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-Windows
+          path: LocalClip/dist/LocalClip-Windows.zip
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip3 install opencv-python Pillow PyQt5 moviepy pyinstaller
+
+      - name: Build executable
+        run: |
+          cd LocalClip
+          pyinstaller --onefile --windowed --name LocalClip Src/main.py
+
+      - name: Package zip
+        run: |
+          cd LocalClip/dist
+          zip -r LocalClip-Mac.zip LocalClip.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-Mac
+          path: LocalClip/dist/LocalClip-Mac.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-pyqt5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd LocalClip
+          pip3 install opencv-python Pillow moviepy pyinstaller
 
       - name: Build executable
         run: |
