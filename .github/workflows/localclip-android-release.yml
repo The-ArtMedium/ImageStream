@@ -124,4 +124,3 @@ jobs:
             UNSIGNED BUILD — not ready for Play Store.
 
             Add KEYSTORE_BASE64 secret and re-push the tag.
-Copy that, paste it into the file on GitHub, save. Then delete the release and tag, create fresh. 🎯
