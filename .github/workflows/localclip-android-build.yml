@@ -1,4 +1,4 @@
-```yaml
+
 name: Build LocalClip Android
 
 on:
@@ -51,6 +51,3 @@ jobs:
         with:
           name: LocalClip-Android-debug
           path: LocalClipAndroid/bin/*.apk
-```
-
-🎯
