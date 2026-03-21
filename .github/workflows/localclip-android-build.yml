@@ -1,6 +1,3 @@
-The `yes |` is not working because buildozer detects it's running as root and blocks. Add this environment variable to skip the check:
-
-```yaml
 name: Build LocalClip Android
 
 on:
@@ -31,6 +28,3 @@ jobs:
         with:
           name: LocalClip-Android-debug
           path: LocalClipAndroid/bin/*.apk
-```
-
-🎯
