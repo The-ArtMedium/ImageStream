@@ -1,3 +1,6 @@
+The `yes |` is not working because buildozer detects it's running as root and blocks. Add this environment variable to skip the check:
+
+```yaml
 name: Build LocalClip Android
 
 on:
@@ -17,12 +20,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build APK
+        env:
+          BUILDOZER_WARN_ON_ROOT: 0
         run: |
           cd LocalClipAndroid
-          yes | buildozer android debug
+          buildozer android debug
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: LocalClip-Android-debug
           path: LocalClipAndroid/bin/*.apk
+```
+
+🎯
