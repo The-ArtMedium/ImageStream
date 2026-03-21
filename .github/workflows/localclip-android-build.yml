@@ -14,6 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android build tools
+        run: |
+          sdkmanager "build-tools;33.0.2" "platforms;android-33"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -23,31 +36,21 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip openjdk-11-jdk \
-            python3-pip autoconf libtool \
-            pkg-config zlib1g-dev libncurses5-dev \
-            libncursesw5-dev libtinfo5 cmake \
-            libffi-dev libssl-dev ffmpeg
+            git zip unzip python3-pip \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev \
+            libncursesw5-dev libtinfo5 \
+            cmake libffi-dev libssl-dev ffmpeg
 
       - name: Install buildozer and cython
         run: |
           pip install buildozer cython
 
-      - name: First pass — let buildozer download SDK
+      - name: Set ANDROID_HOME for buildozer
         run: |
-          cd LocalClipAndroid
-          buildozer android debug || true
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
 
-      - name: Install build tools into buildozer SDK
-        run: |
-          SDK=~/.buildozer/android/platform/android-sdk
-          TOOLS=$(find $SDK -name "sdkmanager" 2>/dev/null | head -1)
-          if [ -n "$TOOLS" ]; then
-            yes | $TOOLS "build-tools;33.0.2" || true
-            yes | $TOOLS "build-tools;30.0.3" || true
-          fi
-
-      - name: Second pass — build with tools installed
+      - name: Build APK
         run: |
           cd LocalClipAndroid
           buildozer android debug
