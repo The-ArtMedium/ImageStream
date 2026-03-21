@@ -29,19 +29,28 @@ jobs:
             libncursesw5-dev libtinfo5 cmake \
             libffi-dev libssl-dev ffmpeg
 
-      - name: Install buildozer and dependencies
+      - name: Install buildozer and cython
         run: |
           pip install buildozer cython
 
-      - name: Build debug APK
+      - name: First pass — let buildozer download SDK
         run: |
           cd LocalClipAndroid
-          buildozer android debug 2>&1 | tee build.log
-          # Install missing build tools if needed
-          BUILDOZER_SDK=~/.buildozer/android/platform/android-sdk
-          if [ -d "$BUILDOZER_SDK" ]; then
-            $BUILDOZER_SDK/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2"
+          buildozer android debug || true
+
+      - name: Install build tools into buildozer SDK
+        run: |
+          SDK=~/.buildozer/android/platform/android-sdk
+          TOOLS=$(find $SDK -name "sdkmanager" 2>/dev/null | head -1)
+          if [ -n "$TOOLS" ]; then
+            yes | $TOOLS "build-tools;33.0.2" || true
+            yes | $TOOLS "build-tools;30.0.3" || true
           fi
+
+      - name: Second pass — build with tools installed
+        run: |
+          cd LocalClipAndroid
+          buildozer android debug
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
