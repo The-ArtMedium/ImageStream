@@ -1,3 +1,4 @@
+```yaml
 name: Build LocalClip Android
 
 on:
@@ -23,7 +24,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip openjdk-17-jdk \
+            git zip unzip openjdk-11-jdk \
             python3-pip autoconf libtool \
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev libtinfo5 cmake \
@@ -32,6 +33,13 @@ jobs:
       - name: Install buildozer and dependencies
         run: |
           pip install buildozer cython
+
+      - name: Install Android SDK build tools
+        run: |
+          sudo apt-get install -y android-sdk
+          export ANDROID_HOME=/usr/lib/android-sdk
+          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
+          yes | sdkmanager "build-tools;33.0.0" "platforms;android-33" || true
 
       - name: Build debug APK
         run: |
@@ -43,3 +51,6 @@ jobs:
         with:
           name: LocalClip-Android-debug
           path: LocalClipAndroid/bin/*.apk
+```
+
+🎯
