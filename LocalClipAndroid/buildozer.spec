@@ -23,7 +23,6 @@ android.allow_backup = True
 android.archs = arm64-v8a
 
 # Let buildozer decide this automatically (more stable)
-# android.build_tools_version = 33.0.2
 
 android.accept_sdk_license = True
 
