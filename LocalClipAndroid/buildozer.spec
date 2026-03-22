@@ -8,7 +8,6 @@ source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1.0
 
-# IMPORTANT: removed ffpyplayer for now (causes build failures)
 requirements = python3,kivy
 
 orientation = portrait
@@ -21,11 +20,8 @@ android.ndk = 25b
 android.ndk_api = 21
 android.allow_backup = True
 android.archs = arm64-v8a
-
-# Let buildozer decide this automatically (more stable)
-
+android.build_tools_version = 33.0.2
 android.accept_sdk_license = True
-
 
 [buildozer]
 log_level = 2
