@@ -10,15 +10,17 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
+          pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Build APK
+      - name: Build APK with Buildozer
         run: |
           cd LocalClipAndroid
           buildozer android debug
