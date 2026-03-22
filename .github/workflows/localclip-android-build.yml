@@ -16,18 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Accept SDK licenses and install build tools
+      - name: First pass — download SDK
         env:
           BUILDOZER_WARN_ON_ROOT: 0
+        run: |
+          cd LocalClipAndroid
+          buildozer android debug || true
+
+      - name: Accept all SDK licenses
         run: |
           SDK=/github/home/.buildozer/android/platform/android-sdk
           mkdir -p $SDK/licenses
           echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $SDK/licenses/android-sdk-license
           echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK/licenses/android-sdk-license
           echo "d975f751698a77b662f1254ddbeed3901e976f5a" >> $SDK/licenses/android-sdk-license
-          find $SDK -name "sdkmanager" 2>/dev/null | head -1 | xargs -I{} {} "build-tools;33.0.2" || true
+          SDKMANAGER=$(find $SDK -name "sdkmanager" 2>/dev/null | head -1)
+          if [ -n "$SDKMANAGER" ]; then
+            yes | $SDKMANAGER --licenses || true
+            $SDKMANAGER "build-tools;33.0.2" || true
+          fi
 
-      - name: Build APK
+      - name: Second pass — build APK
         env:
           BUILDOZER_WARN_ON_ROOT: 0
         run: |
