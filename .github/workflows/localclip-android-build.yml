@@ -16,10 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check versions
+      - name: Accept SDK licenses and install build tools
+        env:
+          BUILDOZER_WARN_ON_ROOT: 0
         run: |
-          buildozer version
-          aidl --version || which aidl || find / -name "aidl" 2>/dev/null | head -5
+          SDK=/github/home/.buildozer/android/platform/android-sdk
+          mkdir -p $SDK/licenses
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > $SDK/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK/licenses/android-sdk-license
+          echo "d975f751698a77b662f1254ddbeed3901e976f5a" >> $SDK/licenses/android-sdk-license
+          find $SDK -name "sdkmanager" 2>/dev/null | head -1 | xargs -I{} {} "build-tools;33.0.2" || true
 
       - name: Build APK
         env:
