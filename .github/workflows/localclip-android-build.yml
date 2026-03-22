@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check versions
+        run: |
+          buildozer version
+          aidl --version || which aidl || find / -name "aidl" 2>/dev/null | head -5
+
       - name: Build APK
         env:
           BUILDOZER_WARN_ON_ROOT: 0
