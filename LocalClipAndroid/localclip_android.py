@@ -1,4 +1,4 @@
-"""
+
 LocalClip — Android Video Trimmer
 Part of the ImageStream Mobile Suite — The Art Medium
 
