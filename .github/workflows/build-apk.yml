@@ -1,0 +1,58 @@
+name: Build LocalClip APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip git zip unzip \
+            openjdk-17-jdk \
+            libffi-dev libssl-dev \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev \
+            cmake ninja-build
+
+      - name: Install buildozer and cython
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.37
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android build tools and NDK
+        run: |
+          sdkmanager "build-tools;33.0.2" "platforms;android-33" "ndk;25.1.8937393"
+
+      - name: Accept licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+      - name: Build APK
+        run: |
+          cd LocalClipAndroid
+          buildozer android debug
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/25.1.8937393
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-APK
+          path: LocalClipAndroid/bin/*.apk
