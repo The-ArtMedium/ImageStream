@@ -1,7 +1,7 @@
 name: Build LocalClip APK
 
 on:
-  workflow_dispatch: # This lets you run it manually from the "Actions" tab
+  workflow_dispatch:
 
 jobs:
   build-apk:
@@ -21,4 +21,3 @@ jobs:
         with:
           name: LocalClip-APK
           path: LocalClipAndroid/bin/*.apk
-          
