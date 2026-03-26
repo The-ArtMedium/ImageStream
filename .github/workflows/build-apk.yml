@@ -1,7 +1,7 @@
 name: Build LocalClip APK
 
 on:
-  workflow_dispatch: # Allows manual trigger from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,15 +13,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
-          workdir: LocalClipAndroid
-          buildozer_version: stable
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Upload Artifact
+      - name: Install Buildozer Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip git zip unzip libffi-dev libssl-dev \
+            autoconf libtool pkg-config zlib1g-dev libncurses5-dev \
+            cmake ninja-build ant
+
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --user --upgrade buildozer cython==0.29.33
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Build APK
+        run: |
+          cd LocalClipAndroid
+          # We force buildozer to accept licenses and build
+          yes | buildozer android debug
+        env:
+          # This tells buildozer where to put things so it doesn't hit permission errors
+          BUILDOZER_ALLOW_ORG_NAME_STUFF: 1
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LocalClip-Android-Package
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: LocalClipAndroid/bin/*.apk
+          
