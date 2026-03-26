@@ -6,20 +6,20 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1.0
 
-# Critical Requirements for ffmpeg
+# Requirements for the "Art Medium"
 requirements = python3,kivy==2.3.0,ffpyplayer,ffmpeg,hostpython3,libffi,openssl
 
 orientation = portrait
 fullscreen = 0
 
-# Android specific (API 33)
+# Android API 33 (Modern Standard)
 android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO, MANAGE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
 android.archs = arm64-v8a
 
-# THE FIX FOR THE BROKEN PIPE
+# The "Sovereign" Handshake
 android.accept_sdk_license = True
 android.skip_update = False
 
