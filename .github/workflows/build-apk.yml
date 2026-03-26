@@ -1,9 +1,12 @@
 name: Build LocalClip APK
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-android:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -18,7 +21,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libffi-dev libssl-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
@@ -27,11 +30,13 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # This 'yes' command automates the licenses to prevent "Broken Pipe"
+          # This 'yes' command automates the licenses to stop the "Broken Pipe"
+          # It forces the server to find the .spec file in the root directory
+          cd $GITHUB_WORKSPACE
           yes | buildozer android debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LocalClip-Package
+          name: LocalClip-Android-Package
           path: bin/*.apk
