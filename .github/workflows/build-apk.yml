@@ -1,49 +1,37 @@
 name: Build LocalClip APK
-
-on:
-  workflow_dispatch:
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install Buildozer Dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            python3-pip git zip unzip libffi-dev libssl-dev \
-            autoconf libtool pkg-config zlib1g-dev libncurses5-dev \
-            cmake ninja-build ant
+          sudo apt-get install -y build-essential libffi-dev libssl-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev
+          pip install --upgrade pip
+          pip install buildozer cython==0.29.33
 
-      - name: Install Buildozer and Cython
+      - name: Build with Buildozer
         run: |
-          pip install --user --upgrade buildozer cython==0.29.33
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Build APK
-        run: |
-          cd LocalClipAndroid
-          # We force buildozer to accept licenses and build
+          # This 'yes' command automates the licenses to prevent "Broken Pipe"
           yes | buildozer android debug
-        env:
-          # This tells buildozer where to put things so it doesn't hit permission errors
-          BUILDOZER_ALLOW_ORG_NAME_STUFF: 1
 
-      - name: Upload APK
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LocalClip-Android-Package
-          path: LocalClipAndroid/bin/*.apk
-          
+          name: LocalClip-Package
+          path: bin/*.apk
