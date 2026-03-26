@@ -1,3 +1,9 @@
+name: Build LocalClip APK
+
+on:
+  workflow_dispatch: # This lets you run it manually from the "Actions" tab
+
+jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
@@ -7,7 +13,7 @@
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         with:
-          workdir: LocalClipAndroid  # Pointing to your subfolder
+          workdir: LocalClipAndroid
           buildozer_version: stable
 
       - name: Upload APK
@@ -15,3 +21,4 @@
         with:
           name: LocalClip-APK
           path: LocalClipAndroid/bin/*.apk
+          
