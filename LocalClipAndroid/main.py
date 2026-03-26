@@ -7,21 +7,15 @@ from kivy.uix.button import Button
 from kivy.utils import get_color_from_hex, platform
 from kivy.metrics import dp, sp
 
-# Android Permissions
 if platform == 'android':
     from android.permissions import request_permissions, Permission
 
 class HomeScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        root = FloatLayout()
-        # Background
-        with root.canvas.before:
-            from kivy.graphics import Color, Rectangle
-            Color(*get_color_from_hex("#0a0a0a"))
-            self.rect = Rectangle(pos=root.pos, size=root.size)
+        layout = FloatLayout()
         
-        # Branding
+        # UI for the Field Professional
         label = Label(
             text="Local[color=#f5a623]Clip[/color]", 
             markup=True,
@@ -35,20 +29,19 @@ class HomeScreen(Screen):
             pos_hint={'center_x': .5, 'center_y': .6}
         )
         
-        # Action Button
         btn = Button(
             text="PICK VIDEO",
             size_hint=(None, None),
-            size=(dp(200), dp(60)),
+            size=(dp(240), dp(60)),
             pos_hint={'center_x': .5, 'center_y': .4},
             background_color=get_color_from_hex("#f5a623"),
             background_normal=''
         )
         
-        root.add_widget(label)
-        root.add_widget(tagline)
-        root.add_widget(btn)
-        self.add_widget(root)
+        layout.add_widget(label)
+        layout.add_widget(tagline)
+        layout.add_widget(btn)
+        self.add_widget(layout)
 
 class LocalClipApp(App):
     def build(self):
