@@ -30,12 +30,16 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # This 'yes' command automates the licenses to stop the "Broken Pipe"
-          # It forces the server to find the .spec file in the root directory
-          cd $GITHUB_WORKSPACE
+          # AUTOMATED FOLDER SEARCH
+          # This finds where buildozer.spec is and moves there
+          SPEC_PATH=$(find . -name "buildozer.spec" -exec dirname {} \;)
+          cd "$SPEC_PATH"
+          echo "Found spec in: $SPEC_PATH"
+          
+          # Force-accept licenses to kill the "Broken Pipe"
           yes | buildozer android debug
 
-      - name: Upload Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LocalClip-Android-Package
