@@ -1,37 +1,30 @@
-import os
-import logging
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.clock import Clock
+from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import platform
 
-# Setup logging to see what's happening internally
-logging.basicConfig(level=logging.DEBUG)
-
-class LoadingScreen(Screen):
-    def on_enter(self):
-        # We wait 2 seconds to let Android stabilize before switching
-        Clock.schedule_once(self.check_permissions, 2)
-
-    def check_permissions(self, dt):
-        if platform == 'android':
-            from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE,
-                Permission.READ_MEDIA_VIDEO
-            ])
-        self.manager.current = 'main'
-
-class MainScreen(Screen):
-    # (The rest of your Select Video code goes here...)
-    pass
-
-class LocalClipApp(App):
+class DiagnosticApp(App):
     def build(self):
-        sm = ScreenManager()
-        sm.add_widget(LoadingScreen(name='loading'))
-        # Adding a simple label to the loading screen
-        sm.get_screen('loading').add_widget(Label(text="IGNITING ENGINES..."))
-        return sm
+        self.lbl = Label(text="DIAGNOSTIC MODE: ACTIVE")
+        btn = Button(text="TEST STORAGE HANDSHAKE", size_hint=(1, .2))
+        btn.bind(on_release=self.check_access)
+        
+        layout = BoxLayout(orientation='vertical')
+        layout.add_widget(self.lbl)
+        layout.add_widget(btn)
+        return layout
+
+    def check_access(self, instance):
+        if platform == 'android':
+            try:
+                from android.permissions import request_permissions, Permission
+                request_permissions([Permission.READ_MEDIA_VIDEO, Permission.READ_EXTERNAL_STORAGE])
+                self.lbl.text = "PERMISSION REQUEST SENT"
+            except Exception as e:
+                self.lbl.text = f"CRASH PREVENTED: {str(e)}"
+        else:
+            self.lbl.text = "NOT ON ANDROID"
+
+if __name__ == '__main__':
+    DiagnosticApp().run()
