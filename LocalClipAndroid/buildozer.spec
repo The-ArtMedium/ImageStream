@@ -24,6 +24,7 @@ android.build_tools_version = 33.0.2
 android.accept_sdk_license = True
 android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /usr/local/lib/android/sdk/ndk/25.1.8937393
+android.skip_update = True
 
 [buildozer]
 log_level = 2
