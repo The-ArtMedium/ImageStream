@@ -24,16 +24,20 @@ jobs:
       - name: Build with Buildozer
         run: |
           sudo apt-get update
-          # FIXED: Added libsqlite3-dev and pkg-config for the video engine build
-          sudo apt-get install -y build-essential libffi-dev libssl-dev \
-          libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
-          libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev \
-          zlib1g-dev libsqlite3-dev pkg-config
+          sudo apt-get install -y build-essential libffi-dev libssl-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev pkg-config
           
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
           
-          # Force the build to accept all Android licenses automatically
+          # --- THE CRITICAL SEARCH FIX ---
+          # This finds the directory containing the spec file
+          SPEC_PATH=$(find . -name "buildozer.spec")
+          SPEC_DIR=$(dirname "$SPEC_PATH")
+          
+          echo "Found spec at: $SPEC_PATH"
+          cd "$SPEC_DIR"
+          
+          # Accept licenses and build
           yes | buildozer android debug
 
       - name: Upload APK
