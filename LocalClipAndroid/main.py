@@ -2,20 +2,17 @@ import os
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.videoplayer import VideoPlayer
 from kivy.utils import platform
 from kivy.clock import Clock
 
 if platform == 'android':
     from android.permissions import request_permissions, Permission
-    from android.activity import bind as activity_bind
-    from jnius import autoclass
-
-    Intent = autoclass('android.content.Intent')
-    Uri = autoclass('android.net.Uri')
-    PythonActivity = autoclass('org.kivy.android.PythonActivity')
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -44,23 +41,45 @@ class MainScreen(Screen):
                 Permission.WRITE_EXTERNAL_STORAGE,
                 Permission.READ_MEDIA_VIDEO
             ])
-            activity_bind(on_activity_result=self.on_activity_result)
-            intent = Intent(Intent.ACTION_PICK)
-            intent.setType("video/*")
-            PythonActivity.mActivity.startActivityForResult(intent, 1)
-        else:
-            self.handle_selection("test_video.mp4")
 
-    def on_activity_result(self, requestCode, resultCode, intent):
-        if requestCode == 1 and resultCode == -1 and intent:
-            uri = intent.getData()
-            path = uri.getPath()
-            self.handle_selection(path)
+        content = BoxLayout(orientation='vertical', spacing=5, padding=5)
 
-    def handle_selection(self, path):
-        if path:
-            self.manager.get_screen('editor').video_path = path
-            self.manager.current = 'editor'
+        fc = FileChooserListView(
+            path='/sdcard/' if platform == 'android' else os.path.expanduser('~'),
+            filters=['*.mp4', '*.mkv', '*.mov', '*.avi', '*.webm', '*.m4v'],
+            size_hint=(1, 0.9)
+        )
+        content.add_widget(fc)
+
+        btn_row = BoxLayout(size_hint=(1, 0.1), spacing=5)
+        cancel_btn = Button(text='Cancel', background_color=(0.3, 0.3, 0.3, 1),
+                           background_normal='')
+        select_btn = Button(text='SELECT', background_color=(0.96, 0.65, 0.14, 1),
+                           background_normal='', color=(0, 0, 0, 1), bold=True)
+        btn_row.add_widget(cancel_btn)
+        btn_row.add_widget(select_btn)
+        content.add_widget(btn_row)
+
+        popup = Popup(
+            title='Select Video',
+            content=content,
+            size_hint=(0.95, 0.9)
+        )
+
+        cancel_btn.bind(on_release=popup.dismiss)
+
+        def on_select(*args):
+            if fc.selection:
+                popup.dismiss()
+                path = fc.selection[0]
+                self.manager.get_screen('editor').video_path = path
+                self.manager.current = 'editor'
+
+        select_btn.bind(on_release=on_select)
+        fc.bind(on_submit=lambda *args: on_select())
+
+        popup.open()
+
 
 class EditorScreen(Screen):
     video_path = ""
@@ -132,6 +151,7 @@ class EditorScreen(Screen):
         self.btn_start.text = "SET START"
         self.btn_end.text = "SET END"
 
+
 class LocalClipApp(App):
     def build(self):
         sm = ScreenManager()
@@ -141,3 +161,5 @@ class LocalClipApp(App):
 
 if __name__ == '__main__':
     LocalClipApp().run()
+Also update spec — remove plyer:
+requirements = python3,kivy==2.2.1,hostpython3
