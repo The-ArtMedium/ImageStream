@@ -8,7 +8,6 @@ from kivy.uix.videoplayer import VideoPlayer
 from kivy.utils import platform
 from kivy.clock import Clock
 
-# --- Android Handshake ---
 if platform == 'android':
     from android.permissions import request_permissions, Permission
     from plyer import filechooser
@@ -17,13 +16,11 @@ class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = FloatLayout()
-        
         self.add_widget(Label(
             text="[b]Local[color=f5a623]Clip[/color][/b]",
             markup=True, font_size='48sp',
             pos_hint={'center_x': 0.5, 'center_y': 0.75}
         ))
-        
         btn = Button(
             text="SELECT MASTER FOOTAGE",
             size_hint=(0.8, 0.12),
@@ -38,7 +35,7 @@ class MainScreen(Screen):
     def open_gallery(self, instance):
         if platform == 'android':
             request_permissions([
-                Permission.READ_EXTERNAL_STORAGE, 
+                Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE,
                 Permission.READ_MEDIA_VIDEO
             ])
@@ -59,34 +56,36 @@ class EditorScreen(Screen):
     def on_enter(self):
         self.clear_widgets()
         layout = FloatLayout()
-
         if self.video_path:
             try:
-                # ffpyplayer engine activation
-                self.player = VideoPlayer(source=self.video_path, state='play', options={'allow_stretch': True})
+                self.player = VideoPlayer(
+                    source=self.video_path, state='play',
+                    options={'allow_stretch': True})
                 self.player.size_hint = (1, 0.5)
                 self.player.pos_hint = {'center_x': 0.5, 'top': 1}
                 layout.add_widget(self.player)
             except Exception as e:
-                layout.add_widget(Label(text="Igniting Video Engine...", pos_hint={'center_y': 0.7}))
+                layout.add_widget(Label(
+                    text="Igniting Video Engine...",
+                    pos_hint={'center_y': 0.7}))
 
-        self.status = Label(text="READY TO HARVEST", pos_hint={'center_y': 0.45}, color=(0.7, 0.7, 0.7, 1))
+        self.status = Label(
+            text="READY TO HARVEST",
+            pos_hint={'center_y': 0.45},
+            color=(0.7, 0.7, 0.7, 1))
         layout.add_widget(self.status)
 
-        # Marker Controls
         self.btn_start = Button(
             text="SET START", size_hint=(0.4, 0.1),
             pos_hint={'x': 0.05, 'y': 0.3},
-            background_color=(0.1, 0.5, 0.1, 1), background_normal=''
-        )
+            background_color=(0.1, 0.5, 0.1, 1), background_normal='')
         self.btn_start.bind(on_release=self.set_start)
         layout.add_widget(self.btn_start)
 
         self.btn_end = Button(
             text="SET END", size_hint=(0.4, 0.1),
             pos_hint={'right': 0.95, 'y': 0.3},
-            background_color=(0.7, 0.1, 0.1, 1), background_normal=''
-        )
+            background_color=(0.7, 0.1, 0.1, 1), background_normal='')
         self.btn_end.bind(on_release=self.set_end)
         layout.add_widget(self.btn_end)
 
@@ -94,8 +93,7 @@ class EditorScreen(Screen):
             text="GENERATE LOSSLESS CLIP", size_hint=(0.9, 0.15),
             pos_hint={'center_x': 0.5, 'center_y': 0.1},
             background_color=(0.96, 0.65, 0.14, 1),
-            background_normal='', color=(0,0,0,1), bold=True
-        )
+            background_normal='', color=(0, 0, 0, 1), bold=True)
         harvest_btn.bind(on_release=self.run_harvest)
         layout.add_widget(harvest_btn)
 
