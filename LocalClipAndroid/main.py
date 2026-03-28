@@ -10,7 +10,12 @@ from kivy.clock import Clock
 
 if platform == 'android':
     from android.permissions import request_permissions, Permission
-    from plyer import filechooser
+    from android.activity import bind as activity_bind
+    from jnius import autoclass
+
+    Intent = autoclass('android.content.Intent')
+    Uri = autoclass('android.net.Uri')
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -39,13 +44,22 @@ class MainScreen(Screen):
                 Permission.WRITE_EXTERNAL_STORAGE,
                 Permission.READ_MEDIA_VIDEO
             ])
-            filechooser.open_file(on_selection=self.handle_selection)
+            activity_bind(on_activity_result=self.on_activity_result)
+            intent = Intent(Intent.ACTION_PICK)
+            intent.setType("video/*")
+            PythonActivity.mActivity.startActivityForResult(intent, 1)
         else:
-            self.handle_selection(["test_video.mp4"])
+            self.handle_selection("test_video.mp4")
 
-    def handle_selection(self, selection):
-        if selection:
-            self.manager.get_screen('editor').video_path = selection[0]
+    def on_activity_result(self, requestCode, resultCode, intent):
+        if requestCode == 1 and resultCode == -1 and intent:
+            uri = intent.getData()
+            path = uri.getPath()
+            self.handle_selection(path)
+
+    def handle_selection(self, path):
+        if path:
+            self.manager.get_screen('editor').video_path = path
             self.manager.current = 'editor'
 
 class EditorScreen(Screen):
