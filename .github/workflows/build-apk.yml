@@ -1,42 +1,59 @@
 name: Build LocalClip APK
+
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build-apk:
     runs-on: ubuntu-22.04
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.10"
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build with Buildozer
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libffi-dev libssl-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libsqlite3-dev pkg-config
-          
+          sudo apt-get install -y \
+            python3-pip git zip unzip \
+            libffi-dev libssl-dev \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev \
+            cmake ninja-build
+
+      - name: Install buildozer and cython
+        run: |
           pip install --upgrade pip
-          pip install buildozer cython==0.29.33
-          
-          # ENTER THE PROJECT ROOM
+          pip install buildozer cython==0.29.37
+
+      - name: Fix sdkmanager path
+        run: |
+          sudo mkdir -p /usr/local/lib/android/sdk/tools/bin
+          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager \
+            /usr/local/lib/android/sdk/tools/bin/sdkmanager
+          yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager --licenses || true
+
+      - name: Build APK
+        run: |
           cd LocalClipAndroid
-          
-          # COMMENCE THE DEEP FORGE
-          yes | buildozer android debug
+          buildozer android debug
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.1.8937393
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LocalClip-Android-Package
-          path: "LocalClipAndroid/bin/*.apk"
+          name: LocalClip-APK
+          path: LocalClipAndroid/bin/*.apk
