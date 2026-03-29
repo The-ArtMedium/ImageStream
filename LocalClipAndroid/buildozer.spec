@@ -8,7 +8,7 @@ source.include_exts = py,png,jpg,kv,atlas
 
 version = 0.1.0
 
-requirements = python3,kivy==2.2.1,plyer,pyjnius,hostpython3
+requirements = python3,kivy==2.2.1
 
 orientation = portrait
 fullscreen = 0
@@ -25,6 +25,7 @@ android.accept_sdk_license = True
 android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /usr/local/lib/android/sdk/ndk/25.1.8937393
 android.skip_update = True
+p4a.branch = release-2023.09
 
 [buildozer]
 log_level = 2
