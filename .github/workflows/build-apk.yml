@@ -37,6 +37,10 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
 
+      - name: Install python-for-android
+        run: |
+          pip install python-for-android==2024.1.21
+
       - name: Fix sdkmanager path
         run: |
           sudo mkdir -p /usr/local/lib/android/sdk/tools/bin
