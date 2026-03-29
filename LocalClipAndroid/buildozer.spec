@@ -25,7 +25,7 @@ android.accept_sdk_license = True
 android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /usr/local/lib/android/sdk/ndk/25.1.8937393
 android.skip_update = True
-p4a.branch = release-2023.09.1
+p4a.branch = release-2024.01.21
 
 [buildozer]
 log_level = 2
