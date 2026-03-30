@@ -11,14 +11,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install Java 17 FIRST (required by sdkmanager)
       - name: Install Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # Install system dependencies
       - name: Install system dependencies
         run: |
           sudo apt update
@@ -30,13 +28,11 @@ jobs:
             libfreetype6-dev libgl1-mesa-dev libgles2-mesa-dev \
             git unzip
 
-      # Install Android SDK (v3 only accepts license flags)
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
 
-      # Install Android components manually
       - name: Install Android components
         run: |
           sdkmanager "platform-tools" \
@@ -44,23 +40,22 @@ jobs:
                      "build-tools;34.0.0" \
                      "ndk;27.0.12077973"
 
-      # Install Buildozer + Cython
       - name: Install Buildozer
+        working-directory: LocalClipAndroid
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
 
-      # Build APK
       - name: Build APK
+        working-directory: LocalClipAndroid
         env:
           ANDROIDSDK: ${{ env.ANDROID_SDK_ROOT }}
           ANDROIDNDK: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.0.12077973
         run: |
           buildozer android debug
 
-      # Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LocalClip-APK
-          path: bin/*.apk
+          path: LocalClipAndroid/bin/*.apk
