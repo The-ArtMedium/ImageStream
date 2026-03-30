@@ -1,4 +1,4 @@
-r[app]
+[app]
 
 title = LocalClip
 package.name = localclip
