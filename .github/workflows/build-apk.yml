@@ -37,13 +37,18 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
 
-      - name: Fix sdkmanager path
-        run: |
-          sudo mkdir -p /usr/local/lib/android/sdk/tools/bin
-          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager \
-            /usr/local/lib/android/sdk/tools/bin/sdkmanager
-          yes | /usr/local/lib/android/sdk/tools/bin/sdkmanager --licenses || true
+      # ---- Proper Android SDK Setup ----
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
+      - name: Install Android SDK components
+        run: |
+          sdkmanager "platform-tools" \
+                     "platforms;android-33" \
+                     "build-tools;33.0.2" \
+                     "ndk;27.0.12077973"
+
+      # ---- Cache Buildozer ----
       - name: Cache buildozer
         uses: actions/cache@v4
         with:
@@ -53,14 +58,16 @@ jobs:
           key: buildozer-${{ hashFiles('LocalClipAndroid/buildozer.spec') }}
           restore-keys: buildozer-
 
+      # ---- Build APK ----
       - name: Build APK
         run: |
           cd LocalClipAndroid
           buildozer android debug
         env:
-          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/27.3.13750724
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+          ANDROID_NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
 
+      # ---- Upload Artifact ----
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
