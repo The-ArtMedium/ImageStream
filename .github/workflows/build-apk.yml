@@ -35,14 +35,17 @@ jobs:
 
       - name: Install Android components
         run: |
-          sdkmanager "cmdline-tools;12.0" \
-                     "platform-tools" \
+          sdkmanager "platform-tools" \
                      "platforms;android-33" \
-                     "build-tools;34.0.0" \
+                     "build-tools;33.0.2" \
                      "ndk;27.0.12077973"
 
-      - name: Install Buildozer
-        working-directory: LocalClipAndroid
+      - name: Remove stale Buildozer state
+        run: |
+          rm -rf ~/.buildozer
+          rm -rf .buildozer
+
+      - name: Install Buildozer globally
         run: |
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
@@ -50,8 +53,8 @@ jobs:
       - name: Build APK
         working-directory: LocalClipAndroid
         env:
-          ANDROIDSDK: /usr/local/lib/android/sdk
-          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.0.12077973
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/27.0.12077973
         run: |
           buildozer android debug
 
