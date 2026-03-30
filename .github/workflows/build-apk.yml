@@ -35,7 +35,8 @@ jobs:
 
       - name: Install Android components
         run: |
-          sdkmanager "platform-tools" \
+          sdkmanager "cmdline-tools;12.0" \
+                     "platform-tools" \
                      "platforms;android-33" \
                      "build-tools;34.0.0" \
                      "ndk;27.0.12077973"
@@ -49,8 +50,8 @@ jobs:
       - name: Build APK
         working-directory: LocalClipAndroid
         env:
-          ANDROIDSDK: ${{ env.ANDROID_SDK_ROOT }}
-          ANDROIDNDK: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.0.12077973
+          ANDROIDSDK: /usr/local/lib/android/sdk
+          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.0.12077973
         run: |
           buildozer android debug
 
