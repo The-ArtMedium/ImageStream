@@ -16,14 +16,14 @@ fullscreen = 0
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,READ_MEDIA_VIDEO
 android.api = 34
 android.minapi = 21
-android.ndk = 25b
+android.ndk = 27.3.13750724
 android.ndk_api = 21
 android.allow_backup = True
 android.archs = arm64-v8a
-android.build_tools_version = 33.0.2
+android.build_tools_version = 34.0.0
 android.accept_sdk_license = True
 android.sdk_path = /usr/local/lib/android/sdk
-android.ndk_path = /usr/local/lib/android/sdk/ndk/25.1.8937393
+android.ndk_path = /usr/local/lib/android/sdk/ndk/27.3.13750724
 android.skip_update = True
 
 [buildozer]
