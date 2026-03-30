@@ -1,5 +1,8 @@
 [app]
 
+android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/27.0.12077973
+
 title = LocalClip
 package.name = localclip
 package.domain = org.localclip
