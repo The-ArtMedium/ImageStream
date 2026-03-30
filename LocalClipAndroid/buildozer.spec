@@ -39,6 +39,3 @@ log_level = 2
 
 # ---- Keep Buildozer Clean ----
 p4a.local_recipes = ./p4a-recipes
-
-android.sdk_path = /usr/local/lib/android/sdk
-android.ndk_path = /usr/local/lib/android/sdk/ndk/27.0.12077973
