@@ -35,4 +35,7 @@ android.allow_cleartext_traffic = True
 # presplash.filename = icons/splash.png
 
 # ---- Log Level ----
-log_level =
+log_level = 2
+
+# ---- Keep Buildozer Clean ----
+p4a.local_recipes = ./p4a-recipes
