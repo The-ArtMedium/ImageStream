@@ -8,68 +8,44 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
+    - name: Install system dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          python3 python3-pip python3-setuptools python3-venv \
+          libffi-dev libssl-dev libjpeg-dev zlib1g-dev \
+          libavcodec-dev libavformat-dev libavdevice-dev \
+          libavutil-dev libswscale-dev libswresample-dev \
+          libfreetype6-dev libgl1-mesa-dev libgles2-mesa-dev \
+          git unzip openjdk-17-jdk
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+    - name: Install Android SDK + NDK
+      uses: android-actions/setup-android@v3
+      with:
+        sdk-version: "latest"
+        ndk-version: "27.0.12077973"
+        components: |
+          platform-tools
+          platforms;android-33
+          build-tools;34.0.0
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            python3-pip git zip unzip \
-            libffi-dev libssl-dev \
-            autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev \
-            cmake ninja-build
+    - name: Install Buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer cython==0.29.37
 
-      - name: Install buildozer and cython
-        run: |
-          pip install --upgrade pip
-          pip install buildozer cython==0.29.37
+    - name: Build APK
+      env:
+        ANDROIDSDK: ${{ env.ANDROID_SDK_ROOT }}
+        ANDROIDNDK: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.0.12077973
+      run: |
+        buildozer android debug
 
-      # ---- Proper Android SDK Setup ----
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK components
-        run: |
-          sdkmanager "platform-tools" \
-                     "platforms;android-33" \
-                     "build-tools;33.0.2" \
-                     "ndk;27.0.12077973"
-
-      # ---- Cache Buildozer ----
-      - name: Cache buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            LocalClipAndroid/.buildozer
-          key: buildozer-${{ hashFiles('LocalClipAndroid/buildozer.spec') }}
-          restore-keys: buildozer-
-
-      # ---- Build APK ----
-      - name: Build APK
-        run: |
-          cd LocalClipAndroid
-          buildozer android debug
-        env:
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
-          ANDROID_NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
-
-      # ---- Upload Artifact ----
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: LocalClip-APK
-          path: LocalClipAndroid/bin/*.apk
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: LocalClip-APK
+        path: bin/*.apk
