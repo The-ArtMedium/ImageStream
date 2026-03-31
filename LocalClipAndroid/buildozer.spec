@@ -3,31 +3,45 @@
 title = LocalClip
 package.name = localclip
 package.domain = org.localclip
-
 source.dir = .
-source.include_exts = py,kv,mp4,mkv,mov,avi,webm,m4v
-
-version = 0.1
+source.include_exts = py,kv,png,jpg,mp4,txt,md
+version = 1.0.0
+requirements = python3,kivy,kivymd,ffpyplayer
 orientation = portrait
 fullscreen = 0
-
-requirements = python3, kivy==2.2.1, ffpyplayer, cython==0.29.37
-
-android.api = 33
+android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE,INTERNET
+android.api = 35
 android.minapi = 21
-android.archs = arm64-v8a, armeabi-v7a
+android.ndk = 25b
+android.archs = arm64-v8a,armeabi-v7a
+android.allow_backup = True
+android.debug_obfuscate = False
+android.enable_androidx = True
+android.gradle_dependencies = androidx.core:core-ktx:1.12.0
 
-android.ndk = 25.2.9519653
+# --- CRITICAL MODERN SDK PATHS ---
 android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
+android.android_home = /usr/local/lib/android/sdk
+android.sdkmanager_path = /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
 
-android.permissions = READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO
+# --- BUILD TOOLS ---
+android.build_tools_version = 35.0.0
 
-p4a.bootstrap = sdl2
+# --- ICONS / SPLASH ---
+icon.filename = %(source.dir)s/icon.png
+presplash.filename = %(source.dir)s/presplash.png
 
-android.allow_backup = True
-android.allow_cleartext_traffic = True
+# --- PYTHON OPTIONS ---
+python.version = 3
+python.code = main.py
 
-android.accept_sdk_license = True
-
+# --- LOGGING ---
 log_level = 2
+
+# --- PACKAGING ---
+package.format = apk
+
+# --- MISC ---
+android.accept_sdk_license = True
+p4a.local_recipes = ./recipes
