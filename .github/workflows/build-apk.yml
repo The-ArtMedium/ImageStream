@@ -29,6 +29,26 @@ jobs:
         sudo mkdir -p /usr/local/lib/android/sdk
         cd /usr/local/lib/android/sdk
 
-        # Download latest command-line tools
         sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         sudo unzip cmdline-tools.zip -d cmdline-tools
+        sudo mv cmdline-tools/cmdline-tools cmdline-tools/latest
+        sudo rm cmdline-tools.zip
+
+        yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+        sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager \
+          "platform-tools" \
+          "platforms;android-35" \
+          "build-tools;35.0.0" \
+          "ndk;25.2.9519653"
+
+    - name: Set environment variables
+      run: |
+        echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+        echo "PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:$PATH" >> $GITHUB_ENV
+
+    - name: Build APK
+      working-directory: LocalClipAndroid
+      run: |
+        buildozer android debug
