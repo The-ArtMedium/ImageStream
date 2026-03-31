@@ -48,7 +48,9 @@ jobs:
         echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
         echo "PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-    - name: Build APK
-      working-directory: LocalClipAndroid
-      run: |
-        buildozer android debug
+- name: Build APK
+  working-directory: ImageStream/LocalClipAndroid
+  run: |
+    buildozer android debug
+
+  
