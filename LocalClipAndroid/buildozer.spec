@@ -1,47 +1,38 @@
-[app]
+[buildozer]
+warn_on_root = 0
+log_level = 2
 
+[app]
 title = LocalClip
 package.name = localclip
 package.domain = org.localclip
 source.dir = .
-source.include_exts = py,kv,png,jpg,mp4,txt,md
-version = 1.0.0
-requirements = python3,kivy,kivymd,ffpyplayer
+source.include_exts = py,png,jpg,kv,mp4,txt,md
+version = 0.1
+requirements = python3,kivy
 orientation = portrait
 fullscreen = 0
-android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,MANAGE_EXTERNAL_STORAGE,INTERNET
+
 android.api = 35
 android.minapi = 21
+android.sdk = 35
 android.ndk = 25b
-android.archs = arm64-v8a,armeabi-v7a
-android.allow_backup = True
-android.debug_obfuscate = False
-android.enable_androidx = True
-android.gradle_dependencies = androidx.core:core-ktx:1.12.0
-
-# --- CRITICAL MODERN SDK PATHS ---
-android.sdk_path = /usr/local/lib/android/sdk
 android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
-android.android_home = /usr/local/lib/android/sdk
-android.sdkmanager_path = /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
+android.sdk_path = /usr/local/lib/android/sdk
+android.archs = arm64-v8a,armeabi-v7a
+android.build_tools = 35.0.0
 
-# --- BUILD TOOLS ---
-android.build_tools_version = 35.0.0
+# Permissions
+android.permissions = CAMERA, RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
-# --- ICONS / SPLASH ---
-icon.filename = %(source.dir)s/icon.png
-presplash.filename = %(source.dir)s/presplash.png
-
-# --- PYTHON OPTIONS ---
-python.version = 3
-python.code = main.py
-
-# --- LOGGING ---
-log_level = 2
-
-# --- PACKAGING ---
-package.format = apk
-
-# --- MISC ---
+# Keep this ON for GitHub Actions
 android.accept_sdk_license = True
-p4a.local_recipes = ./recipes
+
+# Icon (optional)
+# icon.filename = icon.png
+
+# Entry point
+entrypoint = main.py
+
+# Do not touch
+p4a.branch = master
