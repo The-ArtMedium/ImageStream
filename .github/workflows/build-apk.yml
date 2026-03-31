@@ -49,7 +49,7 @@ jobs:
         echo "PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
     - name: Build APK
-      working-directory: ImageStream/LocalClipAndroid
+      working-directory: LocalClipAndroid
       env:
         BUILDOZER_WARN_ON_ROOT: "0"
       run: |
