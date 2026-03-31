@@ -53,8 +53,8 @@ jobs:
       - name: Build APK
         working-directory: LocalClipAndroid
         env:
-          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/27.0.12077973
+          ANDROIDSDK: /usr/local/lib/android/sdk
+          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.0.12077973
         run: |
           buildozer android debug
 
