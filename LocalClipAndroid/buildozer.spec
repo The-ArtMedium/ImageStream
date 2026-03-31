@@ -17,7 +17,9 @@ android.api = 33
 android.minapi = 21
 android.archs = arm64-v8a, armeabi-v7a
 
-android.ndk = 27.0.12077973
+android.ndk = 25.2.9519653
+android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
 
 android.permissions = READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO
 
