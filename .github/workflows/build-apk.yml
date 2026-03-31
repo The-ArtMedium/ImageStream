@@ -1,4 +1,4 @@
-name: Build LocalClip APK
+name: Build LocalClip APK (v2)
 
 on:
   workflow_dispatch:
