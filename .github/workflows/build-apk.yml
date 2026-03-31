@@ -38,7 +38,7 @@ jobs:
           sdkmanager "platform-tools" \
                      "platforms;android-33" \
                      "build-tools;33.0.2" \
-                     "ndk;27.0.12077973"
+                     "ndk;25.2.9519653"
 
       - name: Remove stale Buildozer state
         run: |
@@ -54,7 +54,7 @@ jobs:
         working-directory: LocalClipAndroid
         env:
           ANDROIDSDK: /usr/local/lib/android/sdk
-          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.0.12077973
+          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           buildozer android debug
 
