@@ -15,12 +15,15 @@ requirements = python3, kivy==2.2.1, ffpyplayer, cython==0.29.37
 
 android.api = 33
 android.minapi = 21
-android.ndk = 27.0.12077973
 android.archs = arm64-v8a, armeabi-v7a
+
+android.sdk_path = /usr/local/lib/android/sdk
+android.ndk_path = /usr/local/lib/android/sdk/ndk/27.0.12077973
+android.ndk = 27.0.12077973
 
 android.permissions = READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO
 
-android.bootstrap = sdl2
+p4a.bootstrap = sdl2
 
 android.allow_backup = True
 android.allow_cleartext_traffic = True
