@@ -42,6 +42,11 @@ jobs:
           "build-tools;35.0.0" \
           "ndk;25.2.9519653"
 
+    - name: Fix sdkmanager path for Buildozer
+      run: |
+        sudo mkdir -p /usr/local/lib/android/sdk/tools/bin
+        sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager /usr/local/lib/android/sdk/tools/bin/sdkmanager
+
     - name: Set environment variables
       run: |
         echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
