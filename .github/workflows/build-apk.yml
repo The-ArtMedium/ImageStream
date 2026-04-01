@@ -10,58 +10,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install system dependencies
       run: |
         sudo apt update
-        sudo apt install -y python3 python3-pip python3-setuptools python3-venv \
-          zip unzip git openjdk-17-jdk
+        sudo apt install -y git openjdk-17-jdk zip unzip wget
 
-    - name: Install Buildozer
+    - name: Install Buildozer & Cython
       run: |
-        pip install --upgrade pip
+        python -m pip install --upgrade pip
         pip install buildozer cython
 
-    - name: Install Android SDK + cmdline-tools
+    - name: Install Android SDK & NDK
       run: |
-        sudo mkdir -p /usr/local/lib/android/sdk
-        cd /usr/local/lib/android/sdk
-
-        sudo wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-        sudo unzip cmdline-tools.zip -d cmdline-tools
-        sudo mv cmdline-tools/cmdline-tools cmdline-tools/latest
-        sudo rm cmdline-tools.zip
-
-        yes | sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-
-        sudo /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager \
+        mkdir -p $HOME/Android/Sdk/cmdline-tools
+        cd $HOME/Android/Sdk
+        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+        unzip cmdline-tools.zip -d cmdline-tools
+        mv cmdline-tools/cmdline-tools cmdline-tools/latest
+        rm cmdline-tools.zip
+        yes | $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+        $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager \
           "platform-tools" \
           "platforms;android-35" \
           "build-tools;35.0.0" \
           "ndk;25.2.9519653"
 
-    - name: Fix sdkmanager path for Buildozer
-      run: |
-        sudo mkdir -p /usr/local/lib/android/sdk/tools/bin
-        sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager /usr/local/lib/android/sdk/tools/bin/sdkmanager
-
     - name: Set environment variables
       run: |
-        echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-        echo "PATH=/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:$PATH" >> $GITHUB_ENV
-
-    - name: Force Buildozer to use system NDK
-      run: |
-        echo "ANDROIDNDK=/usr/local/lib/android/sdk/ndk/25.2.9519653" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=/usr/local/lib/android/sdk/ndk/25.2.9519653" >> $GITHUB_ENV
-        echo "ANDROID_NDK_ROOT=/usr/local/lib/android/sdk/ndk/25.2.9519653" >> $GITHUB_ENV
+        echo "ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/Android/Sdk" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=$HOME/Android/Sdk/ndk/25.2.9519653" >> $GITHUB_ENV
+        echo "ANDROID_NDK_ROOT=$HOME/Android/Sdk/ndk/25.2.9519653" >> $GITHUB_ENV
+        echo "PATH=$HOME/Android/Sdk/cmdline-tools/latest/bin:$HOME/Android/Sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
     - name: Build APK
+      run: |
+        buildozer android clean
+        buildozer android debug
       working-directory: LocalClipAndroid
       env:
         BUILDOZER_WARN_ON_ROOT: "0"
-      run: |
-        buildozer android debug
