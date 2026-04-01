@@ -61,7 +61,6 @@ jobs:
 
     - name: Build APK
       run: |
-        buildozer android clean
         buildozer android debug
       working-directory: LocalClipAndroid
       env:
