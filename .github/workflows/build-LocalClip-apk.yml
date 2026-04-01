@@ -1,4 +1,4 @@
-name: Build QndroidAPK
+name: Build Android APK 
 
 on:
   push:
