@@ -1,38 +1,44 @@
-[buildozer]
-warn_on_root = 0
-log_level = 2
-
 [app]
+# (str) Title of your application
 title = LocalClip
+
+# (str) Package name
 package.name = localclip
-package.domain = org.localclip
 
-source.dir = .
-source.include_exts = py,png,jpg,kv,mp4,txt,md
+# (str) Package domain (reverse DNS style)
+package.domain = org.imagestream
 
+# (list) Source files to include
+source.include_exts = py,png,jpg,kv,mp4,txt
+
+# (str) Application version
 version = 0.1
-requirements = python3==3.11.6, kivy==2.2.1
 
-orientation = portrait
-fullscreen = 0
-
-# Android config
-android.api = 35
-android.minapi = 21
-android.ndk = 25.2.9519653
-android.ndk_path = /usr/local/lib/android/sdk/ndk/25.2.9519653
-android.sdk_path = /usr/local/lib/android/sdk
-android.archs = arm64-v8a, armeabi-v7a
-android.build_tools = 35.0.0
-
-# Permissions
-android.permissions = CAMERA, RECORD_AUDIO, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO
-
-# GitHub Actions
-android.accept_sdk_license = True
-
-# Entry point
+# (str) Entry point / main Python file
+# Make sure this matches your main script
+# In your case it is main.py
 entrypoint = main.py
 
-# Lock p4a to a stable version
-p4a.branch = v2024.06.01
+# (list) Requirements (Python modules to include)
+requirements = python3,kivy
+
+# (str) Orientation
+orientation = portrait
+
+# (int) Android API to target
+android.api = 33
+
+# (int) Minimum Android API
+android.minapi = 21
+
+# (str) Android NDK version
+android.ndk = 25b
+
+# (str) Android SDK version
+android.sdk = 33
+
+# (bool) Fullscreen
+fullscreen = 0
+
+# (str) Presplash image (optional)
+# presplash.filename = %(source.dir)s/data/presplash.png
