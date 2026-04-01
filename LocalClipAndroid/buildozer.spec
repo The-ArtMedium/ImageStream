@@ -1,4 +1,6 @@
 [app]
+# (str) Source code where your main.py lives
+source.dir = .
 # (str) Title of your application
 title = LocalClip
 
