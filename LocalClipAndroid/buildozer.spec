@@ -1,6 +1,11 @@
+[buildozer]
+# Section required by Buildozer to avoid NoSectionError
+warn_on_root = 1
+
 [app]
 # (str) Source code where your main.py lives
 source.dir = .
+
 # (str) Title of your application
 title = LocalClip
 
@@ -17,8 +22,6 @@ source.include_exts = py,png,jpg,kv,mp4,txt
 version = 0.1
 
 # (str) Entry point / main Python file
-# Make sure this matches your main script
-# In your case it is main.py
 entrypoint = main.py
 
 # (list) Requirements (Python modules to include)
