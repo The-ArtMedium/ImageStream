@@ -1,15 +1,4 @@
-name: Build Android APK
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-
-    steps:
+steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -39,7 +28,15 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-${{ runner.os }}-ndk25b
+        key: buildozer-${{ runner.os }}-ndk25b-v2
+
+    - name: Cache buildozer local directory
+      uses: actions/cache@v4
+      with:
+        path: LocalClipAndroid/.buildozer
+        key: buildozer-local-${{ runner.os }}-${{ hashFiles('LocalClipAndroid/buildozer.spec') }}
+        restore-keys: |
+          buildozer-local-${{ runner.os }}-
 
     - name: Build APK
       run: |
@@ -56,8 +53,8 @@ jobs:
       run: tail -50 LocalClipAndroid/build.log
 
     - name: Upload APK
-      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: localclip-debug
-        path: LocalClipAndroid/bin/*.a
+        path: LocalClipAndroid/bin/*.apk
+        if-no-files-found: warn
