@@ -14,6 +14,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Verify Java
+      run: |
+        java -version
+        echo "JAVA_HOME=$JAVA_HOME"
+
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
@@ -23,13 +34,9 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y \
-          git openjdk-17-jdk zip unzip wget \
+          git zip unzip wget \
           autoconf automake libtool pkg-config \
           m4 build-essential python3-dev
-
-    - name: Set JAVA_HOME
-      run: |
-        echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
 
     - name: Install Buildozer and Cython
       run: |
@@ -40,7 +47,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.buildozer
-        key: buildozer-${{ runner.os }}-ndk25b-v2
+        key: buildozer-${{ runner.os }}-ndk25b-v3
 
     - name: Cache buildozer local directory
       uses: actions/cache@v4
@@ -58,11 +65,15 @@ jobs:
         BUILDOZER_WARN_ON_ROOT: "1"
 
     - name: Find APK
-      run: find . -name "*.apk" 2>/dev/null
+      run: |
+        echo "=== bin/ contents ==="
+        ls -la LocalClipAndroid/bin/ || echo "bin/ does not exist"
+        echo "=== Full APK search ==="
+        find . -name "*.apk" 2>/dev/null || echo "No APK found"
 
-    - name: Show last 50 lines if failed
-      if: failure()
-      run: tail -50 LocalClipAndroid/build.log
+    - name: Show last 100 lines of build log
+      if: always()
+      run: tail -100 LocalClipAndroid/build.log || echo "No build.log found"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
