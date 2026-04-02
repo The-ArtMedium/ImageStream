@@ -48,6 +48,9 @@ jobs:
       env:
         BUILDOZER_WARN_ON_ROOT: "1"
 
+    - name: Find APK
+      run: find . -name "*.apk" 2>/dev/null
+
     - name: Show last 50 lines if failed
       if: failure()
       run: tail -50 LocalClipAndroid/build.log
@@ -57,4 +60,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: localclip-debug
-        path: LocalClipAndroid/bin/*.apk
+        path: LocalClipAndroid/bin/*.a
