@@ -43,12 +43,6 @@ jobs:
         pip install --upgrade pip
         pip install cython==3.0.12 buildozer==1.5.0
 
-    - name: Cache buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.buildozer
-        key: buildozer-${{ runner.os }}-ndk25b-v3
-
     - name: Cache buildozer local directory
       uses: actions/cache@v4
       with:
@@ -63,6 +57,8 @@ jobs:
       working-directory: LocalClipAndroid
       env:
         BUILDOZER_WARN_ON_ROOT: "1"
+        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
 
     - name: Find APK
       run: |
