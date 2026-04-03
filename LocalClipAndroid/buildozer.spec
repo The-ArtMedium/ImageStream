@@ -21,9 +21,8 @@ version = 0.1
 # (str) Python main file
 entrypoint = main.py
 
-# (list) Application requirements
-# Use older Cython for stability with Kivy on Android
-requirements = python3,kivy
+# (list) Application requirements - pinned for better compatibility on CI
+requirements = python3,kivy==2.3.0
 
 # (str) Orientation of the app
 orientation = portrait
@@ -38,12 +37,17 @@ android.archs = arm64-v8a
 # (bool) Fullscreen
 fullscreen = 0
 
-# Optional: If you later add more libs (e.g. kivymd, pillow, etc.)
-# requirements = python3,kivy,kivymd,pillow
+# Optional: Add more libraries here later if needed (uncomment and adjust)
+# requirements = python3,kivy==2.3.0,kivymd,pillow
 
-# Remove or comment these if they were causing conflicts:
+# Remove or keep commented - these often cause path conflicts on GitHub Actions
 # android.ndk_path = ...
 # android.sdk_path = ...
 
 [buildozer]
+# Important settings for CI
 warn_on_root = 1
+log_level = 2
+
+# Optional: Force a specific python-for-android branch if needed later
+# p4a.branch = master
