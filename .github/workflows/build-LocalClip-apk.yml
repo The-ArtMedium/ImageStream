@@ -14,24 +14,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build APK with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1.2.0   # latest stable as of 2026
-        id: buildozer
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
-          workdir: LocalClipAndroid
-          command: buildozer -v android debug
-          buildozer_version: stable
+          python-version: '3.11'
 
-      - name: List generated files (for debugging)
+      - name: Install system dependencies
         run: |
-          echo "=== All APK files found ==="
-          find . -name "*.apk" -type f || echo "No APK found"
-          echo "=== Contents of bin folder ==="
-          ls -la LocalClipAndroid/bin/ || echo "bin/ folder missing"
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            git zip unzip wget curl \
+            autoconf automake libtool pkg-config \
+            m4 build-essential python3-dev \
+            openjdk-17-jdk
 
-      - name: Upload APK artifact
+      - name: Install Buildozer + Cython
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "cython<3" "buildozer==1.5.0"
+
+      - name: Cache Buildozer dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            \~/.buildozer
+            \~/.cache/pip
+          key: buildozer-\( {{ runner.os }}-py3.11- \){{ hashFiles('LocalClipAndroid/buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-py3.11-
+
+      - name: Build the APK
+        working-directory: LocalClipAndroid
+        run: |
+          yes | buildozer -v android debug 2>&1 | tee build.log
+        env:
+          BUILDOZER_WARN_ON_ROOT: "1"
+
+      - name: Show build summary
+        if: always()
+        run: |
+          echo "=== Last 100 lines of build log ==="
+          tail -100 LocalClipAndroid/build.log || echo "No build.log found"
+          echo "=== Searching for APK files ==="
+          find . -name "*.apk" -type f || echo "No .apk found anywhere"
+
+      - name: Upload APK (if found)
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: localclip-debug-apk
-          path: ${{ steps.buildozer.outputs.filename || 'LocalClipAndroid/bin/*.apk' }}
+          path: LocalClipAndroid/bin/*.apk
           if-no-files-found: warn
