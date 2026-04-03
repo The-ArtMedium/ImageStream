@@ -1,5 +1,3 @@
-name: Build Android APK
-
 on:
   push:
     branches: [ main ]
@@ -43,6 +41,15 @@ jobs:
         pip install --upgrade pip
         pip install cython==3.0.12 buildozer==1.5.0
 
+    - name: Install Android SDK platform tools
+      run: |
+        export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+        SDKMANAGER=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager
+        echo "y" | $SDKMANAGER "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+        echo "SDK tools installed"
+        ls $ANDROID_SDK_ROOT/tools/bin/ || echo "tools/bin not found"
+        ls $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/ || echo "cmdline-tools not found"
+
     - name: Cache buildozer local directory
       uses: actions/cache@v4
       with:
@@ -59,6 +66,7 @@ jobs:
         BUILDOZER_WARN_ON_ROOT: "1"
         ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
+        PATH: /usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools:${{ env.PATH }}
 
     - name: Find APK
       run: |
