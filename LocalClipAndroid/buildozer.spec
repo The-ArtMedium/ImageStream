@@ -1,4 +1,3 @@
-# buildozer.spec
 [buildozer]
 warn_on_root = 1
 
@@ -14,7 +13,8 @@ requirements = python3,kivy
 orientation = portrait
 android.api = 33
 android.minapi = 21
-android.ndk = 25b
-android.sdk = 33
+android.ndk_api = 21
 android.archs = arm64-v8a
+android.ndk_path = /usr/local/lib/android/sdk/ndk/27.3.13750724
+android.sdk_path = /usr/local/lib/android/sdk
 fullscreen = 0
