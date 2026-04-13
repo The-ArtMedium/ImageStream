@@ -26,11 +26,23 @@ jobs:
         run: |
           pip install cython==0.29.33 buildozer
 
+      - name: Accept Android SDK licenses
+        run: |
+          # Create a dummy SDK directory if needed and accept all licenses
+          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          # Alternative: use the sdkmanager from the installed location after Buildozer's first run
+          # But we'll run buildozer once to let it install SDK, then accept licenses
+          # However, easier: set environment variable to auto-accept
+        env:
+          # Some Android tools check this
+          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+
       - name: Build APK
         run: |
           cd LocalClipAndroid
           if [ ! -f main.py ]; then echo "main.py not found"; exit 1; fi
-          buildozer android debug
+          # Auto-accept licenses by piping 'yes' to buildozer's internal license prompt
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
