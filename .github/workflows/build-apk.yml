@@ -28,6 +28,7 @@ jobs:
 
       - name: Build APK
         run: |
+          cd LocalClipAndroid
           if [ ! -f main.py ]; then echo "main.py not found"; exit 1; fi
           buildozer android debug
 
@@ -35,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: LocalClip-APK
-          path: bin/*.apk
+          path: LocalClipAndroid/bin/*.apk
