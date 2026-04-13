@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.2
 requirements = python3,kivy==2.3.0,ffpyplayer,pyjnius
-orientation = portrait
+orientation = sensor
 fullscreen = 0
 
 # Permissions
