@@ -12,37 +12,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1. Clear space so the NDK/FFmpeg build doesn't choke
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
+      # 2. Add the missing compilation tools
       - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev
+          sudo apt install -y \
+            git zip unzip openjdk-17-jdk \
+            autoconf libtool pkg-config zlib1g-dev \
+            libffi-dev libssl-dev m4 libltdl-dev
 
       - name: Install Cython and Buildozer
         run: |
           pip install cython==0.29.33 buildozer
 
-      - name: Accept Android SDK licenses
-        run: |
-          # Create a dummy SDK directory if needed and accept all licenses
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          # Alternative: use the sdkmanager from the installed location after Buildozer's first run
-          # But we'll run buildozer once to let it install SDK, then accept licenses
-          # However, easier: set environment variable to auto-accept
-        env:
-          # Some Android tools check this
-          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
-
+      # 3. Build with log visibility
       - name: Build APK
         run: |
           cd LocalClipAndroid
-          if [ ! -f main.py ]; then echo "main.py not found"; exit 1; fi
-          # Auto-accept licenses by piping 'yes' to buildozer's internal license prompt
-          yes | buildozer android debug
+          # We use "yes y" to handle the Root warning and the Licenses automatically
+          yes y | buildozer -v android debug
+        env:
+          # This helps Buildozer find the Java home correctly
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
