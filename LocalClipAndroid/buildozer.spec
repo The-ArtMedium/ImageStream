@@ -6,30 +6,30 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1.7
 
-# Engine Requirements
-requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,hostpython3,openssl
+# Engine Requirements - Balanced for FFmpeg/ffpyplayer stability
+requirements = python3,kivy,ffmpeg,ffpyplayer,pillow,hostpython3,openssl
 
-# --- THE "REAL ICON" PROTOCOL ---
-# 1. Base icon for old systems
+# --- ICON FIX: BIG SCISSORS, NO WHITE BORDER ---
 icon.filename = %(source.dir)s/Ikon.png
-
-# 2. Adaptive Background (Solid Black to kill all borders)
+# This fills the "Safe Zone" background with Black
 android.adaptive_icon_background = #000000
-
-# 3. Adaptive Foreground (This is what makes it "Big")
-# Note: If Ikon.png is cropped tight to the edges, it will fill the icon perfectly.
+# This places the cropped scissors on top
 android.adaptive_icon_foreground = %(source.dir)s/Ikon.png
 
-# --- OPERATIONAL SETTINGS ---
 presplash.filename = %(source.dir)s/splash-screen.png
 orientation = portrait
 fullscreen = 0
-android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO
+
+# PERMISSIONS
+android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO
+
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
 android.accept_sdk_license = True
 android.archs = arm64-v8a
+
+# Necessary to package the FFmpeg "muscles"
 android.copy_libs = 1
 
 [buildozer]
