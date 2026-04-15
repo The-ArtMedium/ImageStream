@@ -7,8 +7,8 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.4
 
 # THE FACE OF THE APP
-icon.filename = %(source.dir)s/icon.png
-presplash.filename = %(source.dir)s/presplash.png
+ikon.filename = %(source.dir)s/ikon.png
+splash-screen.filename = %(source.dir)s/splash-screen.png
 
 # THE ENGINE
 requirements = python3, kivy==2.3.0, ffpyplayer, ffmpeg, pyjnius, android
