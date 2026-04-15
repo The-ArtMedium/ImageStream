@@ -6,29 +6,30 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1.7
 
-# KEEP THIS ORDER
+# Engine Requirements
 requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,hostpython3,openssl
 
-# ICON FIX: Force the foreground to be your logo and the background to be black
-# This removes the white "legacy" border that makes the icon look small
+# --- THE "REAL ICON" PROTOCOL ---
+# 1. Base icon for old systems
 icon.filename = %(source.dir)s/Ikon.png
+
+# 2. Adaptive Background (Solid Black to kill all borders)
 android.adaptive_icon_background = #000000
+
+# 3. Adaptive Foreground (This is what makes it "Big")
+# Note: If Ikon.png is cropped tight to the edges, it will fill the icon perfectly.
 android.adaptive_icon_foreground = %(source.dir)s/Ikon.png
 
+# --- OPERATIONAL SETTINGS ---
 presplash.filename = %(source.dir)s/splash-screen.png
 orientation = portrait
 fullscreen = 0
-
-# SOVEREIGN PERMISSIONS
 android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO
-
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
 android.accept_sdk_license = True
 android.archs = arm64-v8a
-
-# CRITICAL: THIS IS THE FIX FOR THE SHUT-OFF
 android.copy_libs = 1
 
 [buildozer]
