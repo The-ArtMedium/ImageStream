@@ -9,8 +9,8 @@ package.name = localclip
 # (str) Package domain
 package.domain = org.satdiva
 
-# (str) TARGETED PATH: Pointing specifically to your app folder
-source.dir = ./LocalClipAndroid
+# (str) SOURCE IS HERE: Since the .spec is in the same folder as main.py
+source.dir = .
 
 # (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas
@@ -22,8 +22,8 @@ version = 0.1.7
 requirements = python3,kivy==2.3.0,ffpyplayer,pillow,hostpython3,openssl
 
 # THE FACE OF THE APP
-# Using the source.dir variable to find images inside LocalClipAndroid/
-icon.filename = %(source.dir)s/ikon.png
+# Pointing to the files in the current directory
+icon.filename = %(source.dir)s/Ikon.png
 presplash.filename = %(source.dir)s/splash-screen.png
 
 # (str) Supported orientation
