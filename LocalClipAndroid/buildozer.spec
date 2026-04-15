@@ -8,7 +8,7 @@ version = 0.4
 
 # THE FACE OF THE APP
 ikon.filename = %(source.dir)s/ikon.png
-splash-screen.filename = %(source.dir)s/splash-screen.png
+presplash.filename = %(source.dir)s/splash-screen.png
 
 # THE ENGINE
 requirements = python3, kivy==2.3.0, ffpyplayer, ffmpeg, pyjnius, android
