@@ -18,9 +18,8 @@ source.include_exts = py,png,jpg,kv,atlas
 # (str) Application versioning
 version = 0.1.7
 
-# (list) Application requirements
-# These are the muscles for the video trimmer. 
-requirements = python3,kivy,ffmpeg,ffpyplayer,pillow,hostpython3,openssl
+# ADD 'plyer' HERE. Without it, the "Select" button is a dead end.
+requirements = python3,kivy,ffmpeg,ffpyplayer,pillow,plyer,hostpython3,openssl
 
 # --- THE ICON TRANSFORMATION ---
 # This is the base icon for older systems
