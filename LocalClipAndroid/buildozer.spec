@@ -1,27 +1,29 @@
 [app]
 title = LocalClip
 package.name = localclip
-package.domain = org.example
+package.domain = org.satdiva
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 0.2
+version = 0.3
 
-# THE CORRECT MANIFEST
+# THE FINAL ENGINE REQUIREMENTS
 requirements = python3, kivy==2.3.0, ffpyplayer, ffmpeg, pyjnius, android
 
 orientation = landscape
-fullscreen = 0
+fullscreen = 1
 
-# Permissions for API 31+
-android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE
+# Permissions for API 33+
+android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO
 
-# ARCHITECTURE (Stick to one to avoid memory crashes in Actions)
+# ARCHITECTURE & API
 android.archs = arm64-v8a
-
-# API SETTINGS
 android.api = 33
 android.minapi = 21
+android.ndk = 25b
 android.accept_sdk_license = True
+
+# Necessary for storage access on modern Android
+android.manifest.request_legacy_external_storage = true
 
 [buildozer]
 log_level = 2
