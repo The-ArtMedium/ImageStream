@@ -1,22 +1,54 @@
-# (list) Application requirements 
-# This is the "on" version you just sent. It is correct.
+[app]
+
+# (str) Title of your application
+title = LocalClip
+
+# (str) Package name
+package.name = localclip
+
+# (str) Package domain (needed for android/ios packaging)
+package.domain = org.satdiva
+
+# (str) Source code where the main.py live
+source.dir = .
+
+# (list) Source files to include (let's keep it lean)
+source.include_exts = py,png,jpg,kv,atlas,json
+
+# (list) Application requirements
 requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,hostpython3,openssl
 
-# (str) The Architecture 
-# CRITICAL: Use only this for the T310 Octa-Core chip. 
-# arm64-v8a is likely what was causing the "Open and Shut" crash.
-android.archs = armeabi-v7a
+# (str) Custom source footprint for the "Donation" link or info
+# You can reference this in your UI code
+metadata.donation_url = https://your-donation-link.com
 
-# (str) Presplash and Icon
-# Ensure these image files are small (under 500KB) so the RAM doesn't choke.
-presplash.filename = %(source.dir)s/splash-screen.png
-icon.filename = %(source.dir)s/Ikon.png
+# (str) Icon of the application
+# Ensure 'icon.png' is in your source directory
+icon.filename = icon.png
 
-# (str) The Identity Fix
-# This ensures the black background and no white borders.
-android.adaptive_icon_background = #000000
-android.adaptive_icon_foreground = %(source.dir)s/Ikon.png
+# (str) Presplash of the application (The "Header" / Brief splash)
+# Ensure 'splash.png' is in your source directory
+presplash.filename = splash.png
 
 # (list) Permissions
-# These allow the app to actually see your equestrian archives.
-android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+
+# (int) Target Android API, should be as high as possible.
+android.api = 33
+
+# (int) Minimum API your APK will support.
+android.minapi = 21
+
+# (str) Android NDK version to use
+android.ndk = 25b
+
+# (bool) Use unconventional root for build (needed for CI/CD)
+warn_on_root = 0
+
+[buildozer]
+
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+log_level = 2
+
+# (int) Display warning if buildozer is run as root (0 = False, 1 = True)
+warn_on_root = 0
