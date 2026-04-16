@@ -1,5 +1,4 @@
 [app]
-
 # (str) Title of your application
 title = LocalClip
 
@@ -22,7 +21,8 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 
 # (list) Application requirements
-requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,hostpython3,openssl
+# Added 'android' and 'python3' explicitly to ensure permissions work
+requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,android,hostpython3,openssl
 
 # (str) Icon of the application
 icon.filename = Ikon.png
@@ -30,15 +30,11 @@ icon.filename = Ikon.png
 # (str) Presplash of the application
 presplash.filename = splash-screen.png
 
-# (list) Permissions
-android.permissions = INTERNET, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, MANAGE_EXTERNAL_STORAGE
+# (list) Permissions 
+# READ_MEDIA_VIDEO is the specific requirement for API 33+
+android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES
 
-
-# (int) Target Android API (Keep at 33 for modern phones)
-android.api = 33
-
-
-# (int) Target Android API
+# (int) Target Android API 
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
