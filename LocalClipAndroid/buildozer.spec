@@ -12,6 +12,9 @@ package.domain = org.satdiva
 # (str) Version of your application (REQUIRED)
 version = 1.0.0
 
+# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
+orientation = portrait
+
 # (str) Source code where the main.py live
 source.dir = .
 
