@@ -31,7 +31,8 @@ icon.filename = Ikon.png
 presplash.filename = splash-screen.png
 
 # (list) Permissions
-android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES
+android.permissions = INTERNET, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, MANAGE_EXTERNAL_STORAGE
+
 
 # (int) Target Android API (Keep at 33 for modern phones)
 android.api = 33
