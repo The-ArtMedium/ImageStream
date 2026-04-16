@@ -22,10 +22,10 @@ source.include_exts = py,png,jpg,kv,atlas,json
 requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,hostpython3,openssl
 
 # (str) Icon of the application
-icon.filename = icon.png
+icon.filename = ikon.png
 
 # (str) Presplash of the application
-presplash.filename = splash.png
+presplash.filename = splash-screen.png
 
 # (list) Permissions
 android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
