@@ -9,6 +9,9 @@ package.name = localclip
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.satdiva
 
+# (str) Version of your application
+version = 0.1
+
 # (str) Source code where the main.py live
 source.dir = .
 
