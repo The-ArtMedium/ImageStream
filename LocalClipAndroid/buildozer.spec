@@ -1,64 +1,26 @@
 [app]
-# (str) Title of your application
-title = My Application
+title = LocalClip
+package.name = localclip
+package.domain = org.satdiva
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas
+version = 0.1.0
 
-# (str) Package name
-package.name = org.test.myapp
+presplash.filename = Splash-screen.png
+icon.filename = Ikon.png
 
-# (str) Package domain
-package.domain = org.test
+requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,android,hostpython3,openssl
 
-# (str) Source files
-source.include_exts = py,png,jpg,jpeg,kv,atlas
+orientation = portrait
+fullscreen = 1
 
-# (str) Presplash filename
-presplash.filename = splash-screen.png
+android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,android.permission.READ_MEDIA_VIDEO
 
-# (list) Application requirements
-requirements = python3,kivy
-
-# (str) Supported orientation
-orientation = landscape
-
-# (str) Icon of the application
-icon.filename = icon.png
-
-# (str) Version of the application
-version = 0.1
-
-# (bool) Whether the application is a debug build
-debug = 0
+android.api = 33
+android.minapi = 21
+android.ndk = 25b
+android.sdk = 33
 
 [buildozer]
-# (str) The target to build for (android or ios)
-target = android
-
-# (str) The Android API to use
-android.api = 30
-
-# (str) The minimum Android API
-android.minapi = 21
-
-# (str) Android SDK version
-android.sdk = 30
-
-# (str) The Android NDK version
-android.ndk = 21b
-
-# (str) Directory where the buildozer executes (the default is '.').
-build_dir = ./build
-
-# (list) Permissions for the application
-android.permissions = INTERNET,ACCESS_NETWORK_STATE
-
-# (bool) Whether to use the Gradle build
-use_gradle = True
-
-# (str) Path to your keystore
-android.keystore = mykeystore.keystore
-
-# (str) Release key alias
-android.keyalias = myalias
-
-# (str) Release key password
-android.keystore.password = mypassword
+log_level = 2
+warn_on_root = 1
