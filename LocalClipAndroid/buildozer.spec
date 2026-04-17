@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 0.1.0
 
-presplash.filename = Splash-screen.png
+presplash.filename = splash-screen.png
 icon.filename = Ikon.png
 
 requirements = python3,kivy==2.3.0,ffmpeg,ffpyplayer,pillow,plyer,android,hostpython3,openssl
