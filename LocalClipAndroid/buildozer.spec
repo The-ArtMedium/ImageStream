@@ -1,7 +1,7 @@
----------------------------------------------------------------
-# buildozer.spec
+# (Your Complete Buildozer Configuration Here)
 
-# (str) Presplash filename
+# Buildozer spec file for Android
+
+# (other configurations)
+
 presplash.filename = splash-screen.png
-
-# Other buildozer specifications...
