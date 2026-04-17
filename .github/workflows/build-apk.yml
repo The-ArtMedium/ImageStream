@@ -24,28 +24,39 @@ jobs:
         with:
           python-version: '3.9'
 
-      # 2. Add the missing compilation tools
+      # 2. Compilation tools
       - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y \
             git zip unzip openjdk-17-jdk \
             autoconf libtool pkg-config zlib1g-dev \
-            libffi-dev libssl-dev m4 libltdl-dev
+            libffi-dev libssl-dev m4 libltdl-dev \
+            ccache
 
       - name: Install Cython and Buildozer
         run: |
-          pip install cython==0.29.33 buildozer
+          pip install cython==0.29.33 buildozer==1.5.0
 
-      # 3. Build with log visibility
+      # 3. Fix CRLF line endings in case spec was edited on Windows/mobile
+      - name: Fix spec line endings
+        run: sed -i 's/\r//' LocalClipAndroid/buildozer.spec
+
+      # 4. Accept Android SDK licenses non-interactively
+      - name: Accept Android licenses
+        run: |
+          mkdir -p $HOME/.android
+          touch $HOME/.android/repositories.cfg
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      # 5. Build
       - name: Build APK
         run: |
           cd LocalClipAndroid
-          # We use "yes y" to handle the Root warning and the Licenses automatically
           yes y | buildozer -v android debug
         env:
-          # This helps Buildozer find the Java home correctly
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
