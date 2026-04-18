@@ -9,7 +9,7 @@ version = 0.1.0
 presplash.filename = %(source.dir)s/splash-screen.png
 icon.filename = %(source.dir)s/Ikon.png
 
-requirements = python3,kivy==2.3.0,kvdroid,pillow,plyer,android
+requirements = python3,kivy==2.3.0,https://github.com/kvdroid/Kvdroid/archive/refs/heads/master.zip,pillow,plyer,android
 
 orientation = portrait
 fullscreen = 1
