@@ -28,7 +28,7 @@ class MainScreen(Screen):
         super().__init__(**kwargs)
         layout = FloatLayout()
         layout.add_widget(Image(
-            source='Splash-screen.png',
+            source='splash-screen.png',
             allow_stretch=True, keep_ratio=True
         ))
         btn = Button(
