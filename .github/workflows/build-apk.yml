@@ -49,11 +49,11 @@ jobs:
           touch $HOME/.android/repositories.cfg
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      # 5. Build
+      # 5. Build with --clean flag to force fresh build with kvdroid
       - name: Build APK
         run: |
           cd LocalClipAndroid
-          yes y | buildozer -v android debug
+          yes y | buildozer -v android debug --clean
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
