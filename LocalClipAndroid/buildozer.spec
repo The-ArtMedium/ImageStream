@@ -9,8 +9,8 @@ version = 0.1.0
 presplash.filename = splash-screen.png
 icon.filename = Ikon.png
 
-# Requirements: ADDED pyjnius AND direct github link
-requirements = python3,kivy==2.3.0,https://github.com/kvdroid/Kvdroid/archive/refs/heads/master.zip,pillow,plyer,android,pyjnius
+requirements = python3,kivy==2.3.0,pyjnius,android
+android.gradle_dependencies = com.google.android.exoplayer:exoplayer:2.18.7
 
 # THE ENGINE: This downloads the Java code for ExoPlayer
 android.gradle_dependencies = "com.google.android.exoplayer:exoplayer:2.18.7"
