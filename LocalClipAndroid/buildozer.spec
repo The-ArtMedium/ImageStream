@@ -11,7 +11,7 @@ presplash.filename = splash-screen.png
 icon.filename = Ikon.png
 
 # NO ffpyplayer. NO kvdroid. NO exoplayer. Just Kivy and Android.
-requirements = python3,kivy==2.3.0,pillow,android
+requirements = python3,kivy==2.3.0,https://github.com/kvdroid/Kvdroid/archive/refs/heads/master.zip,pillow,plyer,android
 
 android.permissions = READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_VIDEO
 android.api = 33
