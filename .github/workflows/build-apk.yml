@@ -12,6 +12,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Force complete cache invalidation
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_OUTPUT
+
+      - name: Clear ALL caches
+        run: |
+          sudo rm -rf ~/.buildozer
+          sudo rm -rf ~/.gradle
+          sudo rm -rf ~/.android
+          sudo rm -rf /tmp/*
+
       # 1. Clear space so the NDK/FFmpeg build doesn't choke
       - name: Free Disk Space
         run: |
