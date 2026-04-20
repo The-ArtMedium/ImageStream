@@ -1,4 +1,9 @@
 [app]
+# ... all your existing settings ...
+
+# Force p4a to install requirements
+p4a.hook =
+
 title = LocalClip
 package.name = localclip
 package.domain = org.satdiva
