@@ -16,7 +16,7 @@ source.include_exts = py,png,jpg,kv,atlas
 # or ffmpeg-kit Android release (ffmpeg binary only, ~8MB arm64)
 source.include_patterns = bin/ffmpeg,splash-screen.png,Ikon.png
 
-version = 0.2.0
+version = 0.3.0
 
 presplash.filename = splash-screen.png
 icon.filename = Ikon.png
