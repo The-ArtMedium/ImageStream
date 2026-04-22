@@ -1,6 +1,5 @@
 # main.py — LocalClip Android
-# Frame scrubbing via MediaMetadataRetriever + bundled ffmpeg lossless copy
-# No ExoPlayer, no AAR, no gradle deps required
+# No frame display. No threads for seek. Instant timecode. Lossless ffmpeg cut.
 
 import os, subprocess, threading, time
 from kivy.app import App
@@ -14,53 +13,37 @@ from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.progressbar import ProgressBar
 from kivy.clock import Clock
 from kivy.utils import platform
-from kivy.core.image import Image as CoreImage
-from kivy.core.window import Window
 from io import BytesIO
 
 LOCALES = {
-    'en': {'select': "SELECT MASTER FOOTAGE", 'load': "LOAD MOVIE", 'in': "SET IN", 'out': "SET OUT",
+    'en': {'select': "SELECT FOOTAGE", 'load': "LOAD", 'in': "SET IN", 'out': "SET OUT",
            'save': "SAVE LOSSLESS CLIP", 'ready': "Ready", 'saving': "Saving...",
-           'close': "CLOSE MASTER", 'exit': "EXIT APP", 'err_time': "Check IN/OUT",
-           'no_file': "No file selected", 'saved': "Saved",
-           'kofi': "Support on Ko-fi", 'kofi_msg': "LocalClip is free.\nIf it saves you time, a coffee helps keep it alive.",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "Maybe later"},
-    'es': {'select': "SELECCIONAR MAESTRO", 'load': "CARGAR PELÍCULA", 'in': "MARCAR INICIO",
+           'close': "CLOSE", 'exit': "EXIT", 'err_time': "Check IN / OUT",
+           'no_file': "No file selected", 'saved': "SAVED"},
+    'es': {'select': "SELECCIONAR MASTER", 'load': "CARGAR", 'in': "MARCAR INICIO",
            'out': "MARCAR FINAL", 'save': "GUARDAR SIN PÉRDIDA", 'ready': "Listo",
-           'saving': "Guardando...", 'close': "CERRAR MAESTRO", 'exit': "SALIR",
-           'err_time': "Ver IN/OUT", 'no_file': "Sin archivo", 'saved': "Guardado",
-           'kofi': "Apoya en Ko-fi", 'kofi_msg': "LocalClip es gratis.\nSi te ahorra tiempo, un café ayuda.",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "Quizás después"},
-    'fr': {'select': "SÉLECTIONNER LE MASTER", 'load': "CHARGER LE FILM", 'in': "DÉBUT",
-           'out': "FIN", 'save': "ENREGISTRER SANS PERTE", 'ready': "Prêt",
-           'saving': "Enregistrement...", 'close': "FERMER LE MASTER", 'exit': "QUITTER",
-           'err_time': "Vérifier IN/OUT", 'no_file': "Aucun fichier", 'saved': "Enregistré",
-           'kofi': "Soutenir sur Ko-fi", 'kofi_msg': "LocalClip est gratuit.\nUn café aide à le maintenir.",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "Peut-être plus tard"},
-    'pt': {'select': "SELECIONAR MASTER", 'load': "CARREGAR FILME", 'in': "DEFINIR INÍCIO",
-           'out': "DEFINIR FIM", 'save': "SALVAR SEM PERDA", 'ready': "Pronto",
-           'saving': "Salvando...", 'close': "FECHAR MASTER", 'exit': "SAIR",
-           'err_time': "Ver IN/OUT", 'no_file': "Sem arquivo", 'saved': "Salvo",
-           'kofi': "Apoiar no Ko-fi", 'kofi_msg': "LocalClip é grátis.\nUm café ajuda a mantê-lo vivo.",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "Talvez depois"},
-    'ar': {'select': "اختر الفيديو الأساسي", 'load': "تحميل الفيلم", 'in': "تعيين البداية",
-           'out': "تعيين النهاية", 'save': "حفظ بدون فقدان", 'ready': "جاهز",
-           'saving': "جاري الحفظ...", 'close': "إغلاق الفيديو", 'exit': "إغلاق التطبيق",
-           'err_time': "تحقق من IN/OUT", 'no_file': "لا يوجد ملف", 'saved': "تم الحفظ",
-           'kofi': "ادعم على Ko-fi", 'kofi_msg': "LocalClip مجاني.\nقهوة صغيرة تساعد في الاستمرار.",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "ربما لاحقاً"},
-    'zh': {'select': "选择母带素材", 'load': "加载视频", 'in': "设置入点",
-           'out': "设置出点", 'save': "无损保存片段", 'ready': "就绪",
-           'saving': "正在保存...", 'close': "关闭母带", 'exit': "退出应用",
-           'err_time': "检查IN/OUT", 'no_file': "未选择文件", 'saved': "已保存",
-           'kofi': "在Ko-fi支持", 'kofi_msg': "LocalClip是免费的。\n一杯咖啡帮助维持运营。",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "也许以后"},
-    'hi': {'select': "मास्टर फुटेज चुनें", 'load': "मूवी लोड करें", 'in': "शुरुआत सेट करें",
-           'out': "अंत सेट करें", 'save': "लॉसलेस क्लिप सहेजें", 'ready': "तैयार",
-           'saving': "सहेज रहा है...", 'close': "मास्टर बंद करें", 'exit': "ऐप बंद करें",
-           'err_time': "IN/OUT जांचें", 'no_file': "कोई फ़ाइल नहीं", 'saved': "सहेजा गया",
-           'kofi': "Ko-fi पर समर्थन करें", 'kofi_msg': "LocalClip मुफ़्त है।\nएक कॉफ़ी इसे जीवित रखती है।",
-           'kofi_btn': "ko-fi.com/1satdiva", 'kofi_close': "शायद बाद में"},
+           'saving': "Guardando...", 'close': "CERRAR", 'exit': "SALIR",
+           'err_time': "Ver IN/OUT", 'no_file': "Sin archivo", 'saved': "GUARDADO"},
+    'fr': {'select': "SÉLECTIONNER", 'load': "CHARGER", 'in': "DÉBUT", 'out': "FIN",
+           'save': "ENREGISTRER SANS PERTE", 'ready': "Prêt", 'saving': "Enregistrement...",
+           'close': "FERMER", 'exit': "QUITTER", 'err_time': "Vérifier IN/OUT",
+           'no_file': "Aucun fichier", 'saved': "ENREGISTRÉ"},
+    'pt': {'select': "SELECIONAR MASTER", 'load': "CARREGAR", 'in': "INÍCIO", 'out': "FIM",
+           'save': "SALVAR SEM PERDA", 'ready': "Pronto", 'saving': "Salvando...",
+           'close': "FECHAR", 'exit': "SAIR", 'err_time': "Ver IN/OUT",
+           'no_file': "Sem arquivo", 'saved': "SALVO"},
+    'ar': {'select': "اختر الفيديو", 'load': "تحميل", 'in': "بداية", 'out': "نهاية",
+           'save': "حفظ بدون فقدان", 'ready': "جاهز", 'saving': "جاري الحفظ...",
+           'close': "إغلاق", 'exit': "خروج", 'err_time': "تحقق من IN/OUT",
+           'no_file': "لا يوجد ملف", 'saved': "تم الحفظ"},
+    'zh': {'select': "选择素材", 'load': "加载", 'in': "设置入点", 'out': "设置出点",
+           'save': "无损保存片段", 'ready': "就绪", 'saving': "正在保存...",
+           'close': "关闭", 'exit': "退出", 'err_time': "检查IN/OUT",
+           'no_file': "未选择文件", 'saved': "已保存"},
+    'hi': {'select': "फुटेज चुनें", 'load': "लोड करें", 'in': "शुरुआत", 'out': "अंत",
+           'save': "लॉसलेस क्लिप सहेजें", 'ready': "तैयार", 'saving': "सहेज रहा है...",
+           'close': "बंद करें", 'exit': "बाहर", 'err_time': "IN/OUT जांचें",
+           'no_file': "कोई फ़ाइल नहीं", 'saved': "सहेजा गया"},
 }
 
 try:
@@ -76,29 +59,46 @@ if platform == 'android':
 
 KOFI_URL = "https://ko-fi.com/1satdiva"
 
+# Button style helpers
+BG_BLACK  = (0, 0, 0, 1)
+BG_DARK   = (0.1, 0.1, 0.1, 1)
+BG_MED    = (0.18, 0.18, 0.18, 1)
+BG_WHITE  = (1, 1, 1, 1)
+TXT_WHITE = (1, 1, 1, 1)
+TXT_BLACK = (0, 0, 0, 1)
 
-def get_app_dir():
-    if platform == 'android':
-        d = os.environ.get('ANDROID_APP_PATH', '')
-        if not d:
-            d = os.path.dirname(os.path.abspath(__file__))
-        return d
-    return os.path.dirname(os.path.abspath(__file__))
+
+def btn(text, size_hint, pos_hint, bg=BG_MED, fg=TXT_WHITE,
+        bold=False, font_size='15sp'):
+    b = Button(
+        text=text,
+        size_hint=size_hint,
+        pos_hint=pos_hint,
+        background_color=bg,
+        background_normal='',
+        color=fg,
+        bold=bold,
+        font_size=font_size
+    )
+    return b
 
 
 def get_ffmpeg_path():
     if platform == 'android':
-        app_dir = get_app_dir()
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        private = os.environ.get('ANDROID_PRIVATE', '')
         candidates = [
             os.path.join(app_dir, 'bin', 'ffmpeg'),
             os.path.join(app_dir, 'ffmpeg'),
-            '/data/data/org.satdiva.localclip/files/bin/ffmpeg',
-            '/data/data/org.satdiva.localclip/files/ffmpeg',
-            '/data/user/0/org.satdiva.localclip/files/bin/ffmpeg',
-            '/data/user/0/org.satdiva.localclip/files/ffmpeg',
+            os.path.join(private, 'bin', 'ffmpeg') if private else '',
+            os.path.join(private, 'ffmpeg') if private else '',
+            '/data/data/org.satdiva.localclip/files/app/bin/ffmpeg',
+            '/data/data/org.satdiva.localclip/files/app/ffmpeg',
+            '/data/user/0/org.satdiva.localclip/files/app/bin/ffmpeg',
+            '/data/user/0/org.satdiva.localclip/files/app/ffmpeg',
         ]
         for path in candidates:
-            if os.path.isfile(path):
+            if path and os.path.isfile(path):
                 try:
                     os.chmod(path, 0o755)
                 except Exception:
@@ -106,26 +106,6 @@ def get_ffmpeg_path():
                 return path
         return 'ffmpeg'
     return 'ffmpeg'
-
-
-def get_launch_count():
-    path = os.path.join(get_app_dir(), '.lc')
-    try:
-        with open(path, 'r') as f:
-            return int(f.read().strip())
-    except Exception:
-        return 0
-
-
-def increment_launch_count():
-    path = os.path.join(get_app_dir(), '.lc')
-    count = get_launch_count() + 1
-    try:
-        with open(path, 'w') as f:
-            f.write(str(count))
-    except Exception:
-        pass
-    return count
 
 
 def get_video_duration_ms(video_path):
@@ -141,30 +121,6 @@ def get_video_duration_ms(video_path):
         except Exception:
             return 0
     return 0
-
-
-def extract_frame_at_ms(video_path, position_ms):
-    if platform != 'android':
-        return None
-    try:
-        from jnius import autoclass
-        Retriever = autoclass('android.media.MediaMetadataRetriever')
-        r = Retriever()
-        r.setDataSource(video_path)
-        # OPTION_CLOSEST = 2 (frame-accurate, API 26+)
-        bitmap = r.getFrameAtTime(int(position_ms) * 1000, 2)
-        r.release()
-        if bitmap is None:
-            return None
-        ByteArrayOutputStream = autoclass('java.io.ByteArrayOutputStream')
-        CompressFormat = autoclass('android.graphics.Bitmap$CompressFormat')
-        baos = ByteArrayOutputStream()
-        bitmap.compress(CompressFormat.JPEG, 85, baos)
-        buf = BytesIO(bytes(bytearray(baos.toByteArray())))
-        baos.close()
-        return buf
-    except Exception:
-        return None
 
 
 def open_kofi():
@@ -183,102 +139,104 @@ def open_kofi():
         pass
 
 
+def get_launch_count():
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.lc')
+        with open(path, 'r') as f:
+            return int(f.read().strip())
+    except Exception:
+        return 0
+
+
+def increment_launch_count():
+    count = get_launch_count() + 1
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.lc')
+        with open(path, 'w') as f:
+            f.write(str(count))
+    except Exception:
+        pass
+    return count
+
+
+def fmt_ms(ms):
+    """Format milliseconds as MM:SS.mmm"""
+    s = ms / 1000.0
+    m, sec = divmod(s, 60)
+    return f"{int(m):02d}:{sec:06.3f}"
+
+
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._build_ui()
+        l = FloatLayout()
+        l.canvas.before.clear()
 
-    def _build_ui(self):
-        layout = FloatLayout()
+        # Splash image full screen
+        splash_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), 'splash-screen.png')
+        if not os.path.isfile(splash_path):
+            splash_path = 'splash-screen.png'
 
-        splash = Image(
-            source='splash-screen.png',
+        l.add_widget(Image(
+            source=splash_path,
             allow_stretch=True,
             keep_ratio=False,
             size_hint=(1, 1),
             pos_hint={'x': 0, 'y': 0}
-        )
-        layout.add_widget(splash)
+        ))
 
-        btn = Button(
-            text=L['select'],
-            size_hint=(0.8, 0.1),
-            pos_hint={'center_x': 0.5, 'center_y': 0.22},
-            background_color=(0.96, 0.65, 0.14, 1),
-            background_normal='',
-            color=(0, 0, 0, 1),
-            bold=True,
-            font_size='16sp'
-        )
-        btn.bind(on_release=self.open_picker)
-        layout.add_widget(btn)
+        # SELECT button
+        b = btn(L['select'],
+                size_hint=(0.85, 0.09),
+                pos_hint={'center_x': 0.5, 'center_y': 0.2},
+                bg=BG_WHITE, fg=TXT_BLACK, bold=True, font_size='17sp')
+        b.bind(on_release=self.open_picker)
+        l.add_widget(b)
 
-        exit_btn = Button(
-            text=L['exit'],
-            size_hint=(0.4, 0.07),
-            pos_hint={'center_x': 0.5, 'center_y': 0.09},
-            background_color=(0.15, 0.15, 0.15, 1),
-            background_normal='',
-            color=(1, 1, 1, 1),
-            font_size='13sp'
-        )
-        exit_btn.bind(on_release=lambda x: App.get_running_app().stop())
-        layout.add_widget(exit_btn)
+        # EXIT button
+        e = btn(L['exit'],
+                size_hint=(0.4, 0.07),
+                pos_hint={'center_x': 0.5, 'center_y': 0.09},
+                bg=BG_DARK, fg=TXT_WHITE, font_size='14sp')
+        e.bind(on_release=lambda x: App.get_running_app().stop())
+        l.add_widget(e)
 
-        kofi_btn = Button(
-            text="☕",
-            size_hint=(0.12, 0.07),
-            pos_hint={'right': 0.98, 'y': 0.01},
-            background_color=(0.96, 0.65, 0.14, 1),
-            background_normal='',
-            color=(0, 0, 0, 1),
-            font_size='18sp'
-        )
-        kofi_btn.bind(on_release=lambda x: self._show_kofi_popup())
-        layout.add_widget(kofi_btn)
+        # Ko-fi small button
+        k = btn("Ko-fi",
+                size_hint=(0.2, 0.06),
+                pos_hint={'right': 0.98, 'y': 0.01},
+                bg=BG_WHITE, fg=TXT_BLACK, font_size='12sp')
+        k.bind(on_release=lambda x: self._show_kofi())
+        l.add_widget(k)
 
-        self.add_widget(layout)
+        self.add_widget(l)
 
     def on_enter(self):
         count = increment_launch_count()
         if count % 5 == 0:
-            Clock.schedule_once(lambda dt: self._show_kofi_popup(), 1.5)
+            Clock.schedule_once(lambda dt: self._show_kofi(), 1.5)
 
-    def _show_kofi_popup(self):
+    def _show_kofi(self):
         content = FloatLayout()
-        msg = Label(
-            text=L['kofi_msg'],
+        content.add_widget(Label(
+            text="LocalClip is free.\nIf it saves you time,\na coffee keeps it alive.",
             pos_hint={'center_x': 0.5, 'center_y': 0.65},
-            font_size='15sp',
-            halign='center',
-            text_size=(Window.width * 0.75, None)
-        )
-        go_btn = Button(
-            text=L['kofi_btn'],
-            size_hint=(0.85, 0.2),
-            pos_hint={'center_x': 0.5, 'center_y': 0.38},
-            background_color=(0.96, 0.65, 0.14, 1),
-            background_normal='',
-            color=(0, 0, 0, 1),
-            bold=True
-        )
-        close_btn = Button(
-            text=L['kofi_close'],
-            size_hint=(0.85, 0.15),
-            pos_hint={'center_x': 0.5, 'center_y': 0.15},
-            background_color=(0.2, 0.2, 0.2, 1),
-            background_normal=''
-        )
-        content.add_widget(msg)
-        content.add_widget(go_btn)
-        content.add_widget(close_btn)
-        popup = Popup(
-            title=L['kofi'],
-            content=content,
-            size_hint=(0.85, 0.4)
-        )
-        go_btn.bind(on_release=lambda x: [open_kofi(), popup.dismiss()])
-        close_btn.bind(on_release=popup.dismiss)
+            font_size='15sp', halign='center', color=TXT_WHITE
+        ))
+        go = btn("ko-fi.com/1satdiva",
+                 size_hint=(0.85, 0.2), pos_hint={'center_x': 0.5, 'center_y': 0.38},
+                 bg=BG_WHITE, fg=TXT_BLACK, bold=True)
+        cl = btn("Maybe later",
+                 size_hint=(0.85, 0.15), pos_hint={'center_x': 0.5, 'center_y': 0.15},
+                 bg=BG_DARK, fg=TXT_WHITE)
+        content.add_widget(go)
+        content.add_widget(cl)
+        popup = Popup(title="Support LocalClip", content=content,
+                      size_hint=(0.85, 0.42),
+                      background_color=(0.05, 0.05, 0.05, 1))
+        go.bind(on_release=lambda x: [open_kofi(), popup.dismiss()])
+        cl.bind(on_release=popup.dismiss)
         popup.open()
 
     def open_picker(self, *args):
@@ -293,34 +251,30 @@ class MainScreen(Screen):
             start_path = os.path.expanduser("~")
 
         content = FloatLayout()
-        self.fc = FileChooserListView(
+        fc = FileChooserListView(
             path=start_path,
             filters=['*.mp4', '*.mov', '*.MP4', '*.MOV'],
             size_hint=(1, 0.85),
             pos_hint={'y': 0.15}
         )
-        load_btn = Button(
-            text=L['load'],
-            size_hint=(0.9, 0.1),
-            pos_hint={'center_x': 0.5, 'y': 0.02},
-            background_color=(0.96, 0.65, 0.14, 1),
-            background_normal='',
-            color=(0, 0, 0, 1),
-            bold=True
-        )
-        content.add_widget(self.fc)
-        content.add_widget(load_btn)
-        self.popup = Popup(title="LocalClip", content=content, size_hint=(0.95, 0.9))
-        load_btn.bind(on_release=self.on_load)
-        self.popup.open()
+        load_b = btn(L['load'], size_hint=(0.9, 0.1),
+                     pos_hint={'center_x': 0.5, 'y': 0.02},
+                     bg=BG_WHITE, fg=TXT_BLACK, bold=True)
+        content.add_widget(fc)
+        content.add_widget(load_b)
+        popup = Popup(title="LocalClip", content=content, size_hint=(0.95, 0.9))
+        self._fc = fc
+        self._picker_popup = popup
 
-    def on_load(self, *args):
-        if self.fc.selection:
-            path = self.fc.selection[0].replace('file://', '')
-            self.popup.dismiss()
-            editor = self.manager.get_screen('editor')
-            editor.load_video(path)
-            self.manager.current = 'editor'
+        def on_load(*args):
+            if fc.selection:
+                path = fc.selection[0].replace('file://', '')
+                popup.dismiss()
+                self.manager.get_screen('editor').load_video(path)
+                self.manager.current = 'editor'
+
+        load_b.bind(on_release=on_load)
+        popup.open()
 
 
 class EditorScreen(Screen):
@@ -331,108 +285,121 @@ class EditorScreen(Screen):
         self.duration_ms = 0
         self.start_ms = 0
         self.end_ms = 0
-        self._frame_thread = None
-        self._loading_frame = False
-        self.setup_ui()
+        self._build_ui()
 
-    def setup_ui(self):
-        self.clear_widgets()
+    def _build_ui(self):
         l = FloatLayout()
 
-        self.frame_img = Image(
-            source='splash-screen.png',
-            allow_stretch=True,
-            keep_ratio=True,
-            size_hint=(1.0, 0.46),
-            pos_hint={'center_x': 0.5, 'top': 1.0}
-        )
-        l.add_widget(self.frame_img)
-
-        self.pos_label = Label(
+        # ── TIMECODE ──────────────────────────────────────────
+        self.timecode = Label(
             text="00:00.000",
-            font_size='26sp',
-            pos_hint={'center_x': 0.5, 'center_y': 0.515},
+            font_size='52sp',
             bold=True,
-            color=(0.96, 0.65, 0.14, 1)
+            color=TXT_WHITE,
+            pos_hint={'center_x': 0.5, 'center_y': 0.88}
         )
-        l.add_widget(self.pos_label)
+        l.add_widget(self.timecode)
 
+        # Duration label
+        self.dur_label = Label(
+            text="",
+            font_size='13sp',
+            color=(0.5, 0.5, 0.5, 1),
+            pos_hint={'center_x': 0.5, 'center_y': 0.81}
+        )
+        l.add_widget(self.dur_label)
+
+        # Progress bar
         self.progress = ProgressBar(
-            max=1000,
-            value=0,
-            size_hint=(0.92, 0.02),
-            pos_hint={'center_x': 0.5, 'center_y': 0.478}
+            max=1000, value=0,
+            size_hint=(0.94, 0.018),
+            pos_hint={'center_x': 0.5, 'center_y': 0.765}
         )
         l.add_widget(self.progress)
 
-        # Row 1: large — -60 -30 -5 +5 +30 +60
-        seeks_r1 = [("-60", -60000), ("-30", -30000), ("-5", -5000),
-                    ("+5", 5000), ("+30", 30000), ("+60", 60000)]
-        for i, (txt, val) in enumerate(seeks_r1):
-            b = Button(text=txt, size_hint=(0.145, 0.057),
-                       pos_hint={'x': 0.02 + i * 0.163, 'center_y': 0.432},
-                       background_color=(0.2, 0.2, 0.2, 1), background_normal='', font_size='12sp')
-            b.bind(on_release=lambda x, v=val: self._seek(v))
+        # ── SEEK ROW 1: large ─────────────────────────────────
+        # -60  -30  -5  +5  +30  +60
+        row1 = [("-60s", -60000), ("-30s", -30000), ("-5s", -5000),
+                ("+5s", 5000), ("+30s", 30000), ("+60s", 60000)]
+        for i, (t, v) in enumerate(row1):
+            b = btn(t, size_hint=(0.148, 0.063),
+                    pos_hint={'x': 0.018 + i * 0.164, 'center_y': 0.71},
+                    bg=BG_DARK, fg=TXT_WHITE, font_size='13sp')
+            b.bind(on_release=lambda x, v=v: self._seek(v))
             l.add_widget(b)
 
-        # Row 2: medium — -1s +1s
-        seeks_r2 = [("-1s", -1000), ("+1s", 1000)]
-        for i, (txt, val) in enumerate(seeks_r2):
-            b = Button(text=txt, size_hint=(0.3, 0.057),
-                       pos_hint={'x': 0.02 + i * 0.5, 'center_y': 0.368},
-                       background_color=(0.28, 0.28, 0.12, 1), background_normal='',
-                       bold=True, font_size='13sp')
-            b.bind(on_release=lambda x, v=val: self._seek(v))
+        # ── SEEK ROW 2: seconds ───────────────────────────────
+        # -3s  -1s  +1s  +3s
+        row2 = [("-3s", -3000), ("-1s", -1000), ("+1s", 1000), ("+3s", 3000)]
+        for i, (t, v) in enumerate(row2):
+            b = btn(t, size_hint=(0.22, 0.063),
+                    pos_hint={'x': 0.018 + i * 0.245, 'center_y': 0.638},
+                    bg=BG_MED, fg=TXT_WHITE, bold=True, font_size='14sp')
+            b.bind(on_release=lambda x, v=v: self._seek(v))
             l.add_widget(b)
 
-        # Row 3: fine — -500ms -100ms +100ms +500ms
-        seeks_r3 = [("-500", -500), ("-100", -100), ("+100", 100), ("+500", 500)]
-        for i, (txt, val) in enumerate(seeks_r3):
-            b = Button(text=txt, size_hint=(0.22, 0.057),
-                       pos_hint={'x': 0.02 + i * 0.245, 'center_y': 0.304},
-                       background_color=(0.12, 0.25, 0.28, 1), background_normal='', font_size='11sp')
-            b.bind(on_release=lambda x, v=val: self._seek(v))
+        # ── SEEK ROW 3: sub-second ────────────────────────────
+        # -500ms  -100ms  +100ms  +500ms
+        row3 = [("-500", -500), ("-100", -100), ("+100", 100), ("+500", 500)]
+        for i, (t, v) in enumerate(row3):
+            b = btn(t, size_hint=(0.22, 0.063),
+                    pos_hint={'x': 0.018 + i * 0.245, 'center_y': 0.566},
+                    bg=BG_DARK, fg=TXT_WHITE, font_size='13sp')
+            b.bind(on_release=lambda x, v=v: self._seek(v))
             l.add_widget(b)
 
-        # IN / OUT
-        self.in_btn = Button(text=L['in'], size_hint=(0.46, 0.075),
-                             pos_hint={'x': 0.02, 'center_y': 0.235},
-                             background_color=(0.05, 0.38, 0.05, 1), background_normal='', bold=True)
-        self.out_btn = Button(text=L['out'], size_hint=(0.46, 0.075),
-                              pos_hint={'right': 0.98, 'center_y': 0.235},
-                              background_color=(0.38, 0.05, 0.05, 1), background_normal='', bold=True)
+        # ── IN / OUT ──────────────────────────────────────────
+        self.in_btn = btn(L['in'], size_hint=(0.47, 0.078),
+                          pos_hint={'x': 0.018, 'center_y': 0.485},
+                          bg=BG_WHITE, fg=TXT_BLACK, bold=True, font_size='15sp')
+        self.out_btn = btn(L['out'], size_hint=(0.47, 0.078),
+                           pos_hint={'right': 0.982, 'center_y': 0.485},
+                           bg=BG_WHITE, fg=TXT_BLACK, bold=True, font_size='15sp')
         self.in_btn.bind(on_release=self.set_in)
         self.out_btn.bind(on_release=self.set_out)
         l.add_widget(self.in_btn)
         l.add_widget(self.out_btn)
 
-        self.range_label = Label(text="IN: --:--  OUT: --:--", font_size='11sp',
-                                 pos_hint={'center_x': 0.5, 'center_y': 0.175},
-                                 color=(0.7, 0.7, 0.7, 1))
+        # IN/OUT range display
+        self.range_label = Label(
+            text="IN: --:--   OUT: --:--",
+            font_size='13sp',
+            color=(0.7, 0.7, 0.7, 1),
+            pos_hint={'center_x': 0.5, 'center_y': 0.42}
+        )
         l.add_widget(self.range_label)
 
-        save_btn = Button(text=L['save'], size_hint=(0.94, 0.075),
-                          pos_hint={'center_x': 0.5, 'center_y': 0.118},
-                          background_color=(0.6, 0.4, 0.0, 1), background_normal='', bold=True)
-        save_btn.bind(on_release=self.save_clip)
-        l.add_widget(save_btn)
+        # ── SAVE ──────────────────────────────────────────────
+        save_b = btn(L['save'], size_hint=(0.96, 0.082),
+                     pos_hint={'center_x': 0.5, 'center_y': 0.345},
+                     bg=BG_WHITE, fg=TXT_BLACK, bold=True, font_size='16sp')
+        save_b.bind(on_release=self.save_clip)
+        l.add_widget(save_b)
 
-        close_btn = Button(text=L['close'], size_hint=(0.78, 0.057),
-                           pos_hint={'x': 0.02, 'center_y': 0.048},
-                           background_color=(0.15, 0.15, 0.15, 1), background_normal='')
-        close_btn.bind(on_release=lambda x: setattr(self.manager, 'current', 'main'))
-        l.add_widget(close_btn)
+        # ── SAVE STATUS — large, visible ──────────────────────
+        self.save_label = Label(
+            text="",
+            font_size='16sp',
+            bold=True,
+            color=TXT_WHITE,
+            pos_hint={'center_x': 0.5, 'center_y': 0.278},
+            halign='center'
+        )
+        l.add_widget(self.save_label)
 
-        kofi_btn = Button(text="☕", size_hint=(0.14, 0.057),
-                          pos_hint={'right': 0.98, 'center_y': 0.048},
-                          background_color=(0.96, 0.65, 0.14, 1), background_normal='',
-                          color=(0, 0, 0, 1), font_size='16sp')
-        kofi_btn.bind(on_release=lambda x: open_kofi())
-        l.add_widget(kofi_btn)
+        # ── BOTTOM ROW: close + kofi ──────────────────────────
+        close_b = btn(L['close'], size_hint=(0.75, 0.062),
+                      pos_hint={'x': 0.018, 'center_y': 0.2},
+                      bg=BG_DARK, fg=TXT_WHITE, font_size='14sp')
+        close_b.bind(on_release=lambda x: setattr(self.manager, 'current', 'main'))
+        l.add_widget(close_b)
 
-        self.status = Label(text=L['ready'], pos_hint={'center_x': 0.5, 'center_y': 0.012},
-                            font_size='10sp', color=(0.5, 0.5, 0.5, 1))
-        l.add_widget(self.status)
+        kofi_b = btn("Ko-fi", size_hint=(0.18, 0.062),
+                     pos_hint={'right': 0.982, 'center_y': 0.2},
+                     bg=BG_WHITE, fg=TXT_BLACK, font_size='12sp')
+        kofi_b.bind(on_release=lambda x: open_kofi())
+        l.add_widget(kofi_b)
+
         self.add_widget(l)
 
     def load_video(self, path):
@@ -442,8 +409,9 @@ class EditorScreen(Screen):
         self.end_ms = 0
         self.in_btn.text = L['in']
         self.out_btn.text = L['out']
-        self.range_label.text = "IN: --:--  OUT: --:--"
-        self.status.text = f"Loading: {os.path.basename(path)}"
+        self.range_label.text = "IN: --:--   OUT: --:--"
+        self.save_label.text = f"Loading: {os.path.basename(path)}"
+        self.timecode.text = "00:00.000"
 
         def _load():
             dur = get_video_duration_ms(path)
@@ -455,66 +423,42 @@ class EditorScreen(Screen):
         self.duration_ms = duration_ms
         self.end_ms = duration_ms
         self.progress.max = max(duration_ms, 1)
-        self.status.text = L['ready']
-        self._fetch_frame(0)
+        self.dur_label.text = f"Duration: {fmt_ms(duration_ms)}"
+        self.save_label.text = ""
 
     def _seek(self, delta_ms):
-        new_pos = max(0, min(self.duration_ms, self.position_ms + delta_ms))
-        if new_pos == self.position_ms:
-            return
-        self.position_ms = new_pos
-        self.pos_label.text = self._fmt(self.position_ms)
-        self.progress.value = self.position_ms
-        self._fetch_frame(self.position_ms)
-
-    def _fetch_frame(self, position_ms):
-        if self._loading_frame:
-            return
-        self._loading_frame = True
-
-        def _run():
-            buf = extract_frame_at_ms(self.video_path, position_ms)
-            Clock.schedule_once(lambda dt: self._display_frame(buf))
-
-        self._frame_thread = threading.Thread(target=_run, daemon=True)
-        self._frame_thread.start()
-
-    def _display_frame(self, buf):
-        self._loading_frame = False
-        if buf is None:
-            return
-        try:
-            buf.seek(0)
-            core_img = CoreImage(buf, ext='jpg')
-            self.frame_img.texture = core_img.texture
-        except Exception as e:
-            self.status.text = f"Frame err: {str(e)[:40]}"
+        # Instant — no threads, no waiting
+        self.position_ms = max(0, min(self.duration_ms, self.position_ms + delta_ms))
+        self.timecode.text = fmt_ms(self.position_ms)
+        if self.duration_ms > 0:
+            self.progress.value = self.position_ms
 
     def set_in(self, *args):
         self.start_ms = self.position_ms
-        self.in_btn.text = f"IN: {self._fmt(self.start_ms)}"
-        self._update_range_label()
+        self.in_btn.text = fmt_ms(self.start_ms)
+        self._update_range()
 
     def set_out(self, *args):
         self.end_ms = self.position_ms
-        self.out_btn.text = f"OUT: {self._fmt(self.end_ms)}"
-        self._update_range_label()
+        self.out_btn.text = fmt_ms(self.end_ms)
+        self._update_range()
 
-    def _update_range_label(self):
-        i = self._fmt(self.start_ms) if self.start_ms else "--:--"
-        o = self._fmt(self.end_ms) if self.end_ms else "--:--"
-        dur_s = (self.end_ms - self.start_ms) / 1000.0
-        if dur_s > 0:
-            self.range_label.text = f"IN: {i}  OUT: {o}  ({self._fmt_s(dur_s)})"
+    def _update_range(self):
+        i = fmt_ms(self.start_ms)
+        o = fmt_ms(self.end_ms)
+        dur = (self.end_ms - self.start_ms) / 1000.0
+        if dur > 0:
+            m, s = divmod(dur, 60)
+            self.range_label.text = f"IN {i}   OUT {o}   {int(m):02d}:{s:05.2f}"
         else:
-            self.range_label.text = f"IN: {i}  OUT: {o}"
+            self.range_label.text = f"IN {i}   OUT {o}"
 
     def save_clip(self, *args):
         if self.end_ms <= self.start_ms:
-            self.status.text = L['err_time']
+            self.save_label.text = L['err_time']
             return
         if not self.video_path:
-            self.status.text = L['no_file']
+            self.save_label.text = L['no_file']
             return
 
         if platform == 'android':
@@ -525,12 +469,12 @@ class EditorScreen(Screen):
         out_dir = os.path.join(base, "Movies", "LocalClip_Exports")
         os.makedirs(out_dir, exist_ok=True)
         out_file = os.path.join(out_dir, f"clip_{int(time.time())}.mp4")
-        self.status.text = L['saving']
+        self.save_label.text = L['saving']
 
         def run():
             ffmpeg = get_ffmpeg_path()
             start_s = self.start_ms / 1000.0
-            dur_s = (self.end_ms - self.start_ms) / 1000.0
+            dur_s   = (self.end_ms - self.start_ms) / 1000.0
             cmd = [ffmpeg, '-y',
                    '-ss', f'{start_s:.3f}',
                    '-i', self.video_path,
@@ -540,32 +484,30 @@ class EditorScreen(Screen):
                    '-movflags', '+faststart',
                    out_file]
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
                 if result.returncode == 0:
-                    name = os.path.basename(out_file)
-                    Clock.schedule_once(lambda d: setattr(self.status, 'text', f"{L['saved']}: {name}"))
+                    msg = f"{L['saved']}\n{os.path.basename(out_file)}"
                 else:
-                    err = result.stderr[-100:] if result.stderr else "unknown"
-                    Clock.schedule_once(lambda d: setattr(self.status, 'text', f"ffmpeg err: {err}"))
-            except subprocess.TimeoutExpired:
-                Clock.schedule_once(lambda d: setattr(self.status, 'text', "Timeout — file too large?"))
+                    # Show full error so we can debug
+                    stderr = result.stderr[-200:] if result.stderr else 'no output'
+                    msg = f"ERROR:\n{stderr}"
             except FileNotFoundError:
-                Clock.schedule_once(lambda d: setattr(self.status, 'text', "ffmpeg not found — check binary"))
+                tried = get_ffmpeg_path()
+                msg = f"ffmpeg not found.\nTried: {tried}"
+            except subprocess.TimeoutExpired:
+                msg = "Timeout. File too large?"
+            except Exception as e:
+                msg = f"Error: {str(e)[:100]}"
+
+            Clock.schedule_once(lambda dt: setattr(self.save_label, 'text', msg))
 
         threading.Thread(target=run, daemon=True).start()
-
-    def _fmt(self, ms):
-        s = ms / 1000.0
-        m, sec = divmod(s, 60)
-        return f"{int(m):02d}:{sec:06.3f}"
-
-    def _fmt_s(self, s):
-        m, sec = divmod(s, 60)
-        return f"{int(m):02d}:{sec:06.3f}"
 
 
 class LocalClipApp(App):
     def build(self):
+        from kivy.core.window import Window
+        Window.clearcolor = (0, 0, 0, 1)
         sm = ScreenManager()
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(EditorScreen(name='editor'))
