@@ -1,7 +1,3 @@
 """
-LocalClip Core Module
+LocalClip UI Module
 """
-
-from .video_clipper import VideoClipper
-
-__all__ = ['VideoClipper']
