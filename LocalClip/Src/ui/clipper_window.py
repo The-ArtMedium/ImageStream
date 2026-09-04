@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont
 import sys
-sys.path.append('..')
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.video_clipper import VideoClipper
 
 
@@ -354,3 +355,4 @@ class ClipperWindow(QMainWindow):
             self.mark_in()
         elif event.key() == Qt.Key_O:
             self.mark_out()
+    
