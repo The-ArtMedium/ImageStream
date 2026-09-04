@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QSplitter, QMenuBar, QMenu, QAction, QStatusBar
 )
 from PyQt5.QtCore import Qt
+from pathlib import Path
 from .timeline import Timeline
 
 
@@ -227,10 +228,16 @@ class MainWindow(QMainWindow):
 
     def import_video(self):
         """Import video or image for Layer 1."""
+        # Default to the shared LocalSuite folder — this is where
+        # LocalClip (and other tools) save their exports, so clips
+        # show up here automatically with no direct link between apps.
+        suite_folder = Path.home() / "Documents" / "LocalSuite" / "Saved" / "LocalClip"
+        suite_folder.mkdir(parents=True, exist_ok=True)
+
         filename, _ = QFileDialog.getOpenFileName(
             self,
             self.t('dialogs.import_video_title', 'Import Video/Image'),
-            "",
+            str(suite_folder),
             "Video Files (*.mp4 *.avi *.mov *.mkv);;Image Files (*.png *.jpg *.jpeg);;All Files (*)"
         )
         if filename:
@@ -306,4 +313,4 @@ class MainWindow(QMainWindow):
             <p><i>{self.t('about.signature', 'Baperebup!')} ✨</i></p>
             <p>{self.t('about.license', 'Licensed under MIT License')}</p>
             """
-        )
+    )
