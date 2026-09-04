@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout,
@@ -269,8 +270,13 @@ class MainWindow(QMainWindow):
         if self.current_image is None:
             QMessageBox.warning(self, "Export", "No image loaded.")
             return
+        # Shared LocalSuite folder — same place LocalClip and LocalEdit
+        # use, so everything you produce across the suite lands in one
+        # predictable spot with no connection needed between the apps.
+        suite_folder = Path.home() / "Documents" / "LocalSuite" / "Saved" / "LocalRAW"
+        suite_folder.mkdir(parents=True, exist_ok=True)
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Image", "", "JPEG (*.jpg);;PNG (*.png)"
+            self, "Export Image", str(suite_folder), "JPEG (*.jpg);;PNG (*.png)"
         )
         if path:
             self.update_pipeline_values()
@@ -380,8 +386,10 @@ class MainWindow(QMainWindow):
                 position=position_combo.currentText(),
                 opacity=opacity_slider.value() / 100.0
             )
+            suite_folder = Path.home() / "Documents" / "LocalSuite" / "Saved" / "LocalRAW"
+            suite_folder.mkdir(parents=True, exist_ok=True)
             path, _ = QFileDialog.getSaveFileName(
-                self, "Export Watermarked Image", "", "JPEG (*.jpg);;PNG (*.png)"
+                self, "Export Watermarked Image", str(suite_folder), "JPEG (*.jpg);;PNG (*.png)"
             )
             if path:
                 self.exporter.save(watermarked, path)
@@ -438,3 +446,4 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Metadata", "Metadata saved successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Metadata Error", str(e))
+        
