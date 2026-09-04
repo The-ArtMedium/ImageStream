@@ -12,6 +12,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont
 import sys
 import os
+from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.video_clipper import VideoClipper
 
@@ -291,10 +292,16 @@ class ClipperWindow(QMainWindow):
             )
             return
 
+        # Default to the shared LocalSuite folder so other tools
+        # (like LocalEdit) can find exported clips without any
+        # direct connection between the two apps.
+        suite_folder = Path.home() / "Documents" / "LocalSuite" / "Saved" / "LocalClip"
+        suite_folder.mkdir(parents=True, exist_ok=True)
+
         filename, _ = QFileDialog.getSaveFileName(
             self,
             self.t('dialogs.export_title', 'Export Clip'),
-            "",
+            str(suite_folder),
             "MP4 Video (*.mp4);;All Files (*)"
         )
 
@@ -355,4 +362,4 @@ class ClipperWindow(QMainWindow):
             self.mark_in()
         elif event.key() == Qt.Key_O:
             self.mark_out()
-    
+                                   
