@@ -17,19 +17,17 @@
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.8; overflow-x: hidden; }
 
-  /* --- SIDEBAR --- */
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--bg2); border-right: 1px solid var(--border2); overflow-y: auto; z-index: 1000; }
-  .sidebar-header { padding: 30px 24px; border-bottom: 1px solid var(--border2); }
-  .nav-item { display: block; padding: 12px 24px; color: var(--text2); text-decoration: none; cursor: pointer; font-size: 15px; border-left: 4px solid transparent; transition: 0.2s; }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--bg3); color: var(--gold); border-left-color: var(--gold); font-weight: 700; }
-  .nav-section { padding: 20px 24px 8px; font-size: 11px; text-transform: uppercase; color: var(--text3); letter-spacing: 0.1em; }
-
   /* --- MAIN --- */
-  .main { margin-left: 280px; min-height: 100vh; padding-bottom: 120px; }
+  .main { margin-left: 0; min-height: 100vh; padding-bottom: 120px; }
+
+  /* --- TOP BAR (replaces sidebar) --- */
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .topbar-title { font-family: Lora; font-size: 20px; }
+  .topbar-title span { color: var(--gold); font-size: 12px; font-weight: 700; display: block; margin-top: 2px; }
+  .topbar-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 
   /* --- LESSONS --- */
-  .lesson { display: none; padding: 60px; max-width: 1000px; animation: fadeIn 0.3s ease-out; }
+  .lesson { display: none; padding: 60px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease-out; }
   .lesson.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -88,7 +86,7 @@
   .lesson-card-arrow { color: var(--border2); font-size: 20px; }
 
   /* --- FOOTER NAV --- */
-  .footer-nav { position: fixed; bottom: 0; right: 0; left: 280px; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
+  .footer-nav { position: fixed; bottom: 0; right: 0; left: 0; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
   .btn { padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; border: none; font-size: 16px; transition: 0.2s; font-family: 'Nunito', sans-serif; }
   .btn-next { background: var(--gold); color: var(--bg); }
   .btn-prev { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
@@ -99,52 +97,24 @@
   p  { margin-bottom: 16px; color: var(--text2); }
 
   @media (max-width: 900px) {
-    .sidebar { display: none; }
-    .main { margin-left: 0; }
-    .footer-nav { left: 0; padding: 16px 24px; }
+    .footer-nav { padding: 16px 24px; }
     .lesson { padding: 30px 24px; }
+    .topbar { padding: 16px 24px; }
   }
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="sidebar-header">
-    <div style="font-family:Lora; font-size:20px;">Fondations SQL</div>
-    <div style="color:var(--gold); font-size:12px; font-weight:700; margin-top:4px;">ÉDITION DONNÉES PHOTO</div>
-  </div>
-  <div style="padding:14px 16px; border-bottom:1px solid var(--border2); display:flex; flex-wrap:wrap; gap:6px;">
+<div class="topbar">
+  <div class="topbar-title">Fondations SQL<span>ÉDITION DONNÉES PHOTO</span></div>
+  <div class="topbar-badges">
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">photographers.csv</span></span>
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">shoots.csv</span></span>
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">equipment.csv</span></span>
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">🗃 <span style="color:var(--gold);">191 vraies données</span></span>
   </div>
-  <div id="sidebar-nav">
-    <a class="nav-item active" onclick="jumpTo(0)">✦ Aperçu du Cours</a>
-
-    <div class="nav-section">Pour Commencer</div>
-    <a class="nav-item" onclick="jumpTo(1)">1. Qu'est-ce que SQL ?</a>
-    <a class="nav-item" onclick="jumpTo(2)">2. SELECT — Lire les Données</a>
-
-    <div class="nav-section">Fondamentaux</div>
-    <a class="nav-item" onclick="jumpTo(3)">3. WHERE — Filtrer</a>
-    <a class="nav-item" onclick="jumpTo(4)">4. ORDER BY — Trier</a>
-    <a class="nav-item" onclick="jumpTo(5)">5. LIMIT & DISTINCT</a>
-
-    <div class="nav-section">Agrégats</div>
-    <a class="nav-item" onclick="jumpTo(6)">6. COUNT, AVG, MIN, MAX</a>
-    <a class="nav-item" onclick="jumpTo(7)">7. GROUP BY & HAVING</a>
-
-    <div class="nav-section">Relations</div>
-    <a class="nav-item" onclick="jumpTo(8)">8. JOIN — Deux Tables</a>
-    <a class="nav-item" onclick="jumpTo(9)">9. JOINs Multiples</a>
-
-    <div class="nav-section">Avancé</div>
-    <a class="nav-item" onclick="jumpTo(10)">10. Sous-requêtes</a>
-    <a class="nav-item" onclick="jumpTo(11)">11. INSERT & UPDATE</a>
-  </div>
-</nav>
+</div>
 
 <!-- MAIN -->
 <div class="main">
@@ -157,7 +127,7 @@
     </div>
     <h2>Feuille de Route du Cours</h2>
     <p>Nous utiliserons une vraie base de données de photographes de 20 pays, leurs séances à travers le monde, et l'équipement qu'ils possèdent. Chaque requête de ce cours est construite autour de données que vous comprenez déjà.</p>
-    <div class="tip"><strong>Comment utiliser ce cours :</strong> Lisez chaque leçon, étudiez les requêtes, observez les résultats. Appuyez sur Leçon Suivante pour continuer. Sur un grand écran, utilisez la barre latérale pour aller à n'importe quelle leçon — sur téléphone ou tablette, utilisez Suivant/Précédent ci-dessous.</div>
+    <div class="tip"><strong>Comment utiliser ce cours :</strong> Lisez chaque leçon, étudiez les requêtes, observez les résultats. Appuyez sur Leçon Suivante pour continuer, ou allez directement à n'importe quelle leçon avec les cartes ci-dessous.</div>
     <h3>Votre Base de Données</h3>
     <div class="lessons-list">
       <div class="lesson-card" onclick="jumpTo(1)"><div class="lesson-card-num">1</div><div class="lesson-card-info"><div class="lesson-card-title">Qu'est-ce que SQL ?</div><div class="lesson-card-desc">Bases de données, tables, lignes et colonnes expliquées</div></div><div class="lesson-card-arrow">→</div></div>
@@ -292,417 +262,4 @@
         <tr><td>Sunrise Series</td><td>Dakar</td><td>2024</td></tr>
       </tbody>
     </table>
-    <div class="concept"><strong>Opérateurs disponibles</strong>= (égal) &nbsp;·&nbsp; != (différent) &nbsp;·&nbsp; &gt; &lt; &gt;= &lt;= (comparaisons) &nbsp;·&nbsp; AND / OR (combiner) &nbsp;·&nbsp; LIKE (motif) &nbsp;·&nbsp; IN (liste de valeurs)</div>
-    <div class="code-block">
-<span class="cmt">-- LIKE — correspondance partielle (% est un joker)</span>
-<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>
-<span class="kw">FROM</span> <span class="tbl">photographers</span>
-<span class="kw">WHERE</span> <span class="col">name</span> <span class="kw">LIKE</span> <span class="str">'S%'</span>;
-
-<span class="cmt">-- IN — correspond à n'importe quelle valeur d'une liste</span>
-<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>
-<span class="kw">FROM</span> <span class="tbl">photographers</span>
-<span class="kw">WHERE</span> <span class="col">country</span> <span class="kw">IN</span> (<span class="str">'USA'</span>, <span class="str">'Brazil'</span>, <span class="str">'Nigeria'</span>);
-    </div>
-    <div class="tip"><strong>Les valeurs texte ont besoin de guillemets.</strong> Pas les nombres. WHERE location = 'Dakar' — WHERE year > 2020. Mélangez-les et vous obtenez une erreur.</div>
-  </section>
-
-  <!-- LESSON 4 -->
-  <section class="lesson" id="lesson-4">
-    <h2>4. ORDER BY — Trier</h2>
-    <div class="dataset-badge">📂 Table : <span>shoots</span></div>
-    <p>ORDER BY trie vos résultats. Par année, par nom, par nombre de photos. Croissant (A→Z, le plus ancien→le plus récent) ou décroissant (le plus récent→le plus ancien, le plus élevé→le plus bas).</p>
-    <div class="code-block">
-<span class="cmt">-- Les séances les plus récentes en premier</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>;
-    </div>
-    <div class="code-block">
-<span class="cmt">-- Les séances avec le plus de photos prises, les plus élevées en premier</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">photos_taken</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>;
-    </div>
-    <div class="code-block">
-<span class="cmt">-- Trier par deux colonnes — année d'abord, puis nom de l'événement</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>, <span class="col">event</span> <span class="kw">ASC</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>event</th><th>location</th><th>year</th></tr></thead>
-      <tbody>
-        <tr><td>Bridal Session</td><td>Kyiv</td><td>2024</td></tr>
-        <tr><td>City Nights</td><td>Accra</td><td>2024</td></tr>
-        <tr><td>Coastal Landscape Series</td><td>Casablanca</td><td>2024</td></tr>
-        <tr><td>Coastal Landscape Series</td><td>Dakar</td><td>2024</td></tr>
-      </tbody>
-    </table>
-    <div class="tip"><strong>ASC</strong> = croissant (par défaut, du plus petit au plus grand, A à Z). <strong>DESC</strong> = décroissant (du plus grand au plus petit, Z à A). En cas de doute, ajoutez DESC pour voir les valeurs les plus récentes ou les plus élevées en premier.</div>
-  </section>
-
-  <!-- LESSON 5 -->
-  <section class="lesson" id="lesson-5">
-    <h2>5. LIMIT & DISTINCT</h2>
-    <div class="dataset-badge">📂 Table : <span>shoots · photographers</span></div>
-    <p>Deux petites commandes que vous utiliserez constamment. LIMIT contrôle le nombre de lignes retournées. DISTINCT supprime les valeurs en double.</p>
-    <h3>LIMIT</h3>
-    <div class="code-block">
-<span class="cmt">-- Montrer seulement les 5 séances les plus récentes</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">5</span>;
-    </div>
-    <div class="code-block">
-<span class="cmt">-- La seule séance avec le plus de photos prises</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">photos_taken</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">1</span>;
-    </div>
-    <h3>DISTINCT</h3>
-    <div class="code-block">
-<span class="cmt">-- Quels pays sont représentés ? (sans doublons)</span>
-<span class="kw">SELECT DISTINCT</span> <span class="col">country</span>
-<span class="kw">FROM</span> <span class="tbl">photographers</span>
-<span class="kw">ORDER BY</span> <span class="col">country</span>;
-    </div>
-    <div class="code-block">
-<span class="cmt">-- Quels lieux ont été utilisés pour des séances ?</span>
-<span class="kw">SELECT DISTINCT</span> <span class="col">location</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">ORDER BY</span> <span class="col">location</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>location</th></tr></thead>
-      <tbody>
-        <tr><td>Accra</td></tr>
-        <tr><td>Beirut</td></tr>
-        <tr><td>Berlin</td></tr>
-        <tr><td>Bogotá</td></tr>
-        <tr><td>Cairo</td></tr>
-      </tbody>
-    </table>
-    <div class="tip"><strong>Utilisez toujours LIMIT</strong> quand vous explorez une table pour la première fois. Même avec 103 lignes, cela garde votre écran lisible — et cette habitude compte encore plus une fois que votre vraie archive atteint des milliers d'entrées.</div>
-  </section>
-
-  <!-- LESSON 6 -->
-  <section class="lesson" id="lesson-6">
-    <h2>6. COUNT, AVG, MIN, MAX</h2>
-    <div class="dataset-badge">📂 Table : <span>shoots · photographers</span></div>
-    <p>Les fonctions d'agrégation calculent des valeurs à travers plusieurs lignes. Au lieu de voir des lignes individuelles, vous obtenez un seul nombre récapitulatif. Essentiel pour comprendre votre archive à grande échelle.</p>
-    <div class="code-block">
-<span class="cmt">-- Combien de séances dans la base de données ?</span>
-<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_shoots
-<span class="kw">FROM</span> <span class="tbl">shoots</span>;
-
-<span class="cmt">-- Moyenne de photos prises par séance</span>
-<span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> avg_photos
-<span class="kw">FROM</span> <span class="tbl">shoots</span>;
-
-<span class="cmt">-- Nombre de photos le plus élevé et le plus bas pour une seule séance</span>
-<span class="kw">SELECT</span>
-  <span class="fn">MAX</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> biggest_shoot,
-  <span class="fn">MIN</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> smallest_shoot
-<span class="kw">FROM</span> <span class="tbl">shoots</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>total_shoots</th><th>avg_photos</th><th>biggest_shoot</th><th>smallest_shoot</th></tr></thead>
-      <tbody>
-        <tr><td>103</td><td>600</td><td>1,186</td><td>119</td></tr>
-      </tbody>
-    </table>
-    <div class="code-block">
-<span class="cmt">-- Total de photos exportées sur toutes les séances</span>
-<span class="kw">SELECT</span> <span class="fn">SUM</span>(<span class="col">photos_exported</span>) <span class="kw">AS</span> total_exported
-<span class="kw">FROM</span> <span class="tbl">shoots</span>;
-
-<span class="cmt">-- Combien de photographes sont notés au-dessus de 4.0 ?</span>
-<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> top_rated
-<span class="kw">FROM</span> <span class="tbl">photographers</span>
-<span class="kw">WHERE</span> <span class="col">rating</span> > <span class="num">4.0</span>;
-    </div>
-    <div class="tip"><strong>SUM · AVG · MAX · MIN · COUNT</strong> — ces cinq fonctions répondent à la plupart des questions concrètes sur votre archive. Combien ? Combien de fois ? Quel est le meilleur ? Quel est le pire ?</div>
-  </section>
-
-  <!-- LESSON 7 -->
-  <section class="lesson" id="lesson-7">
-    <h2>7. GROUP BY & HAVING</h2>
-    <div class="dataset-badge">📂 Table : <span>shoots · photographers</span></div>
-    <p>GROUP BY regroupe les lignes ensemble pour que vous puissiez compter, sommer ou faire la moyenne par catégorie. Au lieu de « combien de séances au total », vous obtenez « combien de séances par année » ou « par lieu ».</p>
-    <div class="code-block">
-<span class="cmt">-- Combien de séances par année ?</span>
-<span class="kw">SELECT</span> <span class="col">year</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> shoots_that_year
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">GROUP BY</span> <span class="col">year</span>
-<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>year</th><th>shoots_that_year</th></tr></thead>
-      <tbody>
-        <tr><td>2024</td><td>312</td></tr>
-        <tr><td>2023</td><td>298</td></tr>
-        <tr><td>2022</td><td>341</td></tr>
-        <tr><td>2021</td><td>276</td></tr>
-      </tbody>
-    </table>
-    <div class="code-block">
-<span class="cmt">-- Moyenne de photos par séance, groupée par lieu</span>
-<span class="kw">SELECT</span>
-  <span class="col">location</span>,
-  <span class="fn">COUNT</span>(*)                   <span class="kw">AS</span> total_shoots,
-  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="col">photos_taken</span>), <span class="num">0</span>) <span class="kw">AS</span> avg_photos
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">GROUP BY</span> <span class="col">location</span>
-<span class="kw">ORDER BY</span> total_shoots <span class="kw">DESC</span>;
-    </div>
-    <h3>HAVING — filtrer après le regroupement</h3>
-    <p>WHERE filtre les lignes avant le regroupement. HAVING filtre les groupes après le regroupement. Utilisez HAVING quand votre condition implique une fonction d'agrégation.</p>
-    <div class="code-block">
-<span class="cmt">-- Seulement les lieux avec plus de 5 séances</span>
-<span class="kw">SELECT</span> <span class="col">location</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> shoot_count
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">GROUP BY</span> <span class="col">location</span>
-<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">5</span>
-<span class="kw">ORDER BY</span> shoot_count <span class="kw">DESC</span>;
-    </div>
-    <div class="concept"><strong>La règle</strong>Chaque colonne dans SELECT qui n'est pas à l'intérieur d'une fonction (COUNT, SUM, AVG) doit apparaître dans GROUP BY. Si vous la sélectionnez, groupez-la.</div>
-    <div class="tip"><strong>WHERE vs HAVING :</strong> WHERE filtre les lignes avant que le groupe soit formé. HAVING filtre les groupes après leur formation. En cas de doute — si votre condition utilise COUNT, SUM, AVG — utilisez HAVING.</div>
-  </section>
-
-  <!-- LESSON 8 -->
-  <section class="lesson" id="lesson-8">
-    <h2>8. JOIN — Deux Tables</h2>
-    <div class="dataset-badge">📂 Tables : <span>photographers · shoots</span></div>
-    <p>JOIN relie deux tables ensemble en utilisant une colonne commune. C'est ici que SQL devient vraiment puissant — relier le nom d'un photographe à toutes ses séances, à travers deux tables séparées.</p>
-    <div class="code-block">
-<span class="cmt">-- Relier les séances aux noms des photographes</span>
-<span class="kw">SELECT</span>
-  <span class="tbl">photographers</span>.<span class="col">name</span>,
-  <span class="tbl">shoots</span>.<span class="col">event</span>,
-  <span class="tbl">shoots</span>.<span class="col">location</span>,
-  <span class="tbl">shoots</span>.<span class="col">year</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">JOIN</span> <span class="tbl">photographers</span>
-  <span class="kw">ON</span> <span class="tbl">shoots</span>.<span class="col">photographer_id</span> = <span class="tbl">photographers</span>.<span class="col">photographer_id</span>
-<span class="kw">ORDER BY</span> <span class="tbl">shoots</span>.<span class="col">year</span> <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">5</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>name</th><th>event</th><th>location</th><th>year</th></tr></thead>
-      <tbody>
-        <tr><td>Amara Diallo</td><td>Wildlife Reserve Shoot</td><td>Kyiv</td><td>2024</td></tr>
-        <tr><td>Carlos Mendez</td><td>Urban Portraits</td><td>São Paulo</td><td>2024</td></tr>
-        <tr><td>Carlos Mendez</td><td>Market Day</td><td>Berlin</td><td>2024</td></tr>
-        <tr><td>Carlos Mendez</td><td>Street Life Series</td><td>Lisbon</td><td>2024</td></tr>
-      </tbody>
-    </table>
-    <div class="code-block">
-<span class="cmt">-- Utiliser des alias de table pour raccourcir les requêtes</span>
-<span class="kw">SELECT</span>
-  p.<span class="col">name</span>,
-  s.<span class="col">event</span>,
-  s.<span class="col">year</span>,
-  s.<span class="col">photos_taken</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>        s
-<span class="kw">JOIN</span> <span class="tbl">photographers</span>  p  <span class="kw">ON</span> s.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
-<span class="kw">WHERE</span> s.<span class="col">year</span> >= <span class="num">2022</span>
-<span class="kw">ORDER BY</span> s.<span class="col">photos_taken</span> <span class="kw">DESC</span>;
-    </div>
-    <div class="concept"><strong>La clé commune</strong>shoots.photographer_id correspond à photographers.photographer_id. Cette colonne commune est ce qui relie les deux tables. Sans elle, le JOIN n'a rien pour établir la correspondance.</div>
-    <div class="tip"><strong>Alias de table</strong> — donnez à chaque table une lettre courte (p pour photographers, s pour shoots). Cela rend les requêtes longues beaucoup plus faciles à lire et à écrire.</div>
-  </section>
-
-  <!-- LESSON 9 -->
-  <section class="lesson" id="lesson-9">
-    <h2>9. JOINs Multiples</h2>
-    <div class="dataset-badge">📂 Tables : <span>photographers · shoots · equipment</span></div>
-    <p>Vous pouvez faire un JOIN de plus de deux tables dans une seule requête. Chaque JOIN ajoute une connexion supplémentaire. La clé est toujours une colonne commune entre deux tables.</p>
-    <div class="code-block">
-<span class="cmt">-- Photographes + leurs séances + l'équipement utilisé</span>
-<span class="kw">SELECT</span>
-  p.<span class="col">name</span>                     <span class="kw">AS</span> photographer,
-  s.<span class="col">event</span>,
-  s.<span class="col">year</span>,
-  e.<span class="col">brand</span>  || <span class="str">' '</span> || e.<span class="col">model</span> <span class="kw">AS</span> camera
-<span class="kw">FROM</span> <span class="tbl">shoots</span>      s
-<span class="kw">JOIN</span> <span class="tbl">photographers</span> p <span class="kw">ON</span> s.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
-<span class="kw">JOIN</span> <span class="tbl">equipment</span>     e <span class="kw">ON</span> e.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
-<span class="kw">WHERE</span> e.<span class="col">type</span> = <span class="str">'Camera'</span>
-<span class="kw">ORDER BY</span> s.<span class="col">year</span> <span class="kw">DESC</span>
-<span class="kw">LIMIT</span> <span class="num">10</span>;
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>photographer</th><th>event</th><th>year</th><th>camera</th></tr></thead>
-      <tbody>
-        <tr><td>Amara Diallo</td><td>Wildlife Reserve Shoot</td><td>2024</td><td>Sony A7 IV</td></tr>
-        <tr><td>Sofia Reyes</td><td>Coastal Landscape Series</td><td>2024</td><td>Nikon Z7 II</td></tr>
-        <tr><td>Carlos Mendez</td><td>Rio Street Series</td><td>2023</td><td>Sony A7 IV</td></tr>
-      </tbody>
-    </table>
-    <div class="code-block">
-<span class="cmt">-- Combien de pièces d'équipement chaque photographe possède-t-il ?</span>
-<span class="kw">SELECT</span>
-  p.<span class="col">name</span>,
-  <span class="fn">COUNT</span>(e.<span class="col">item_id</span>) <span class="kw">AS</span> gear_count,
-  <span class="fn">SUM</span>(e.<span class="col">purchase_price_usd</span>) <span class="kw">AS</span> total_invested
-<span class="kw">FROM</span> <span class="tbl">photographers</span> p
-<span class="kw">JOIN</span> <span class="tbl">equipment</span> e <span class="kw">ON</span> e.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
-<span class="kw">GROUP BY</span> p.<span class="col">name</span>
-<span class="kw">ORDER BY</span> total_invested <span class="kw">DESC</span>;
-    </div>
-    <div class="tip"><strong>Chaque JOIN est un pont de plus.</strong> Premier pont : shoots → photographers. Deuxième pont : equipment → photographers. L'ordre compte — chaque nouvelle table doit partager une colonne avec une table déjà présente dans la requête.</div>
-  </section>
-
-  <!-- LESSON 10 -->
-  <section class="lesson" id="lesson-10">
-    <h2>10. Sous-requêtes</h2>
-    <div class="dataset-badge">📂 Tables : <span>photographers · shoots</span></div>
-    <p>Une sous-requête est une requête à l'intérieur d'une requête. Elle vous permet d'utiliser le résultat d'une question comme donnée d'entrée pour une autre. La requête interne s'exécute en premier et transmet son résultat à la requête externe.</p>
-    <div class="code-block">
-<span class="cmt">-- Trouver toutes les séances au-dessus du nombre moyen de photos</span>
-<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">photos_taken</span>
-<span class="kw">FROM</span> <span class="tbl">shoots</span>
-<span class="kw">WHERE</span> <span class="col">photos_taken</span> > (
-  <span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">photos_taken</span>) <span class="kw">FROM</span> <span class="tbl">shoots</span>
-)
-<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>;
-    </div>
-    <div class="code-block">
-<span class="cmt">-- Photographes ayant fait plus de 5 séances</span>
-<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>, <span class="col">specialty</span>
-<span class="kw">FROM</span> <span class="tbl">photographers</span>
-<span class="kw">WHERE</span> <span class="col">photographer_id</span> <span class="kw">IN</span> (
-  <span class="kw">SELECT</span> <span class="col">photographer_id</span>
-  <span class="kw">FROM</span> <span class="tbl">shoots</span>
-  <span class="kw">GROUP BY</span> <span class="col">photographer_id</span>
-  <span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">5</span>
-);
-    </div>
-    <div class="result-label">Résultat</div>
-    <table class="result-table">
-      <thead><tr><th>name</th><th>country</th><th>specialty</th></tr></thead>
-      <tbody>
-        <tr><td>Carlos Mendez</td><td>Brazil</td><td>Street</td></tr>
-        <tr><td>Sofia Reyes</td><td>Mexico</td><td>Landscape</td></tr>
-        <tr><td>Diego Vargas</td><td>Colombia</td><td>Wildlife</td></tr>
-        <tr><td>James Okonkwo</td><td>Nigeria</td><td>Documentary</td></tr>
-        <tr><td>Ahmed Hassan</td><td>Egypt</td><td>Architecture</td></tr>
-        <tr><td>Nour Khalil</td><td>Lebanon</td><td>Documentary</td></tr>
-        <tr><td>Marcus Johnson</td><td>USA</td><td>Sports</td></tr>
-        <tr><td>Ravi Sharma</td><td>India</td><td>Wedding</td></tr>
-      </tbody>
-    </table>
-    <div class="concept"><strong>La requête interne s'exécute en premier</strong>Son résultat est transmis à la requête externe. Pensez-y comme répondre à une petite question pour répondre à la plus grande. La requête interne va toujours entre parenthèses.</div>
-    <div class="exercise">
-      <div class="exercise-label">Exercice</div>
-      <p>Essayez d'écrire ces sous-requêtes :</p>
-      <ol>
-        <li>Trouvez tous les photographes notés au-dessus de la note moyenne</li>
-        <li>Trouvez les séances où photos_exported dépasse la moyenne générale</li>
-        <li>Trouvez les photographes possédant un équipement coûtant plus de 5 000 $ au total</li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- LESSON 11 -->
-  <section class="lesson" id="lesson-11">
-    <h2>11. INSERT & UPDATE</h2>
-    <div class="dataset-badge">📂 Tables : <span>photographers · shoots</span></div>
-    <p>Tout ce que nous avons vu jusqu'ici consistait à lire des données. INSERT ajoute de nouvelles lignes. UPDATE modifie celles qui existent déjà. Ce sont les commandes que vous utilisez pour garder votre archive à jour.</p>
-    <h3>INSERT — ajouter un nouvel enregistrement</h3>
-    <div class="code-block">
-<span class="cmt">-- Ajouter une nouvelle séance à la base de données</span>
-<span class="kw">INSERT INTO</span> <span class="tbl">shoots</span>
-  (<span class="col">photographer_id</span>, <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>, <span class="col">photos_taken</span>, <span class="col">photos_exported</span>)
-<span class="kw">VALUES</span>
-  (<span class="num">1</span>, <span class="str">'Nairobi Wildlife Assignment'</span>, <span class="str">'Nairobi'</span>, <span class="num">2025</span>, <span class="num">710</span>, <span class="num">115</span>);
-    </div>
-    <div class="code-block">
-<span class="cmt">-- Ajouter un nouveau photographe</span>
-<span class="kw">INSERT INTO</span> <span class="tbl">photographers</span>
-  (<span class="col">name</span>, <span class="col">country</span>, <span class="col">specialty</span>, <span class="col">years_experience</span>, <span class="col">rating</span>)
-<span class="kw">VALUES</span>
-  (<span class="str">'Grace Mwangi'</span>, <span class="str">'Kenya'</span>, <span class="str">'Wildlife'</span>, <span class="num">8</span>, <span class="num">4.3</span>);
-    </div>
-    <h3>UPDATE — modifier des données existantes</h3>
-    <div class="code-block">
-<span class="cmt">-- Mettre à jour la note d'un photographe</span>
-<span class="kw">UPDATE</span> <span class="tbl">photographers</span>
-<span class="kw">SET</span>    <span class="col">rating</span> = <span class="num">4.8</span>
-<span class="kw">WHERE</span>  <span class="col">photographer_id</span> = <span class="num">1</span>;
-
-<span class="cmt">-- Mettre à jour photos_exported pour une séance spécifique</span>
-<span class="kw">UPDATE</span> <span class="tbl">shoots</span>
-<span class="kw">SET</span>    <span class="col">photos_exported</span> = <span class="num">112</span>
-<span class="kw">WHERE</span>  <span class="col">shoot_id</span> = <span class="num">4471</span>;
-    </div>
-    <div class="tip"><strong>Utilisez toujours WHERE avec UPDATE.</strong> Sans WHERE, l'UPDATE s'applique à toutes les lignes de la table. Ce n'est presque jamais ce que vous voulez. Vérifiez votre condition WHERE avec un SELECT avant d'exécuter un UPDATE.</div>
-    <div class="concept"><strong>La boîte à outils SQL complète</strong>SELECT · WHERE · ORDER BY · LIMIT · DISTINCT · COUNT · AVG · SUM · MIN · MAX · GROUP BY · HAVING · JOIN · Sous-requêtes · INSERT · UPDATE. C'est tout ce dont vous avez besoin pour interroger, comprendre et maintenir toute votre archive photographique.</div>
-    <div class="exercise">
-      <div class="exercise-label">Défi Final</div>
-      <p>Sans regarder en arrière, écrivez des requêtes qui :</p>
-      <ol>
-        <li>Montrent les 5 meilleurs photographes par total de photos prises sur toutes leurs séances</li>
-        <li>Trouvent toutes les séances des 3 dernières années avec plus de 1 000 photos prises — montrez le nom, l'événement, l'année</li>
-        <li>Calculent le taux de conservation (photos_exported / photos_taken × 100) par lieu — triez du plus élevé au plus bas</li>
-        <li>Insèrent une nouvelle séance d'un événement récent que vous avez couvert</li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- FOOTER NAV -->
-  <div class="footer-nav">
-    <button class="btn btn-prev" id="prevBtn" onclick="changeLesson(-1)">← Précédent</button>
-    <div id="progress" style="font-weight:700; color:var(--gold);">0 / 11</div>
-    <button class="btn btn-next" id="nextBtn" onclick="changeLesson(1)">Leçon Suivante →</button>
-  </div>
-
-</div>
-
-<script>
-  let current = 0;
-  const total = 11;
-
-  function jumpTo(index) {
-    current = index;
-
-    document.querySelectorAll('.lesson').forEach((l, i) => {
-      l.classList.toggle('active', i === index);
-    });
-
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach((item, i) => {
-      item.classList.toggle('active', i === index);
-    });
-
-    document.getElementById('progress').innerText = index + ' / ' + total;
-    document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
-    document.getElementById('nextBtn').innerText = index === total ? '✓ Terminé — Retour au Darkroom' : 'Leçon Suivante →';
-
-    document.querySelector('.main').scrollTo({ top: 0, behavior: 'instant' });
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  function changeLesson(dir) {
-    const next = current + dir;
-    if (next > total) {
-      window.location.href = 'index_fr.html';
-      return;
-    }
-    if (next >= 0 && next <= total) jumpTo(next);
-  }
-
-  window.onload = () => jumpTo(0);
-</script>
-
-</body>
-</html>
+    <div class="concept"><strong>Opérateurs dis
