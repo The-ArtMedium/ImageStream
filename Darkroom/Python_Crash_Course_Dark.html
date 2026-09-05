@@ -16,19 +16,27 @@
   html { scroll-behavior: smooth; }
   body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.8; overflow-x: hidden; }
 
-  /* --- SIDEBAR --- */
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--bg2); border-right: 1px solid var(--border2); overflow-y: auto; z-index: 1000; }
-  .sidebar-header { padding: 30px 24px; border-bottom: 1px solid var(--border2); }
-  .nav-item { display: block; padding: 12px 24px; color: var(--text2); text-decoration: none; cursor: pointer; font-size: 15px; border-left: 4px solid transparent; transition: 0.2s; }
-  .nav-item:hover { background: var(--bg3); color: var(--text); }
-  .nav-item.active { background: var(--bg3); color: var(--green); border-left-color: var(--green); font-weight: 700; }
-  .nav-section { padding: 20px 24px 8px; font-size: 11px; text-transform: uppercase; color: var(--text3); letter-spacing: 0.1em; }
-
   /* --- MAIN --- */
-  .main { margin-left: 280px; min-height: 100vh; padding-bottom: 120px; }
+  .main { margin-left: 0; min-height: 100vh; padding-bottom: 120px; }
+
+  /* --- TOP BAR (replaces sidebar) --- */
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .topbar-title { font-family: Lora; font-size: 20px; }
+  .topbar-title span { color: var(--green); font-size: 12px; font-weight: 700; display: block; margin-top: 2px; }
+  .topbar-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* --- LESSON CARDS (overview page navigation) --- */
+  .lessons-list { display: grid; gap: 10px; max-width: 740px; }
+  .lesson-card { display: flex; align-items: center; gap: 18px; padding: 18px 22px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+  .lesson-card:hover { border-color: var(--green); background: var(--bg3); transform: translateX(4px); }
+  .lesson-card-num { width: 42px; height: 42px; background: var(--bg3); color: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Source Code Pro', monospace; font-size: 14px; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border2); }
+  .lesson-card-info { flex: 1; }
+  .lesson-card-title { font-weight: 700; color: var(--text); font-size: 16px; margin-bottom: 2px; }
+  .lesson-card-desc { font-size: 13px; color: var(--text3); }
+  .lesson-card-arrow { color: var(--border2); font-size: 20px; }
 
   /* --- LESSONS --- */
-  .lesson { display: none; padding: 60px; max-width: 1000px; animation: fadeIn 0.3s ease-out; }
+  .lesson { display: none; padding: 60px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease-out; }
   .lesson.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -61,7 +69,7 @@
   .lesson-hero p { color: var(--text2); font-size: 20px; max-width: 600px; }
 
   /* --- FOOTER NAV --- */
-  .footer-nav { position: fixed; bottom: 0; right: 0; left: 280px; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
+  .footer-nav { position: fixed; bottom: 0; right: 0; left: 0; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
   .btn { padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; border: none; font-size: 16px; transition: 0.2s; }
   .btn-next { background: var(--green); color: var(--bg); }
   .btn-prev { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
@@ -71,36 +79,20 @@
   h3 { font-family: Lora; font-size: 22px; margin: 30px 0 12px; color: var(--gold); }
   p { margin-bottom: 16px; color: var(--text2); }
 
-  @media (max-width: 900px) { .sidebar { display: none; } .main { margin-left: 0; } .footer-nav { left: 0; padding: 16px 24px; } .lesson { padding: 30px 24px; } }
+  @media (max-width: 900px) { .footer-nav { padding: 16px 24px; } .lesson { padding: 30px 24px; } .topbar { padding: 16px 24px; } }
 </style>
 </head>
 <body>
 
-<nav class="sidebar">
-  <div class="sidebar-header">
-    <div style="font-family:Lora; font-size:20px;">Python Foundation</div>
-    <div style="color:var(--green); font-size:12px; font-weight:700; margin-top:4px;">PHOTO DATA EDITION</div>
-  </div>
-  <div style="padding:14px 16px; border-bottom:1px solid var(--border2); display:flex; flex-wrap:wrap; gap:6px;">
+<div class="topbar">
+  <div class="topbar-title">Python Foundation<span>PHOTO DATA EDITION</span></div>
+  <div class="topbar-badges">
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">photographers.csv</span></span>
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">shoots.csv</span></span>
     <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">equipment.csv</span></span>
-    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">🗃 <span style="color:var(--gold);">750,000 records</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">🗃 <span style="color:var(--gold);">191 real records</span></span>
   </div>
-  <div id="sidebar-nav">
-    <a class="nav-item active" onclick="jumpTo(0)">✦ Course Overview</a>
-    <div class="nav-section">The Basics</div>
-    <a class="nav-item" onclick="jumpTo(1)">1. Variables & Data Types</a>
-    <a class="nav-item" onclick="jumpTo(2)">2. Lists & Dictionaries</a>
-    <a class="nav-item" onclick="jumpTo(3)">3. Loops & Logic</a>
-    <a class="nav-item" onclick="jumpTo(4)">4. Functions</a>
-    <div class="nav-section">Data Analysis</div>
-    <a class="nav-item" onclick="jumpTo(5)">5. Reading CSV Files</a>
-    <a class="nav-item" onclick="jumpTo(6)">6. Pandas DataFrames</a>
-    <a class="nav-item" onclick="jumpTo(7)">7. Filtering Shoots</a>
-    <a class="nav-item" onclick="jumpTo(8)">8. Visualisation</a>
-  </div>
-</nav>
+</div>
 
 <div class="main">
 
@@ -113,7 +105,18 @@
     <h2>Course Roadmap</h2>
     <p>We will use a real dataset of photographers, shoots and equipment to learn how to automate, organise, and protect your lifetime of work.</p>
     <p>Each lesson builds on the last. By the end you will be able to query, filter and visualise your own archive data.</p>
-    <div class="tip"><strong>How to use this course:</strong> Read each lesson, study the code examples, then press Next Lesson to continue. Use the sidebar to jump to any lesson at any time.</div>
+    <div class="tip"><strong>How to use this course:</strong> Read each lesson, study the code examples, then press Next Lesson to continue, or jump straight to any lesson using the cards below.</div>
+    <h3 style="font-family:Lora; font-size:22px; margin:30px 0 12px; color:var(--green);">Lessons</h3>
+    <div class="lessons-list">
+      <div class="lesson-card" onclick="jumpTo(1)"><div class="lesson-card-num">1</div><div class="lesson-card-info"><div class="lesson-card-title">Variables & Data Types</div><div class="lesson-card-desc">The building blocks — text, numbers, booleans</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(2)"><div class="lesson-card-num">2</div><div class="lesson-card-info"><div class="lesson-card-title">Lists & Dictionaries</div><div class="lesson-card-desc">Holding many items, and labelling them</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(3)"><div class="lesson-card-num">3</div><div class="lesson-card-info"><div class="lesson-card-title">Loops & Logic</div><div class="lesson-card-desc">Repeat tasks automatically, make decisions</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(4)"><div class="lesson-card-num">4</div><div class="lesson-card-info"><div class="lesson-card-title">Functions</div><div class="lesson-card-desc">Reusable tools you build once, use forever</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(5)"><div class="lesson-card-num">5</div><div class="lesson-card-info"><div class="lesson-card-title">Reading CSV Files</div><div class="lesson-card-desc">Open and read your archive data with Python</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(6)"><div class="lesson-card-num">6</div><div class="lesson-card-info"><div class="lesson-card-title">Pandas DataFrames</div><div class="lesson-card-desc">Turn your CSV into a queryable table</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(7)"><div class="lesson-card-num">7</div><div class="lesson-card-info"><div class="lesson-card-title">Filtering Shoots</div><div class="lesson-card-desc">Ask questions of your data in one line</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(8)"><div class="lesson-card-num">8</div><div class="lesson-card-info"><div class="lesson-card-title">Visualisation</div><div class="lesson-card-desc">Turn your archive into charts</div></div><div class="lesson-card-arrow">→</div></div>
+    </div>
   </section>
 
   <!-- LESSON 1: Variables -->
@@ -138,7 +141,7 @@ camera_body = <span class="str">"Canon R5"</span>
 photographer = <span class="str">"Satdiva"</span>
 
 <span class="cmt"># Number (called an integer)</span>
-total_shots = <span class="kw">750000</span>
+total_shots = <span class="kw">61833</span>  <span class="cmt"># real total across all 103 shoots</span>
 
 <span class="cmt"># True / False (called a boolean)</span>
 is_raw = <span class="kw">True</span>
@@ -164,15 +167,15 @@ equestrian_events = [<span class="str">"Show Jumping"</span>, <span class="str">
     <p>A Dictionary is like a camera bag. Each item has a name (key) and a value.</p>
     <div class="code-block">
 photographer = {
-    <span class="str">"name"</span>:       <span class="str">"Satdiva"</span>,
-    <span class="str">"credential"</span>: <span class="str">"USA06591"</span>,
-    <span class="str">"speciality"</span>: <span class="str">"Equestrian"</span>,
-    <span class="str">"total_shoots"</span>: <span class="kw">4200</span>
+    <span class="str">"name"</span>:       <span class="str">"Amara Diallo"</span>,
+    <span class="str">"country"</span>:    <span class="str">"Senegal"</span>,
+    <span class="str">"specialty"</span>:  <span class="str">"Wildlife"</span>,
+    <span class="str">"total_shoots"</span>: <span class="kw">4</span>
 }
 
 <span class="cmt"># Access by key name</span>
-<span class="fn">print</span>(photographer[<span class="str">"name"</span>])       <span class="cmt"># → "Satdiva"</span>
-<span class="fn">print</span>(photographer[<span class="str">"speciality"</span>]) <span class="cmt"># → "Equestrian"</span>
+<span class="fn">print</span>(photographer[<span class="str">"name"</span>])       <span class="cmt"># → "Amara Diallo"</span>
+<span class="fn">print</span>(photographer[<span class="str">"specialty"</span>]) <span class="cmt"># → "Wildlife"</span>
     </div>
     <div class="tip"><strong>Think of it this way:</strong> A List is ordered like a film roll. A Dictionary is labelled like a file cabinet.</div>
   </section>
@@ -220,8 +223,8 @@ iso = <span class="kw">3200</span>
     <span class="fn">print</span>(<span class="str">f"Total shots: {shots_taken}"</span>)
 
 <span class="cmt"># Use it as many times as you need</span>
-<span class="fn">describe_shoot</span>(<span class="str">"Wellington Polo"</span>, <span class="str">"Florida"</span>, <span class="kw">840</span>)
-<span class="fn">describe_shoot</span>(<span class="str">"Grand Prix Jumping"</span>, <span class="str">"Geneva"</span>, <span class="kw">1200</span>)
+<span class="fn">describe_shoot</span>(<span class="str">"Serengeti Safari"</span>, <span class="str">"Shanghai"</span>, <span class="kw">652</span>)
+<span class="fn">describe_shoot</span>(<span class="str">"Wildlife Reserve Shoot"</span>, <span class="str">"Kyiv"</span>, <span class="kw">165</span>)
     </div>
     <p>Functions can also return a value — like a calculation result.</p>
     <div class="code-block">
@@ -247,14 +250,14 @@ result = <span class="fn">keeper_rate</span>(<span class="kw">840</span>, <span 
 <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
     reader = csv.<span class="fn">DictReader</span>(file)
     <span class="kw">for</span> row <span class="kw">in</span> reader:
-        <span class="fn">print</span>(row[<span class="str">"name"</span>], <span class="str">"—"</span>, row[<span class="str">"speciality"</span>])
+        <span class="fn">print</span>(row[<span class="str">"name"</span>], <span class="str">"—"</span>, row[<span class="str">"specialty"</span>])
     </div>
     <h3>photographers.csv structure</h3>
     <div class="code-block" style="font-size:14px;">
-<span class="cmt">id, name,         credential, speciality,   country</span>
-<span class="str"> 1, Satdiva,       USA06591,   Equestrian,   USA</span>
-<span class="str"> 2, David,         USA00234,   Polo,         USA</span>
-<span class="str"> 3, Snoopy,        USA00089,   Equestrian,   USA</span>
+<span class="cmt">photographer_id, name,          country,  specialty</span>
+<span class="str"> 1,              Amara Diallo,  Senegal,  Wildlife</span>
+<span class="str"> 2,              Carlos Mendez, Brazil,   Street</span>
+<span class="str"> 3,              Priya Nair,    India,    Portrait</span>
     </div>
     <div class="tip"><strong>DictReader</strong> reads each row as a dictionary — so you access columns by name, not by position. Much easier to read.</div>
   </section>
@@ -274,122 +277,30 @@ df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
 <span class="fn">print</span>(df.<span class="fn">head</span>())
 
 <span class="cmt"># How many rows and columns?</span>
-<span class="fn">print</span>(df.shape)   <span class="cmt"># → (750000, 8)</span>
+<span class="fn">print</span>(df.shape)   <span class="cmt"># → (103, 10)</span>
 
 <span class="cmt"># Column names</span>
 <span class="fn">print</span>(df.columns)
     </div>
     <h3>shoots.csv structure</h3>
     <div class="code-block" style="font-size:14px;">
-<span class="cmt">id, photographer_id, event,          location,  year, shots, keepers</span>
-<span class="str"> 1, 1,               Wellington Polo, Florida,   2019, 840,   92</span>
-<span class="str"> 2, 1,               Grand Prix,      Geneva,    2022, 1200,  140</span>
-<span class="str"> 3, 3,               Dressage Cup,    Aachen,    2021, 600,   78</span>
+<span class="cmt">shoot_id, photographer_id, event,              location, year, photos_taken, photos_exported</span>
+<span class="str"> 1,       1,               Serengeti Safari,      Shanghai, 2021, 652,          132</span>
+<span class="str"> 2,       1,               Wildlife Reserve Shoot, Kyiv,     2024, 165,          100</span>
+<span class="str"> 3,       1,               Migration Season,       Kolkata,  2023, 744,          128</span>
     </div>
-    <div class="tip"><strong>750,000 rows</strong> — that is your full archive. Pandas handles it instantly. Python without Pandas would take minutes.</div>
+    <div class="tip"><strong>103 rows</strong> — that is your full archive. Pandas handles it instantly, whether it is 103 rows or 103 million.</div>
   </section>
 
   <!-- LESSON 7: Filtering -->
   <section class="lesson" id="lesson-7">
     <h2>7. Filtering Shoots</h2>
     <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv</span></div>
-    <p>Filtering lets you ask questions of your data. Which shoots were in Florida? Which year had the most shots? Find them in one line.</p>
+    <p>Filtering lets you ask questions of your data. Which shoots were in Dakar? Which year had the most photos taken? Find them in one line.</p>
     <div class="code-block">
 <span class="kw">import</span> pandas <span class="kw">as</span> pd
 df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
 
-<span class="cmt"># All shoots in Florida</span>
-florida = df[df[<span class="str">"location"</span>] == <span class="str">"Florida"</span>]
-<span class="fn">print</span>(florida)
-
-<span class="cmt"># All shoots after 2020</span>
-recent = df[df[<span class="str">"year"</span>] > <span class="kw">2020</span>]
-<span class="fn">print</span>(recent.<span class="fn">head</span>())
-
-<span class="cmt"># Shoots with more than 1000 shots taken</span>
-heavy = df[df[<span class="str">"shots"</span>] > <span class="kw">1000</span>]
-<span class="fn">print</span>(<span class="str">f"Heavy shoots: {len(heavy)}"</span>)
-    </div>
-    <p>Combine filters using & (and) or | (or):</p>
-    <div class="code-block">
-<span class="cmt"># Florida AND after 2020</span>
-filtered = df[(df[<span class="str">"location"</span>] == <span class="str">"Florida"</span>) & (df[<span class="str">"year"</span>] > <span class="kw">2020</span>)]
-<span class="fn">print</span>(filtered)
-    </div>
-    <div class="tip"><strong>This is the power.</strong> 750,000 records. One line of code. The answer is instant.</div>
-  </section>
-
-  <!-- LESSON 8: Visualisation -->
-  <section class="lesson" id="lesson-8">
-    <h2>8. Visualisation</h2>
-    <div class="dataset-badge">📂 Dataset used in this lesson: <span>shoots.csv · photographers.csv</span></div>
-    <p>Matplotlib turns your data into charts. See your archive at a glance — shoots per year, locations, keeper rates.</p>
-    <div class="code-block">
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
-
-df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
-
-<span class="cmt"># Count shoots per year</span>
-by_year = df.<span class="fn">groupby</span>(<span class="str">"year"</span>)[<span class="str">"id"</span>].<span class="fn">count</span>()
-
-<span class="cmt"># Plot it</span>
-by_year.<span class="fn">plot</span>(kind=<span class="str">"bar"</span>, color=<span class="str">"#6bcf8a"</span>)
-plt.<span class="fn">title</span>(<span class="str">"Shoots Per Year"</span>)
-plt.<span class="fn">xlabel</span>(<span class="str">"Year"</span>)
-plt.<span class="fn">ylabel</span>(<span class="str">"Number of Shoots"</span>)
-plt.<span class="fn">tight_layout</span>()
-plt.<span class="fn">show</span>()
-    </div>
-    <div class="tip"><strong>You have completed the foundation.</strong> Variables → Lists → Loops → Functions → CSV → Pandas → Filter → Visualise. That is the full pipeline. Your archive is now programmable.</div>
-  </section>
-
-  <div class="footer-nav">
-    <button class="btn btn-prev" id="prevBtn" onclick="changeLesson(-1)">← Previous</button>
-    <div id="progress" style="font-weight:700; color:var(--green);">0 / 8</div>
-    <button class="btn btn-next" id="nextBtn" onclick="changeLesson(1)">Next Lesson →</button>
-  </div>
-</div>
-
-<script>
-  let current = 0;
-  const total = 8;
-
-  function jumpTo(index) {
-    current = index;
-
-    // Show correct lesson
-    document.querySelectorAll('.lesson').forEach((l, i) => {
-      l.classList.toggle('active', i === index);
-    });
-
-    // Update sidebar — skip nav-section dividers
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach((item, i) => {
-      item.classList.toggle('active', i === index);
-    });
-
-    // Progress counter
-    document.getElementById('progress').innerText = index + ' / ' + total;
-
-    // Prev button
-    document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
-
-    // Next button label
-    document.getElementById('nextBtn').innerText = index === total ? '✓ Finished' : 'Next Lesson →';
-
-    // Scroll to top of main content
-    document.querySelector('.main').scrollTo({ top: 0, behavior: 'instant' });
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  function changeLesson(dir) {
-    const next = current + dir;
-    if (next >= 0 && next <= total) jumpTo(next);
-  }
-
-  window.onload = () => jumpTo(0);
-</script>
-
-</body>
-</html>
+<span class="cmt"># All shoots in Dakar</span>
+dakar = df[df[<span class="str">"location"</span>] == <span class="str">"Dakar"</span>]
+        
