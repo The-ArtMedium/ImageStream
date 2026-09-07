@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دورة SQL المكثفة — قاعدة بيانات التصوير</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Source+Code+Pro:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1a14; --bg2: #232318; --bg3: #2c2c20; --border: #3a3a2a;
+    --border2: #4a4a38; --text: #f5f0e3; --text2: #d4ccb8; --text3: #9a9278;
+    --gold: #e8b84b; --green: #6bcf8a; --blue: #7eb8f7; --purple: #c4a0f0;
+    --teal: #5dd0c8; --coral: #f08060;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.8; overflow-x: hidden; }
+
+  /* --- MAIN --- */
+  .main { margin-left: 0; min-height: 100vh; padding-bottom: 120px; }
+
+  /* --- TOP BAR (replaces sidebar) --- */
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .topbar-title { font-family: Lora; font-size: 20px; }
+  .topbar-title span { color: var(--gold); font-size: 12px; font-weight: 700; display: block; margin-top: 2px; }
+  .topbar-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* --- LESSONS --- */
+  .lesson { display: none; padding: 60px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease-out; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* --- DATASET BADGE --- */
+  .dataset-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 8px 16px; font-size: 0.78em;
+    color: var(--text3); margin-bottom: 28px;
+    font-family: 'Source Code Pro', monospace;
+  }
+  .dataset-badge span { color: var(--gold); font-weight: 600; }
+
+  /* --- CODE --- */
+  .code-block { background: #000; padding: 25px; border-radius: 12px; font-family: 'Source Code Pro', monospace; font-size: 16px; border: 1px solid var(--border2); margin: 25px 0; overflow-x: auto; line-height: 1.9; }
+  .kw  { color: var(--blue);   font-weight: 600; }
+  .fn  { color: var(--green);  }
+  .str { color: var(--gold);   }
+  .num { color: var(--coral);  }
+  .cmt { color: #555; font-style: italic; }
+  .col { color: var(--text);   }
+  .tbl { color: var(--teal);   }
+
+  /* --- RESULT TABLE --- */
+  .result-label { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); font-weight: 700; margin: 28px 0 10px; }
+  .result-table { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 28px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border2); }
+  .result-table th { background: #111110; color: var(--gold); padding: 12px 18px; text-align: left; font-family: 'Source Code Pro', monospace; font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--border2); }
+  .result-table td { padding: 11px 18px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.6; }
+  .result-table tr:last-child td { border-bottom: none; }
+  .result-table tr:nth-child(even) td { background: var(--bg3); }
+  .result-table code { font-family: 'Source Code Pro', monospace; color: var(--teal); font-size: 13px; background: var(--bg); padding: 2px 6px; border-radius: 3px; }
+
+  /* --- TIP / CONCEPT / EXERCISE --- */
+  .tip { background: var(--bg2); border-left: 4px solid var(--gold); padding: 20px 24px; margin: 24px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; color: var(--text2); }
+  .concept { background: var(--bg2); border-left: 4px solid var(--blue); padding: 20px 24px; margin: 24px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; color: var(--text2); }
+  .watch-demo { background: var(--bg2); border: 2px solid var(--gold); border-radius: 12px; padding: 28px 32px; margin: 28px 0; }
+  .watch-demo-label { font-family: 'Source Code Pro', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; font-weight: 700; }
+  .watch-demo-q { font-size: 18px; margin-bottom: 16px; }
+  .concept strong { color: var(--blue); display: block; margin-bottom: 8px; font-size: 0.85em; letter-spacing: 0.1em; text-transform: uppercase; }
+  .exercise { background: var(--bg3); border: 1px solid var(--purple); border-radius: 10px; padding: 24px 28px; margin: 32px 0; }
+  .exercise-label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 14px; }
+  .exercise p { color: var(--text); font-weight: 600; margin-bottom: 14px; }
+  .exercise ol { padding-left: 22px; }
+  .exercise li { color: var(--text2); margin-bottom: 10px; font-size: 16px; line-height: 1.7; }
+
+  /* --- HERO inside lesson-0 only --- */
+  .lesson-hero { margin-bottom: 40px; }
+  .lesson-hero h1 { font-family: Lora; font-size: 48px; margin-bottom: 15px; }
+  .lesson-hero p { color: var(--text2); font-size: 20px; max-width: 600px; }
+
+  /* --- OVERVIEW CARDS --- */
+  .lessons-list { display: grid; gap: 10px; max-width: 740px; }
+  .lesson-card { display: flex; align-items: center; gap: 18px; padding: 18px 22px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+  .lesson-card:hover { border-color: var(--gold); background: var(--bg3); transform: translateX(4px); }
+  .lesson-card-num { width: 42px; height: 42px; background: var(--bg3); color: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Source Code Pro', monospace; font-size: 14px; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border2); }
+  .lesson-card-info { flex: 1; }
+  .lesson-card-title { font-weight: 700; color: var(--text); font-size: 16px; margin-bottom: 2px; }
+  .lesson-card-desc { font-size: 13px; color: var(--text3); }
+  .lesson-card-arrow { color: var(--border2); font-size: 20px; }
+
+  /* --- FOOTER NAV --- */
+  .footer-nav { position: fixed; bottom: 0; right: 0; left: 0; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
+  .btn { padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; border: none; font-size: 16px; transition: 0.2s; font-family: 'Nunito', sans-serif; }
+  .btn-next { background: var(--gold); color: var(--bg); }
+  .btn-prev { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+  .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  h2 { font-family: Lora; font-size: 32px; margin-bottom: 20px; color: var(--text); }
+  h3 { font-family: Lora; font-size: 22px; margin: 30px 0 12px; color: var(--gold); }
+  p  { margin-bottom: 16px; color: var(--text2); }
+
+  @media (max-width: 900px) {
+    .footer-nav { padding: 16px 24px; }
+    .lesson { padding: 30px 24px; }
+    .topbar { padding: 16px 24px; }
+  }
+/* Force code and results to stay left-to-right inside the RTL page */
+.code-block, .result-table { direction: ltr; text-align: left; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="topbar">
+  <div class="topbar-title">أساسيات SQL<span>إصدار بيانات التصوير</span></div>
+  <div class="topbar-badges">
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">photographers.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">shoots.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">equipment.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">🗃 <span style="color:var(--gold);">191 سجلاً حقيقياً</span></span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LESSON 0: Overview -->
+  <section class="lesson active" id="lesson-0">
+    <div class="lesson-hero">
+      <h1>تعلّم SQL باستخدام<br><em style="color:var(--gold); font-style:normal;">بيانات التصوير</em></h1>
+      <p>11 درساً باستخدام مجموعة بيانات أصلية واحدة — المصورون، الجلسات والمعدات. نفس السمة الداكنة. نفس البيانات في دورة Python.</p>
+    </div>
+
+    <div class="watch-demo">
+      <div class="watch-demo-label">شاهد أولاً — بلا كتابة بعد</div>
+      <div class="watch-demo-q">🤔 <strong>السؤال:</strong> من هو المصور الأعلى تقييماً في قاعدة البيانات هذه؟</div>
+      <div class="code-block"><span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>, <span class="col">rating</span> <span class="kw">FROM</span> <span class="tbl">photographers</span> <span class="kw">ORDER BY</span> <span class="col">rating</span> <span class="kw">DESC</span> <span class="kw">LIMIT</span> <span class="num">1</span>;</div>
+      <div class="result-label">النتيجة</div>
+      <table class="result-table">
+        <thead><tr><th>name</th><th>country</th><th>rating</th></tr></thead>
+        <tbody><tr><td>Sarah Oduya</td><td>Kenya</td><td>4.9</td></tr></tbody>
+      </table>
+      <p style="margin-top:16px; color:var(--text2);">هذا كل شيء — جملة واحدة، سطر كود واحد، إجابة حقيقية واحدة. هذه هي الفكرة الكاملة لـ SQL. مستعد لكتابة استعلامك الخاص؟</p>
+    </div>
+
+    <h2>خارطة طريق الدورة</h2>
+    <p>سنستخدم قاعدة بيانات حقيقية لمصورين من 20 دولة، جلساتهم حول العالم، والمعدات التي يمتلكونها. كل استعلام في هذه الدورة مبني حول بيانات تفهمها بالفعل.</p>
+    <div class="tip"><strong>كيفية استخدام هذه الدورة:</strong> اقرأ كل درس، ادرس الاستعلامات، انظر إلى النتائج. اضغط الدرس التالي للمتابعة، أو انتقل مباشرة إلى أي درس باستخدام البطاقات أدناه.</div>
+    <h3>قاعدة بياناتك</h3>
+    <div class="lessons-list">
+      <div class="lesson-card" onclick="jumpTo(1)"><div class="lesson-card-num">1</div><div class="lesson-card-info"><div class="lesson-card-title">What is SQL?</div><div class="lesson-card-desc">Databases, tables, rows and columns explained</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(2)"><div class="lesson-card-num">2</div><div class="lesson-card-info"><div class="lesson-card-title">SELECT — Reading Data</div><div class="lesson-card-desc">Your first query. Ask the database for data.</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(3)"><div class="lesson-card-num">3</div><div class="lesson-card-info"><div class="lesson-card-title">WHERE — Filtering</div><div class="lesson-card-desc">Ask for only the rows you need</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(4)"><div class="lesson-card-num">4</div><div class="lesson-card-info"><div class="lesson-card-title">ORDER BY — Sorting</div><div class="lesson-card-desc">Sort results highest to lowest or A to Z</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(5)"><div class="lesson-card-num">5</div><div class="lesson-card-info"><div class="lesson-card-title">LIMIT & DISTINCT</div><div class="lesson-card-desc">Control volume and remove duplicates</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(6)"><div class="lesson-card-num">6</div><div class="lesson-card-info"><div class="lesson-card-title">COUNT, AVG, MIN, MAX</div><div class="lesson-card-desc">Calculate across rows</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(7)"><div class="lesson-card-num">7</div><div class="lesson-card-info"><div class="lesson-card-title">GROUP BY & HAVING</div><div class="lesson-card-desc">Group rows and filter the groups</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(8)"><div class="lesson-card-num">8</div><div class="lesson-card-info"><div class="lesson-card-title">JOIN — Two Tables</div><div class="lesson-card-desc">Connect photographers to their shoots</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(9)"><div class="lesson-card-num">9</div><div class="lesson-card-info"><div class="lesson-card-title">Multiple JOINs</div><div class="lesson-card-desc">Photographers + shoots + equipment together</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(10)"><div class="lesson-card-num">10</div><div class="lesson-card-info"><div class="lesson-card-title">Subqueries</div><div class="lesson-card-desc">A query inside a query</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(11)"><div class="lesson-card-num">11</div><div class="lesson-card-info"><div class="lesson-card-title">INSERT & UPDATE</div><div class="lesson-card-desc">Add and change data safely</div></div><div class="lesson-card-arrow">→</div></div>
+    </div>
+  </section>
+
+  <!-- LESSON 1 -->
+  <section class="lesson" id="lesson-1">
+    <h2>1. ما هو SQL؟</h2>
+    <div class="dataset-badge">📂 قاعدة البيانات: <span>photography_db</span></div>
+    <p>SQL تعني <strong>Structured Query Language</strong> (لغة الاستعلام المُهيكلة). هي اللغة التي تستخدمها للتحدث إلى قاعدة بيانات — لطرح الأسئلة، استرجاع البيانات، إضافة سجلات جديدة، أو إجراء تغييرات.</p>
+    <p>تُسمى قاعدة بياناتنا <strong>photography_db</strong>. تحتوي على مصورين من 20 دولة، جلساتهم حول العالم، والمعدات التي يمتلكونها. هذه نفس البيانات المستخدمة في دورة Python — لغتان، مجموعة بيانات واحدة.</p>
+    <div class="concept"><strong>مصطلحات أساسية</strong><strong>قاعدة البيانات</strong> هي مجموعة من البيانات المنظمة. <strong>الجدول</strong> مجموعة واحدة من البيانات المترابطة بداخلها. <strong>الصف</strong> سجل واحد. <strong>العمود</strong> معلومة واحدة عن ذلك السجل.</div>
+    <h3>الجداول الثلاثة</h3>
+    <table class="result-table">
+      <thead><tr><th>الجدول</th><th>ماذا يحتوي</th><th>استُخدم أولاً في</th></tr></thead>
+      <tbody>
+        <tr><td><code>photographers</code></td><td>الأسماء، البلدان، التخصصات، الكاميرات، التقييمات</td><td>الدرس 2</td></tr>
+        <tr><td><code>shoots</code></td><td>الفعاليات، المواقع، السنوات، الصور الملتقطة، الرسوم</td><td>الدرس 3</td></tr>
+        <tr><td><code>equipment</code></td><td>المعدات التي يملكها كل مصور</td><td>الدرس 9</td></tr>
+      </tbody>
+    </table>
+    <h3>معاينة لجدول photographers</h3>
+    <table class="result-table">
+      <thead><tr><th>photographer_id</th><th>name</th><th>country</th><th>specialty</th><th>rating</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Amara Diallo</td><td>Senegal</td><td>Wildlife</td><td>3.7</td></tr>
+        <tr><td>2</td><td>Carlos Mendez</td><td>Brazil</td><td>Street</td><td>3.8</td></tr>
+        <tr><td>3</td><td>Priya Nair</td><td>India</td><td>Portrait</td><td>4.6</td></tr>
+        <tr><td>4</td><td>James Okonkwo</td><td>Nigeria</td><td>Documentary</td><td>4.1</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>اصطلاح:</strong> الكلمات المفتاحية في SQL مثل SELECT وFROM لا تفرّق بين الأحرف الكبيرة والصغيرة — لكننا نكتبها بأحرف كبيرة لتتميز بوضوح عن أسماء الجداول والأعمدة.</div>
+    <div class="exercise">
+      <div class="exercise-label">فكّر في الأمر</div>
+      <p>قبل كتابة أي كود، أجب عن هذه ذهنياً:</p>
+      <ol>
+        <li>إذا أردت كل المصورين من نيجيريا، أي جدول ستستخدم؟</li>
+        <li>إذا أردت رسوم جلسة معينة، أي جدول؟</li>
+        <li>لماذا تُخزَّن الجلسات في جدول منفصل عن المصورين؟</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- LESSON 2 -->
+  <section class="lesson" id="lesson-2">
+    <h2>2. SELECT — قراءة البيانات</h2>
+    <div class="dataset-badge">📂 الجدول: <span>photographers</span></div>
+    <p>أهم أمر في SQL هو <strong>SELECT</strong>. ستستخدمه في كل استعلام تكتبه تقريباً. يخبر قاعدة البيانات بالأعمدة التي تريد رؤيتها.</p>
+    <div class="code-block">
+<span class="cmt">-- الحصول على كل الأعمدة من جدول photographers</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span> <span class="tbl">photographers</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- الحصول على الاسم والبلد فقط</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>name</th><th>country</th></tr></thead>
+      <tbody>
+        <tr><td>Amara Diallo</td><td>Senegal</td></tr>
+        <tr><td>Carlos Mendez</td><td>Brazil</td></tr>
+        <tr><td>Priya Nair</td><td>India</td></tr>
+        <tr><td>James Okonkwo</td><td>Nigeria</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+<span class="cmt">-- إعادة تسمية عمود في النتيجة باستخدام AS</span>
+<span class="kw">SELECT</span>
+  <span class="col">name</span>        <span class="kw">AS</span> photographer,
+  <span class="col">specialty</span>   <span class="kw">AS</span> type_of_work,
+  <span class="col">rating</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>;
+    </div>
+    <div class="tip"><strong>استخدم * باعتدال.</strong> SELECT * يُرجع كل الأعمدة. هذا مقبول للاستكشاف، لكن في الاستعلامات الحقيقية اذكر فقط الأعمدة التي تحتاجها فعلاً.</div>
+    <div class="exercise">
+      <div class="exercise-label">تمرين</div>
+      <p>اكتب استعلامات تُرجع:</p>
+      <ol>
+        <li>اسم وكاميرا كل مصور</li>
+        <li>كل الأعمدة من photographers — استخدم *</li>
+        <li>الاسم، التخصص، وyears_experience — أعد تسمية years_experience إلى experience</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- LESSON 3 -->
+  <section class="lesson" id="lesson-3">
+    <h2>3. WHERE — التصفية</h2>
+    <div class="dataset-badge">📂 الجدول: <span>shoots</span></div>
+    <p>WHERE يُصفّي نتائجك. بدلاً من كل صف، تحصل فقط على الصفوف التي تطابق شرطك. فكّر فيه كالسؤال الذي يأتي بعد «أرني فقط...».</p>
+    <div class="code-block">
+<span class="cmt">-- فقط الجلسات في داكار</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">WHERE</span> <span class="col">location</span> = <span class="str">'Dakar'</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- فقط الجلسات بعد 2020</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">year</span>, <span class="col">photos_taken</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">WHERE</span> <span class="col">year</span> > <span class="num">2020</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- دمج شرطين باستخدام AND</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">WHERE</span> <span class="col">location</span> = <span class="str">'Dakar'</span>
+  <span class="kw">AND</span> <span class="col">year</span> > <span class="num">2020</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>event</th><th>location</th><th>year</th></tr></thead>
+      <tbody>
+        <tr><td>Urban Portraits</td><td>Dakar</td><td>2024</td></tr>
+        <tr><td>Coastal Landscape Series</td><td>Dakar</td><td>2024</td></tr>
+        <tr><td>Urban Architecture</td><td>Dakar</td><td>2023</td></tr>
+        <tr><td>Conceptual Series</td><td>Dakar</td><td>2023</td></tr>
+        <tr><td>Sunrise Series</td><td>Dakar</td><td>2024</td></tr>
+      </tbody>
+    </table>
+    <div class="concept"><strong>عوامل يمكنك استخدامها</strong>= (يساوي) &nbsp;·&nbsp; != (لا يساوي) &nbsp;·&nbsp; &gt; &lt; &gt;= &lt;= (مقارنات) &nbsp;·&nbsp; AND / OR (دمج) &nbsp;·&nbsp; LIKE (مطابقة نمط) &nbsp;·&nbsp; IN (قائمة قيم)</div>
+    <div class="code-block">
+<span class="cmt">-- LIKE — مطابقة جزئية (% رمز بديل)</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>
+<span class="kw">WHERE</span> <span class="col">name</span> <span class="kw">LIKE</span> <span class="str">'S%'</span>;
+
+<span class="cmt">-- IN — مطابقة أي قيمة من قائمة</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>
+<span class="kw">WHERE</span> <span class="col">country</span> <span class="kw">IN</span> (<span class="str">'USA'</span>, <span class="str">'Brazil'</span>, <span class="str">'Nigeria'</span>);
+    </div>
+    <div class="tip"><strong>القيم النصية تحتاج علامات اقتباس.</strong> الأرقام لا تحتاج. WHERE location = 'Dakar' — WHERE year > 2020. اخلطهما وستحصل على خطأ.</div>
+  </section>
+
+  <!-- LESSON 4 -->
+  <section class="lesson" id="lesson-4">
+    <h2>4. ORDER BY — الترتيب</h2>
+    <div class="dataset-badge">📂 الجدول: <span>shoots</span></div>
+    <p>ORDER BY يرتب نتائجك. حسب السنة، حسب الاسم، حسب عدد الصور. تصاعدي (A→Z، الأقدم→الأحدث) أو تنازلي (الأحدث→الأقدم، الأعلى→الأدنى).</p>
+    <div class="code-block">
+<span class="cmt">-- الجلسات الأحدث أولاً</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- الجلسات ذات أكبر عدد صور، الأعلى أولاً</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">photos_taken</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- الترتيب حسب عمودين — السنة أولاً، ثم اسم الفعالية</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>, <span class="col">event</span> <span class="kw">ASC</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>event</th><th>location</th><th>year</th></tr></thead>
+      <tbody>
+        <tr><td>Bridal Session</td><td>Kyiv</td><td>2024</td></tr>
+        <tr><td>City Nights</td><td>Accra</td><td>2024</td></tr>
+        <tr><td>Coastal Landscape Series</td><td>Casablanca</td><td>2024</td></tr>
+        <tr><td>Coastal Landscape Series</td><td>Dakar</td><td>2024</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>ASC</strong> = تصاعدي (الافتراضي، من الأصغر إلى الأكبر، A إلى Z). <strong>DESC</strong> = تنازلي (من الأكبر إلى الأصغر، Z إلى A). عند الشك، أضف DESC لرؤية القيم الأحدث أو الأعلى أولاً.</div>
+  </section>
+
+  <!-- LESSON 5 -->
+  <section class="lesson" id="lesson-5">
+    <h2>5. LIMIT & DISTINCT</h2>
+    <div class="dataset-badge">📂 الجدول: <span>shoots · photographers</span></div>
+    <p>أمران صغيران ستستخدمهما باستمرار. LIMIT يتحكم بعدد الصفوف التي تحصل عليها. DISTINCT يزيل القيم المكررة.</p>
+    <h3>LIMIT</h3>
+    <div class="code-block">
+<span class="cmt">-- إظهار فقط أحدث 5 جلسات</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- الجلسة الوحيدة ذات أكبر عدد صور</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">photos_taken</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">1</span>;
+    </div>
+    <h3>DISTINCT</h3>
+    <div class="code-block">
+<span class="cmt">-- ما البلدان الممثَّلة؟ (بدون تكرار)</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>
+<span class="kw">ORDER BY</span> <span class="col">country</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- ما المواقع التي استُخدمت للجلسات؟</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">location</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">ORDER BY</span> <span class="col">location</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>location</th></tr></thead>
+      <tbody>
+        <tr><td>Accra</td></tr>
+        <tr><td>Beirut</td></tr>
+        <tr><td>Berlin</td></tr>
+        <tr><td>Bogotá</td></tr>
+        <tr><td>Cairo</td></tr>
+      </tbody>
+    </table>
+    <div class="tip"><strong>استخدم LIMIT دائماً</strong> عند استكشاف جدول لأول مرة. حتى مع 103 صفوف، يبقي هذا شاشتك قابلة للقراءة — وتزداد أهمية هذه العادة أكثر عندما ينمو أرشيفك الحقيقي إلى الآلاف.</div>
+  </section>
+
+  <!-- LESSON 6 -->
+  <section class="lesson" id="lesson-6">
+    <h2>6. COUNT, AVG, MIN, MAX</h2>
+    <div class="dataset-badge">📂 الجدول: <span>shoots · photographers</span></div>
+    <p>الدوال المجمِّعة تحسب القيم عبر صفوف متعددة. بدلاً من رؤية صفوف فردية، تحصل على رقم ملخص واحد. أساسي لفهم أرشيفك على نطاق واسع.</p>
+    <div class="code-block">
+<span class="cmt">-- كم عدد الجلسات في قاعدة البيانات؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_shoots
+<span class="kw">FROM</span> <span class="tbl">shoots</span>;
+
+<span class="cmt">-- متوسط الصور الملتقطة لكل جلسة</span>
+<span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> avg_photos
+<span class="kw">FROM</span> <span class="tbl">shoots</span>;
+
+<span class="cmt">-- أعلى وأدنى عدد صور في جلسة واحدة</span>
+<span class="kw">SELECT</span>
+  <span class="fn">MAX</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> biggest_shoot,
+  <span class="fn">MIN</span>(<span class="col">photos_taken</span>) <span class="kw">AS</span> smallest_shoot
+<span class="kw">FROM</span> <span class="tbl">shoots</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>total_shoots</th><th>avg_photos</th><th>biggest_shoot</th><th>smallest_shoot</th></tr></thead>
+      <tbody>
+        <tr><td>103</td><td>600</td><td>1,186</td><td>119</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+<span class="cmt">-- إجمالي الصور المُصدَّرة عبر كل الجلسات</span>
+<span class="kw">SELECT</span> <span class="fn">SUM</span>(<span class="col">photos_exported</span>) <span class="kw">AS</span> total_exported
+<span class="kw">FROM</span> <span class="tbl">shoots</span>;
+
+<span class="cmt">-- كم عدد المصورين المقيَّمين فوق 4.0؟</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> top_rated
+<span class="kw">FROM</span> <span class="tbl">photographers</span>
+<span class="kw">WHERE</span> <span class="col">rating</span> > <span class="num">4.0</span>;
+    </div>
+    <div class="tip"><strong>SUM · AVG · MAX · MIN · COUNT</strong> — هذه الدوال الخمس تجيب على معظم الأسئلة الواقعية حول أرشيفك. كم؟ كم عدد؟ ما الأفضل؟ ما الأسوأ؟</div>
+  </section>
+
+  <!-- LESSON 7 -->
+  <section class="lesson" id="lesson-7">
+    <h2>7. GROUP BY & HAVING</h2>
+    <div class="dataset-badge">📂 الجدول: <span>shoots · photographers</span></div>
+    <p>GROUP BY يجمع الصفوف معاً حتى تتمكن من العد أو الجمع أو حساب المتوسط لكل فئة. بدلاً من «كم عدد الجلسات الإجمالي» تحصل على «كم جلسة لكل سنة» أو «لكل موقع».</p>
+    <div class="code-block">
+<span class="cmt">-- كم جلسة لكل سنة؟</span>
+<span class="kw">SELECT</span> <span class="col">year</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> shoots_that_year
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">GROUP BY</span> <span class="col">year</span>
+<span class="kw">ORDER BY</span> <span class="col">year</span> <span class="kw">DESC</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>year</th><th>shoots_that_year</th></tr></thead>
+      <tbody>
+        <tr><td>2024</td><td>312</td></tr>
+        <tr><td>2023</td><td>298</td></tr>
+        <tr><td>2022</td><td>341</td></tr>
+        <tr><td>2021</td><td>276</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+<span class="cmt">-- متوسط الصور لكل جلسة، مجمّعة حسب الموقع</span>
+<span class="kw">SELECT</span>
+  <span class="col">location</span>,
+  <span class="fn">COUNT</span>(*)                   <span class="kw">AS</span> total_shoots,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="col">photos_taken</span>), <span class="num">0</span>) <span class="kw">AS</span> avg_photos
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">GROUP BY</span> <span class="col">location</span>
+<span class="kw">ORDER BY</span> total_shoots <span class="kw">DESC</span>;
+    </div>
+    <h3>HAVING — التصفية بعد التجميع</h3>
+    <p>WHERE يُصفّي الصفوف قبل التجميع. HAVING يُصفّي المجموعات بعد التجميع. استخدم HAVING عندما يتضمن شرطك دالة مجمِّعة.</p>
+    <div class="code-block">
+<span class="cmt">-- فقط المواقع التي بها أكثر من 5 جلسات</span>
+<span class="kw">SELECT</span> <span class="col">location</span>, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> shoot_count
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">GROUP BY</span> <span class="col">location</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">5</span>
+<span class="kw">ORDER BY</span> shoot_count <span class="kw">DESC</span>;
+    </div>
+    <div class="concept"><strong>القاعدة</strong>كل عمود في SELECT ليس داخل دالة (COUNT، SUM، AVG) يجب أن يظهر في GROUP BY. إذا اخترته في SELECT، جمّعه في GROUP BY.</div>
+    <div class="tip"><strong>WHERE مقابل HAVING:</strong> WHERE يُصفّي الصفوف قبل تشكيل المجموعة. HAVING يُصفّي المجموعات بعد تشكيلها. عند الشك — إذا كان شرطك يستخدم COUNT أو SUM أو AVG — استخدم HAVING.</div>
+  </section>
+
+  <!-- LESSON 8 -->
+  <section class="lesson" id="lesson-8">
+    <h2>8. JOIN — جدولان</h2>
+    <div class="dataset-badge">📂 الجداول: <span>photographers · shoots</span></div>
+    <p>JOIN يربط جدولين معاً باستخدام عمود مشترك. هنا يصبح SQL قوياً حقاً — ربط اسم مصور بكل جلساته، عبر جدولين منفصلين.</p>
+    <div class="code-block">
+<span class="cmt">-- ربط الجلسات بأسماء المصورين</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">photographers</span>.<span class="col">name</span>,
+  <span class="tbl">shoots</span>.<span class="col">event</span>,
+  <span class="tbl">shoots</span>.<span class="col">location</span>,
+  <span class="tbl">shoots</span>.<span class="col">year</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">JOIN</span> <span class="tbl">photographers</span>
+  <span class="kw">ON</span> <span class="tbl">shoots</span>.<span class="col">photographer_id</span> = <span class="tbl">photographers</span>.<span class="col">photographer_id</span>
+<span class="kw">ORDER BY</span> <span class="tbl">shoots</span>.<span class="col">year</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>name</th><th>event</th><th>location</th><th>year</th></tr></thead>
+      <tbody>
+        <tr><td>Amara Diallo</td><td>Wildlife Reserve Shoot</td><td>Kyiv</td><td>2024</td></tr>
+        <tr><td>Carlos Mendez</td><td>Urban Portraits</td><td>São Paulo</td><td>2024</td></tr>
+        <tr><td>Carlos Mendez</td><td>Market Day</td><td>Berlin</td><td>2024</td></tr>
+        <tr><td>Carlos Mendez</td><td>Street Life Series</td><td>Lisbon</td><td>2024</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+<span class="cmt">-- استخدام ألقاب الجداول لتقصير الاستعلامات</span>
+<span class="kw">SELECT</span>
+  p.<span class="col">name</span>,
+  s.<span class="col">event</span>,
+  s.<span class="col">year</span>,
+  s.<span class="col">photos_taken</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>        s
+<span class="kw">JOIN</span> <span class="tbl">photographers</span>  p  <span class="kw">ON</span> s.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
+<span class="kw">WHERE</span> s.<span class="col">year</span> >= <span class="num">2022</span>
+<span class="kw">ORDER BY</span> s.<span class="col">photos_taken</span> <span class="kw">DESC</span>;
+    </div>
+    <div class="concept"><strong>المفتاح المشترك</strong>shoots.photographer_id يطابق photographers.photographer_id. هذا العمود المشترك هو ما يربط الجدولين. بدونه، لا يجد JOIN شيئاً ليطابقه.</div>
+    <div class="tip"><strong>ألقاب الجداول</strong> — أعطِ كل جدول حرفاً قصيراً (p لـ photographers، s لـ shoots). هذا يجعل الاستعلامات الطويلة أسهل بكثير للقراءة والكتابة.</div>
+  </section>
+
+  <!-- LESSON 9 -->
+  <section class="lesson" id="lesson-9">
+    <h2>9. عدة JOINs</h2>
+    <div class="dataset-badge">📂 الجداول: <span>photographers · shoots · equipment</span></div>
+    <p>يمكنك عمل JOIN لأكثر من جدولين في استعلام واحد. كل JOIN يضيف رابطاً إضافياً. المفتاح دائماً عمود مشترك بين جدولين.</p>
+    <div class="code-block">
+<span class="cmt">-- المصورون + جلساتهم + المعدات المستخدمة</span>
+<span class="kw">SELECT</span>
+  p.<span class="col">name</span>                     <span class="kw">AS</span> photographer,
+  s.<span class="col">event</span>,
+  s.<span class="col">year</span>,
+  e.<span class="col">brand</span>  || <span class="str">' '</span> || e.<span class="col">model</span> <span class="kw">AS</span> camera
+<span class="kw">FROM</span> <span class="tbl">shoots</span>      s
+<span class="kw">JOIN</span> <span class="tbl">photographers</span> p <span class="kw">ON</span> s.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
+<span class="kw">JOIN</span> <span class="tbl">equipment</span>     e <span class="kw">ON</span> e.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
+<span class="kw">WHERE</span> e.<span class="col">type</span> = <span class="str">'Camera'</span>
+<span class="kw">ORDER BY</span> s.<span class="col">year</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>photographer</th><th>event</th><th>year</th><th>camera</th></tr></thead>
+      <tbody>
+        <tr><td>Amara Diallo</td><td>Wildlife Reserve Shoot</td><td>2024</td><td>Sony A7 IV</td></tr>
+        <tr><td>Sofia Reyes</td><td>Coastal Landscape Series</td><td>2024</td><td>Nikon Z7 II</td></tr>
+        <tr><td>Carlos Mendez</td><td>Rio Street Series</td><td>2023</td><td>Sony A7 IV</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+<span class="cmt">-- كم قطعة معدات يمتلك كل مصور؟</span>
+<span class="kw">SELECT</span>
+  p.<span class="col">name</span>,
+  <span class="fn">COUNT</span>(e.<span class="col">item_id</span>) <span class="kw">AS</span> gear_count,
+  <span class="fn">SUM</span>(e.<span class="col">purchase_price_usd</span>) <span class="kw">AS</span> total_invested
+<span class="kw">FROM</span> <span class="tbl">photographers</span> p
+<span class="kw">JOIN</span> <span class="tbl">equipment</span> e <span class="kw">ON</span> e.<span class="col">photographer_id</span> = p.<span class="col">photographer_id</span>
+<span class="kw">GROUP BY</span> p.<span class="col">name</span>
+<span class="kw">ORDER BY</span> total_invested <span class="kw">DESC</span>;
+    </div>
+    <div class="tip"><strong>كل JOIN هو جسر إضافي.</strong> الجسر الأول: shoots → photographers. الجسر الثاني: equipment → photographers. الترتيب مهم — كل جدول جديد يجب أن يشارك عموداً مع جدول موجود بالفعل في الاستعلام.</div>
+  </section>
+
+  <!-- LESSON 10 -->
+  <section class="lesson" id="lesson-10">
+    <h2>10. الاستعلامات الفرعية</h2>
+    <div class="dataset-badge">📂 الجداول: <span>photographers · shoots</span></div>
+    <p>الاستعلام الفرعي هو استعلام داخل استعلام. يتيح لك استخدام نتيجة سؤال واحد كمدخل لسؤال آخر. الاستعلام الداخلي يُنفَّذ أولاً ويمرر نتيجته إلى الاستعلام الخارجي.</p>
+    <div class="code-block">
+<span class="cmt">-- إيجاد كل الجلسات فوق متوسط عدد الصور</span>
+<span class="kw">SELECT</span> <span class="col">event</span>, <span class="col">location</span>, <span class="col">photos_taken</span>
+<span class="kw">FROM</span> <span class="tbl">shoots</span>
+<span class="kw">WHERE</span> <span class="col">photos_taken</span> > (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">photos_taken</span>) <span class="kw">FROM</span> <span class="tbl">shoots</span>
+)
+<span class="kw">ORDER BY</span> <span class="col">photos_taken</span> <span class="kw">DESC</span>;
+    </div>
+    <div class="code-block">
+<span class="cmt">-- المصورون الذين أجروا أكثر من 5 جلسات</span>
+<span class="kw">SELECT</span> <span class="col">name</span>, <span class="col">country</span>, <span class="col">specialty</span>
+<span class="kw">FROM</span> <span class="tbl">photographers</span>
+<span class="kw">WHERE</span> <span class="col">photographer_id</span> <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> <span class="col">photographer_id</span>
+  <span class="kw">FROM</span> <span class="tbl">shoots</span>
+  <span class="kw">GROUP BY</span> <span class="col">photographer_id</span>
+  <span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > <span class="num">5</span>
+);
+    </div>
+    <div class="result-label">النتيجة</div>
+    <table class="result-table">
+      <thead><tr><th>name</th><th>country</th><th>specialty</th></tr></thead>
+      <tbody>
+        <tr><td>Carlos Mendez</td><td>Brazil</td><td>Street</td></tr>
+        <tr><td>Sofia Reyes</td><td>Mexico</td><td>Landscape</td></tr>
+        <tr><td>Diego Vargas</td><td>Colombia</td><td>Wildlife</td></tr>
+        <tr><td>James Okonkwo</td><td>Nigeria</td><td>Documentary</td></tr>
+        <tr><td>Ahmed Hassan</td><td>Egypt</td><td>Architecture</td></tr>
+        <tr><td>Nour Khalil</td><td>Lebanon</td><td>Documentary</td></tr>
+        <tr><td>Marcus Johnson</td><td>USA</td><td>Sports</td></tr>
+        <tr><td>Ravi Sharma</td><td>India</td><td>Wedding</td></tr>
+      </tbody>
+    </table>
+    <div class="concept"><strong>الاستعلام الداخلي يُنفَّذ أولاً</strong>نتيجته تُمرَّر إلى الاستعلام الخارجي. فكّر فيه كإجابة سؤال أصغر من أجل الإجابة عن السؤال الأكبر. الاستعلام الداخلي يوضع دائماً بين قوسين.</div>
+    <div class="exercise">
+      <div class="exercise-label">تمرين</div>
+      <p>حاول كتابة هذه الاستعلامات الفرعية:</p>
+      <ol>
+        <li>إيجاد كل المصورين المقيَّمين فوق متوسط التقييم</li>
+        <li>إيجاد الجلسات حيث photos_exported أكبر من المتوسط العام</li>
+        <li>إيجاد المصورين الذين يمتلكون معدات تكلفتها أكثر من 5,000 دولار إجمالاً</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- LESSON 11 -->
+  <section class="lesson" id="lesson-11">
+    <h2>11. INSERT & UPDATE</h2>
+    <div class="dataset-badge">📂 الجداول: <span>photographers · shoots</span></div>
+    <p>كل ما سبق كان قراءة بيانات. INSERT يضيف صفوفاً جديدة. UPDATE يغيّر الموجودة. هذه هي الأوامر التي تستخدمها للحفاظ على أرشيفك محدَّثاً.</p>
+    <h3>INSERT — إضافة سجل جديد</h3>
+    <div class="code-block">
+<span class="cmt">-- إضافة جلسة جديدة إلى قاعدة البيانات</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">shoots</span>
+  (<span class="col">photographer_id</span>, <span class="col">event</span>, <span class="col">location</span>, <span class="col">year</span>, <span class="col">photos_taken</span>, <span class="col">photos_exported</span>)
+<span class="kw">VALUES</span>
+  (<span class="num">1</span>, <span class="str">'Nairobi Wildlife Assignment'</span>, <span class="str">'Nairobi'</span>, <span class="num">2025</span>, <span class="num">710</span>, <span class="num">115</span>);
+    </div>
+    <div class="code-block">
+<span class="cmt">-- إضافة مصور جديد</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">photographers</span>
+  (<span class="col">name</span>, <span class="col">country</span>, <span class="col">specialty</span>, <span class="col">years_experience</span>, <span class="col">rating</span>)
+<span class="kw">VALUES</span>
+  (<span class="str">'Grace Mwangi'</span>, <span class="str">'Kenya'</span>, <span class="str">'Wildlife'</span>, <span class="num">8</span>, <span class="num">4.3</span>);
+    </div>
+    <h3>UPDATE — تغيير بيانات موجودة</h3>
+    <div class="code-block">
+<span class="cmt">-- تحديث تقييم مصور واحد</span>
+<span class="kw">UPDATE</span> <span class="tbl">photographers</span>
+<span class="kw">SET</span>    <span class="col">rating</span> = <span class="num">4.8</span>
+<span class="kw">WHERE</span>  <span class="col">photographer_id</span> = <span class="num">1</span>;
+
+<span class="cmt">-- تحديث photos_exported لجلسة معينة</span>
+<span class="kw">UPDATE</span> <span class="tbl">shoots</span>
+<span class="kw">SET</span>    <span class="col">photos_exported</span> = <span class="num">112</span>
+<span class="kw">WHERE</span>  <span class="col">shoot_id</span> = <span class="num">4471</span>;
+    </div>
+    <div class="tip"><strong>استخدم WHERE دائماً مع UPDATE.</strong> بدون WHERE، يُطبَّق UPDATE على كل صف في الجدول. هذا نادراً ما يكون ما تريده. تحقق من شرط WHERE باستخدام SELECT أولاً قبل تشغيل UPDATE.</div>
+    <div class="concept"><strong>مجموعة أدوات SQL الكاملة</strong>SELECT · WHERE · ORDER BY · LIMIT · DISTINCT · COUNT · AVG · SUM · MIN · MAX · GROUP BY · HAVING · JOIN · الاستعلامات الفرعية · INSERT · UPDATE. هذا كل ما تحتاجه للاستعلام عن أرشيف التصوير بأكمله وفهمه وصيانته.</div>
+    <div class="exercise">
+      <div class="exercise-label">التحدي الأخير</div>
+      <p>بدون النظر للخلف، اكتب استعلامات:</p>
+      <ol>
+        <li>تُظهر أفضل 5 مصورين حسب إجمالي الصور الملتقطة عبر كل جلساتهم</li>
+        <li>تجد كل الجلسات في السنوات الـ3 الأخيرة بأكثر من 1,000 صورة ملتقطة — أظهر الاسم، الفعالية، السنة</li>
+        <li>تحسب معدل الاحتفاظ (photos_exported / photos_taken × 100) لكل موقع — رتّب من الأعلى</li>
+        <li>تُدرج جلسة جديدة من فعالية حديثة قمت بتغطيتها</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FOOTER NAV -->
+  <div class="footer-nav">
+    <button class="btn btn-prev" id="prevBtn" onclick="changeLesson(-1)">→ السابق</button>
+    <div id="progress" style="font-weight:700; color:var(--gold); direction:ltr;">0 / 11</div>
+    <button class="btn btn-next" id="nextBtn" onclick="changeLesson(1)">الدرس التالي ←</button>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const total = 11;
+
+  function jumpTo(index) {
+    current = index;
+
+    document.querySelectorAll('.lesson').forEach((l, i) => {
+      l.classList.toggle('active', i === index);
+    });
+
+    document.getElementById('progress').innerText = index + ' / ' + total;
+    document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+    document.getElementById('nextBtn').innerText = index === total ? '✓ انتهيت — العودة إلى Darkroom' : 'الدرس التالي ←';
+
+    document.querySelector('.main').scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function changeLesson(dir) {
+    const next = current + dir;
+    if (next > total) {
+      window.location.href = 'index_ar.html';
+      return;
+    }
+    if (next >= 0 && next <= total) jumpTo(next);
+  }
+
+  window.onload = () => jumpTo(0);
+</script>
+
+</body>
+</html>
