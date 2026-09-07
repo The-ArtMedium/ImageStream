@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دورة Python للتصوير — إصدار Satdiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Source+Code+Pro:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1a14; --bg2: #232318; --bg3: #2c2c20; --border: #3a3a2a;
+    --border2: #4a4a38; --text: #f5f0e3; --text2: #d4ccb8; --text3: #9a9278;
+    --gold: #e8b84b; --green: #6bcf8a; --blue: #7eb8f7; --purple: #c4a0f0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.8; overflow-x: hidden; }
+
+  /* --- MAIN --- */
+  .main { margin-left: 0; min-height: 100vh; padding-bottom: 120px; }
+
+  /* --- TOP BAR (replaces sidebar) --- */
+  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .topbar-title { font-family: Lora; font-size: 20px; }
+  .topbar-title span { color: var(--green); font-size: 12px; font-weight: 700; display: block; margin-top: 2px; }
+  .topbar-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* --- LESSON CARDS (overview page navigation) --- */
+  .lessons-list { display: grid; gap: 10px; max-width: 740px; }
+  .lesson-card { display: flex; align-items: center; gap: 18px; padding: 18px 22px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+  .lesson-card:hover { border-color: var(--green); background: var(--bg3); transform: translateX(4px); }
+  .lesson-card-num { width: 42px; height: 42px; background: var(--bg3); color: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Source Code Pro', monospace; font-size: 14px; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border2); }
+  .lesson-card-info { flex: 1; }
+  .lesson-card-title { font-weight: 700; color: var(--text); font-size: 16px; margin-bottom: 2px; }
+  .lesson-card-desc { font-size: 13px; color: var(--text3); }
+  .lesson-card-arrow { color: var(--border2); font-size: 20px; }
+
+  /* --- LESSONS --- */
+  .lesson { display: none; padding: 60px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.3s ease-out; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* --- DATASET BADGE — compact, inside lesson only when needed --- */
+  .dataset-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.78em;
+    color: var(--text3);
+    margin-bottom: 28px;
+    font-family: 'Source Code Pro', monospace;
+  }
+  .dataset-badge span { color: var(--gold); font-weight: 600; }
+
+  /* --- CODE --- */
+  .code-block { background: #000; padding: 25px; border-radius: 12px; font-family: 'Source Code Pro', monospace; font-size: 16px; border: 1px solid var(--border2); margin: 25px 0; overflow-x: auto; line-height: 1.7; }
+  .kw { color: var(--blue); } .fn { color: var(--green); } .str { color: var(--gold); } .cmt { color: #555; font-style: italic; }
+
+  /* --- TIP --- */
+  .tip { background: var(--bg2); border-left: 4px solid var(--gold); padding: 20px 24px; margin: 24px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; color: var(--text2); }
+  .watch-demo { background: var(--bg2); border: 2px solid var(--green); border-radius: 12px; padding: 28px 32px; margin: 28px 0; }
+  .watch-demo-label { font-family: 'Source Code Pro', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); margin-bottom: 14px; font-weight: 700; }
+  .watch-demo-q { font-size: 18px; margin-bottom: 16px; }
+  .result-label { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); font-weight: 700; margin: 28px 0 10px; }
+
+  /* --- HERO inside lesson-0 only --- */
+  .lesson-hero { margin-bottom: 40px; }
+  .lesson-hero h1 { font-family: Lora; font-size: 48px; margin-bottom: 15px; }
+  .lesson-hero p { color: var(--text2); font-size: 20px; max-width: 600px; }
+
+  /* --- FOOTER NAV --- */
+  .footer-nav { position: fixed; bottom: 0; right: 0; left: 0; background: var(--bg2); padding: 20px 60px; border-top: 1px solid var(--border2); display: flex; justify-content: space-between; align-items: center; z-index: 900; }
+  .btn { padding: 12px 28px; border-radius: 8px; cursor: pointer; font-weight: 700; border: none; font-size: 16px; transition: 0.2s; }
+  .btn-next { background: var(--green); color: var(--bg); }
+  .btn-prev { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+  .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  h2 { font-family: Lora; font-size: 32px; margin-bottom: 20px; color: var(--text); }
+  h3 { font-family: Lora; font-size: 22px; margin: 30px 0 12px; color: var(--gold); }
+  p { margin-bottom: 16px; color: var(--text2); }
+
+  @media (max-width: 900px) { .footer-nav { padding: 16px 24px; } .lesson { padding: 30px 24px; } .topbar { padding: 16px 24px; } }
+/* Force code and results to stay left-to-right inside the RTL page */
+.code-block, .result-table { direction: ltr; text-align: left; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">أساسيات Python<span>إصدار بيانات التصوير</span></div>
+  <div class="topbar-badges">
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">photographers.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">shoots.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">📂 <span style="color:var(--gold);">equipment.csv</span></span>
+    <span style="background:var(--bg3); border:1px solid var(--border2); border-radius:6px; padding:4px 10px; font-family:'Source Code Pro',monospace; font-size:11px; color:var(--text3);">🗃 <span style="color:var(--gold);">191 سجلاً حقيقياً</span></span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- LESSON 0: Overview -->
+  <section class="lesson active" id="lesson-0">
+    <div class="lesson-hero">
+      <h1>تعلّم Python باستخدام<br><em style="color:var(--green); font-style:normal;">بيانات التصوير</em></h1>
+      <p>دورة أساسية مصممة من أجل الوضوح، التباين العالي، والحفظ الواقعي لأرشيفاتك.</p>
+    </div>
+
+    <div class="watch-demo">
+      <div class="watch-demo-label">شاهد أولاً — بلا كتابة بعد</div>
+      <div class="watch-demo-q">🤔 <strong>السؤال:</strong> من هو المصور الأعلى تقييماً في هذا الأرشيف؟</div>
+      <div class="code-block"><span class="kw">import</span> csv
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>) <span class="kw">as</span> file:
+    rows = <span class="fn">list</span>(csv.<span class="fn">DictReader</span>(file))
+    top = <span class="fn">max</span>(rows, key=<span class="kw">lambda</span> r: <span class="fn">float</span>(r[<span class="str">"rating"</span>]))
+    <span class="fn">print</span>(top[<span class="str">"name"</span>], <span class="str">"-"</span>, top[<span class="str">"country"</span>], <span class="str">"-"</span>, top[<span class="str">"rating"</span>])</div>
+      <div class="result-label">الناتج</div>
+      <div class="code-block" style="color:var(--green);">Sarah Oduya - Kenya - 4.9</div>
+      <p style="margin-top:16px; color:var(--text2);">هذا كل شيء — خمسة أسطر من Python، إجابة حقيقية واحدة، مستخرجة مباشرة من أرشيفك الخاص. هذه هي الفكرة الكاملة. مستعد لكتابة كودك الخاص؟</p>
+    </div>
+
+    <h2>خارطة طريق الدورة</h2>
+    <p>سنستخدم مجموعة بيانات حقيقية من المصورين والجلسات والمعدات لتعلّم كيفية أتمتة عملك وتنظيمه وحمايته مدى الحياة.</p>
+    <p>كل درس يُبنى على السابق. في النهاية ستكون قادراً على الاستعلام عن بيانات أرشيفك الخاص وتصفيتها وتصويرها.</p>
+    <div class="tip"><strong>كيفية استخدام هذه الدورة:</strong> اقرأ كل درس، ادرس أمثلة الكود، ثم اضغط الدرس التالي للمتابعة، أو انتقل مباشرة إلى أي درس باستخدام البطاقات أدناه.</div>
+    <h3 style="font-family:Lora; font-size:22px; margin:30px 0 12px; color:var(--green);">الدروس</h3>
+    <div class="lessons-list">
+      <div class="lesson-card" onclick="jumpTo(1)"><div class="lesson-card-num">1</div><div class="lesson-card-info"><div class="lesson-card-title">المتغيرات وأنواع البيانات</div><div class="lesson-card-desc">اللبنات الأساسية — النصوص، الأرقام، القيم المنطقية</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(2)"><div class="lesson-card-num">2</div><div class="lesson-card-info"><div class="lesson-card-title">القوائم والقواميس</div><div class="lesson-card-desc">حفظ عناصر كثيرة، وتسميتها</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(3)"><div class="lesson-card-num">3</div><div class="lesson-card-info"><div class="lesson-card-title">الحلقات والمنطق</div><div class="lesson-card-desc">تكرار المهام تلقائياً، اتخاذ القرارات</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(4)"><div class="lesson-card-num">4</div><div class="lesson-card-info"><div class="lesson-card-title">الدوال</div><div class="lesson-card-desc">أدوات قابلة لإعادة الاستخدام تبنيها مرة واحدة وتستخدمها للأبد</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(5)"><div class="lesson-card-num">5</div><div class="lesson-card-info"><div class="lesson-card-title">قراءة ملفات CSV</div><div class="lesson-card-desc">فتح وقراءة بيانات أرشيفك باستخدام Python</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(6)"><div class="lesson-card-num">6</div><div class="lesson-card-info"><div class="lesson-card-title">DataFrames في Pandas</div><div class="lesson-card-desc">تحويل CSV إلى جدول قابل للاستعلام</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(7)"><div class="lesson-card-num">7</div><div class="lesson-card-info"><div class="lesson-card-title">تصفية الجلسات</div><div class="lesson-card-desc">اطرح أسئلة على بياناتك في سطر واحد</div></div><div class="lesson-card-arrow">→</div></div>
+      <div class="lesson-card" onclick="jumpTo(8)"><div class="lesson-card-num">8</div><div class="lesson-card-info"><div class="lesson-card-title">التصوير البياني</div><div class="lesson-card-desc">حوّل أرشيفك إلى رسوم بيانية</div></div><div class="lesson-card-arrow">→</div></div>
+    </div>
+  </section>
+
+  <!-- LESSON 1: Variables -->
+  <section class="lesson" id="lesson-1">
+    <h2>1. المتغيرات وأنواع البيانات</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>photographers.csv</span></div>
+    <p>فكّر في المتغيّر كالملصق على علبة فيلم. يخبر Python بما بداخلها.</p>
+    <div class="code-block">
+<span class="cmt"># تعريف أول متغيرات بيانات الصور لدينا</span>
+photo_name = <span class="str">"World_Cup_Final_001.jpg"</span>
+shutter_speed = <span class="str">"1/1000"</span>
+iso = <span class="kw">800</span>
+camera_body = <span class="str">"Canon R5"</span>
+
+<span class="cmt"># طباعتها</span>
+<span class="fn">print</span>(photo_name)
+<span class="fn">print</span>(<span class="str">"ISO was:"</span>, iso)
+    </div>
+    <p>يخزّن Python ثلاثة أنواع رئيسية من البيانات ستستخدمها باستمرار:</p>
+    <div class="code-block">
+<span class="cmt"># نص (يُسمى string)</span>
+photographer = <span class="str">"Satdiva"</span>
+
+<span class="cmt"># رقم (يُسمى integer)</span>
+total_shots = <span class="kw">61833</span>  <span class="cmt"># الإجمالي الحقيقي عبر كل الـ103 جلسة</span>
+
+<span class="cmt"># صح / خطأ (يُسمى boolean)</span>
+is_raw = <span class="kw">True</span>
+    </div>
+    <div class="tip"><strong>عندما ترسي الأساس، يصبح كل شيء واضحاً.</strong> المتغيرات هي الأساس. كل شيء آخر في Python يُبنى على هذا.</div>
+  </section>
+
+  <!-- LESSON 2: Lists & Dicts -->
+  <section class="lesson" id="lesson-2">
+    <h2>2. القوائم والقواميس</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>photographers.csv · shoots.csv</span></div>
+    <p>القائمة مثل ورقة التلامس. تحتفظ بعناصر كثيرة في مكان واحد وبترتيب محدد.</p>
+    <div class="code-block">
+equestrian_events = [<span class="str">"Show Jumping"</span>, <span class="str">"Dressage"</span>, <span class="str">"Polo"</span>]
+
+<span class="cmt"># الحصول على أول عنصر (Python يعد من 0)</span>
+<span class="fn">print</span>(equestrian_events[<span class="kw">0</span>])  <span class="cmt"># → "Show Jumping"</span>
+<span class="fn">print</span>(equestrian_events[<span class="kw">2</span>])  <span class="cmt"># → "Polo"</span>
+
+<span class="cmt"># كم عدد العناصر؟</span>
+<span class="fn">print</span>(<span class="fn">len</span>(equestrian_events))   <span class="cmt"># → 3</span>
+    </div>
+    <p>القاموس مثل حقيبة الكاميرا. كل عنصر له اسم (مفتاح) وقيمة.</p>
+    <div class="code-block">
+photographer = {
+    <span class="str">"name"</span>:       <span class="str">"Amara Diallo"</span>,
+    <span class="str">"country"</span>:    <span class="str">"Senegal"</span>,
+    <span class="str">"specialty"</span>:  <span class="str">"Wildlife"</span>,
+    <span class="str">"total_shoots"</span>: <span class="kw">4</span>
+}
+
+<span class="cmt"># الوصول عبر اسم المفتاح</span>
+<span class="fn">print</span>(photographer[<span class="str">"name"</span>])       <span class="cmt"># → "Amara Diallo"</span>
+<span class="fn">print</span>(photographer[<span class="str">"specialty"</span>]) <span class="cmt"># → "Wildlife"</span>
+    </div>
+    <div class="tip"><strong>فكّر بها هكذا:</strong> القائمة مرتبة كبكرة فيلم. القاموس مُسمّى كخزانة ملفات.</div>
+  </section>
+
+  <!-- LESSON 3: Loops -->
+  <section class="lesson" id="lesson-3">
+    <h2>3. الحلقات والمنطق</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>shoots.csv</span></div>
+    <p>الحلقة تتيح لـ Python تكرار مهمة تلقائياً — مثل معالجة كل صورة في مجلد دون فعل ذلك واحدة تلو الأخرى.</p>
+    <div class="code-block">
+shots = [<span class="str">"IMG_001.jpg"</span>, <span class="str">"IMG_002.jpg"</span>, <span class="str">"IMG_003.jpg"</span>]
+
+<span class="kw">for</span> shot <span class="kw">in</span> shots:
+    <span class="fn">print</span>(<span class="str">"معالجة:"</span>, shot)
+
+<span class="cmt"># الناتج:</span>
+<span class="cmt"># معالجة: IMG_001.jpg</span>
+<span class="cmt"># معالجة: IMG_002.jpg</span>
+<span class="cmt"># معالجة: IMG_003.jpg</span>
+    </div>
+    <p>المنطق (if / else) يتيح لـ Python اتخاذ قرارات بناءً على البيانات.</p>
+    <div class="code-block">
+iso = <span class="kw">3200</span>
+
+<span class="kw">if</span> iso > <span class="kw">1600</span>:
+    <span class="fn">print</span>(<span class="str">"ISO مرتفع — تحقق من التشويش"</span>)
+<span class="kw">elif</span> iso > <span class="kw">800</span>:
+    <span class="fn">print</span>(<span class="str">"ISO متوسط — مقبول"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"ISO نظيف — جودة ممتازة"</span>)
+    </div>
+    <div class="tip"><strong>القوة المجتمعة:</strong> مرّ عبر كل جلسة. لكل واحدة، تحقق من ISO. صنّف المشوَّشة تلقائياً.</div>
+  </section>
+
+  <!-- LESSON 4: Functions -->
+  <section class="lesson" id="lesson-4">
+    <h2>4. الدوال</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>shoots.csv · equipment.csv</span></div>
+    <p>الدالة أداة قابلة لإعادة الاستخدام تبنيها مرة واحدة وتستخدمها للأبد. مثل العدسة — تشتريها مرة واحدة، وتستخدمها على أي جسم كاميرا.</p>
+    <div class="code-block">
+<span class="cmt"># تعريف الدالة مرة واحدة</span>
+<span class="kw">def</span> <span class="fn">describe_shoot</span>(event, location, shots_taken):
+    <span class="fn">print</span>(<span class="str">f"Event: {event}"</span>)
+    <span class="fn">print</span>(<span class="str">f"Location: {location}"</span>)
+    <span class="fn">print</span>(<span class="str">f"Total shots: {shots_taken}"</span>)
+
+<span class="cmt"># استخدمها بقدر ما تحتاج</span>
+<span class="fn">describe_shoot</span>(<span class="str">"Serengeti Safari"</span>, <span class="str">"Shanghai"</span>, <span class="kw">652</span>)
+<span class="fn">describe_shoot</span>(<span class="str">"Wildlife Reserve Shoot"</span>, <span class="str">"Kyiv"</span>, <span class="kw">165</span>)
+    </div>
+    <p>يمكن للدوال أيضاً إرجاع قيمة — مثل نتيجة حساب.</p>
+    <div class="code-block">
+<span class="kw">def</span> <span class="fn">keeper_rate</span>(total, keepers):
+    rate = (keepers / total) * <span class="kw">100</span>
+    <span class="kw">return</span> <span class="fn">round</span>(rate, <span class="kw">1</span>)
+
+result = <span class="fn">keeper_rate</span>(<span class="kw">840</span>, <span class="kw">92</span>)
+<span class="fn">print</span>(<span class="str">f"Keeper rate: {result}%"</span>)  <span class="cmt"># → Keeper rate: 11.0%</span>
+    </div>
+    <div class="tip"><strong>قاعدة عامة:</strong> إذا كتبت نفس الكود مرتين، حوّله إلى دالة.</div>
+  </section>
+
+  <!-- LESSON 5: CSV Files -->
+  <section class="lesson" id="lesson-5">
+    <h2>5. قراءة ملفات CSV</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>photographers.csv</span></div>
+    <p>CSV تعني Comma-Separated Values (قيم مفصولة بفواصل). بيانات أرشيفك تعيش في ملفات CSV. يُظهر هذا الدرس كيفية فتحها وقراءتها باستخدام Python.</p>
+    <div class="code-block">
+<span class="kw">import</span> csv
+
+<span class="cmt"># فتح مجموعة بيانات photographers</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"photographers.csv"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
+    reader = csv.<span class="fn">DictReader</span>(file)
+    <span class="kw">for</span> row <span class="kw">in</span> reader:
+        <span class="fn">print</span>(row[<span class="str">"name"</span>], <span class="str">"—"</span>, row[<span class="str">"specialty"</span>])
+    </div>
+    <h3>بنية photographers.csv</h3>
+    <div class="code-block" style="font-size:14px;">
+<span class="cmt">photographer_id, name,          country,  specialty</span>
+<span class="str"> 1,              Amara Diallo,  Senegal,  Wildlife</span>
+<span class="str"> 2,              Carlos Mendez, Brazil,   Street</span>
+<span class="str"> 3,              Priya Nair,    India,    Portrait</span>
+    </div>
+    <div class="tip"><strong>DictReader</strong> يقرأ كل صف كقاموس — لذا تصل إلى الأعمدة بالاسم، وليس بالموضع. أسهل بكثير للقراءة.</div>
+  </section>
+
+  <!-- LESSON 6: Pandas -->
+  <section class="lesson" id="lesson-6">
+    <h2>6. DataFrames في Pandas</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>photographers.csv · shoots.csv</span></div>
+    <p>Pandas مكتبة Python تحوّل CSV إلى جدول قوي يمكنك الاستعلام عنه كقاعدة بيانات.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cmt"># تحميل مجموعة البيانات</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># رؤية أول 5 صفوف</span>
+<span class="fn">print</span>(df.<span class="fn">head</span>())
+
+<span class="cmt"># كم عدد الصفوف والأعمدة؟</span>
+<span class="fn">print</span>(df.shape)   <span class="cmt"># → (103, 10)</span>
+
+<span class="cmt"># أسماء الأعمدة</span>
+<span class="fn">print</span>(df.columns)
+    </div>
+    <h3>shoots.csv structure</h3>
+    <div class="code-block" style="font-size:14px;">
+<span class="cmt">shoot_id, photographer_id, event,              location, year, photos_taken, photos_exported</span>
+<span class="str"> 1,       1,               Serengeti Safari,      Shanghai, 2021, 652,          132</span>
+<span class="str"> 2,       1,               Wildlife Reserve Shoot, Kyiv,     2024, 165,          100</span>
+<span class="str"> 3,       1,               Migration Season,       Kolkata,  2023, 744,          128</span>
+    </div>
+    <div class="tip"><strong>103 صفوف</strong> — هذا هو أرشيفك بالكامل. Pandas يتعامل معه فوراً، سواء كان 103 صفوف أو 103 مليون.</div>
+  </section>
+
+  <!-- LESSON 7: Filtering -->
+  <section class="lesson" id="lesson-7">
+    <h2>7. تصفية الجلسات</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>shoots.csv</span></div>
+    <p>التصفية تتيح لك طرح أسئلة على بياناتك. ما الجلسات التي كانت في داكار؟ أي سنة شهدت أكبر عدد صور؟ اعثر عليها في سطر واحد.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># كل الجلسات في داكار</span>
+dakar = df[df[<span class="str">"location"</span>] == <span class="str">"Dakar"</span>]
+<span class="fn">print</span>(dakar)
+
+<span class="cmt"># كل الجلسات بعد 2020</span>
+recent = df[df[<span class="str">"year"</span>] > <span class="kw">2020</span>]
+<span class="fn">print</span>(recent.<span class="fn">head</span>())
+
+<span class="cmt"># الجلسات بأكثر من 1000 صورة ملتقطة</span>
+heavy = df[df[<span class="str">"photos_taken"</span>] > <span class="kw">1000</span>]
+<span class="fn">print</span>(<span class="str">f"Heavy shoots: {len(heavy)}"</span>)
+    </div>
+    <p>ادمج التصفيات باستخدام & (و) أو | (أو):</p>
+    <div class="code-block">
+<span class="cmt"># داكار و بعد 2020</span>
+filtered = df[(df[<span class="str">"location"</span>] == <span class="str">"Dakar"</span>) & (df[<span class="str">"year"</span>] > <span class="kw">2020</span>)]
+<span class="fn">print</span>(filtered)
+    </div>
+    <div class="tip"><strong>هذه هي القوة.</strong> حتى مع 103 سجل، سطر كود واحد يتفوق على تصفح جدول بيانات — ويتوسع إلى الملايين بنفس الطريقة.</div>
+  </section>
+
+  <!-- LESSON 8: Visualisation -->
+  <section class="lesson" id="lesson-8">
+    <h2>8. التصوير البياني</h2>
+    <div class="dataset-badge">📂 مجموعة البيانات المستخدمة في هذا الدرس: <span>shoots.csv · photographers.csv</span></div>
+    <p>Matplotlib يحوّل بياناتك إلى رسوم بيانية. اطّلع على أرشيفك بلمحة — الجلسات لكل سنة، المواقع، معدلات الاحتفاظ.</p>
+    <div class="code-block">
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+df = pd.<span class="fn">read_csv</span>(<span class="str">"shoots.csv"</span>)
+
+<span class="cmt"># عد الجلسات لكل سنة</span>
+by_year = df.<span class="fn">groupby</span>(<span class="str">"year"</span>)[<span class="str">"shoot_id"</span>].<span class="fn">count</span>()
+
+<span class="cmt"># رسمها</span>
+by_year.<span class="fn">plot</span>(kind=<span class="str">"bar"</span>, color=<span class="str">"#6bcf8a"</span>)
+plt.<span class="fn">title</span>(<span class="str">"الجلسات لكل سنة"</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">"السنة"</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">"عدد الجلسات"</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()
+    </div>
+    <div class="tip"><strong>لقد أكملت الأساسيات.</strong> المتغيرات ← القوائم ← الحلقات ← الدوال ← CSV ← Pandas ← التصفية ← التصوير البياني. هذا هو المسار الكامل. أرشيفك الآن قابل للبرمجة.</div>
+  </section>
+
+  <div class="footer-nav">
+    <button class="btn btn-prev" id="prevBtn" onclick="changeLesson(-1)">→ السابق</button>
+    <div id="progress" style="font-weight:700; color:var(--green); direction:ltr;">0 / 8</div>
+    <button class="btn btn-next" id="nextBtn" onclick="changeLesson(1)">الدرس التالي ←</button>
+  </div>
+</div>
+
+<script>
+  let current = 0;
+  const total = 8;
+
+  function jumpTo(index) {
+    current = index;
+
+    // Show correct lesson
+    document.querySelectorAll('.lesson').forEach((l, i) => {
+      l.classList.toggle('active', i === index);
+    });
+
+    // Progress counter
+    document.getElementById('progress').innerText = index + ' / ' + total;
+
+    // Prev button
+    document.getElementById('prevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+
+    // Next button label
+    document.getElementById('nextBtn').innerText = index === total ? '✓ انتهيت — العودة إلى Darkroom' : 'الدرس التالي ←';
+
+    // Scroll to top of main content
+    document.querySelector('.main').scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function changeLesson(dir) {
+    const next = current + dir;
+    if (next > total) {
+      window.location.href = 'index_ar.html';
+      return;
+    }
+    if (next >= 0 && next <= total) jumpTo(next);
+  }
+
+  window.onload = () => jumpTo(0);
+</script>
+
+</body>
+</html>
