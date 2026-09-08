@@ -1,60 +1,66 @@
 {
-  "app": {
-    "name": "LocalClip",
-    "tagline": "Simple. Local. Yours.",
-    "version": "0.1.0"
-  },
-  "menu": {
-    "file": "File",
-    "import_video": "Import Video",
-    "exit": "Exit",
-    "help": "Help",
-    "about": "About LocalClip"
-  },
-  "buttons": {
-    "import_video": "Import Video",
-    "play": "Play",
-    "pause": "Pause",
-    "mark_start": "Mark Start (I)",
-    "mark_end": "Mark End (O)",
-    "reset_markers": "Reset Markers",
-    "export_clip": "Export Clip"
-  },
-  "labels": {
-    "no_video": "No video loaded",
-    "loaded": "Loaded",
-    "duration": "Duration",
-    "in_point": "In",
-    "out_point": "Out",
-    "tagline_subtitle": "Trim videos. No cloud. No watermarks."
-  },
-  "dialogs": {
-    "import_title": "Import Video",
-    "export_title": "Export Clip",
-    "invalid_range": "Invalid Range",
-    "invalid_range_msg": "End point must be after start point!",
-    "export_complete": "Export Complete",
-    "export_success": "Clip exported successfully!",
-    "export_failed": "Export Failed",
-    "failed_msg": "Failed to export clip:",
-    "load_error": "Error",
-    "load_error_msg": "Failed to load video file!"
-  },
-  "status": {
-    "ready": "Ready - Import a video to begin",
-    "video_loaded": "Video loaded",
-    "start_marked": "Start marked at",
-    "end_marked": "End marked at",
-    "markers_reset": "Markers reset",
-    "exporting": "Exporting clip...",
-    "export_complete": "Export complete!",
-    "export_failed": "Export failed"
-  },
-  "about": {
-    "title": "About LocalClip",
-    "description": "A lightweight video trimming tool for creators.",
-    "features": "No cloud uploads. No watermarks. No limits.",
-    "signature": "Baperebup!",
-    "license": "Licensed under MIT License"
-  }
+  "app_name": "LocalRAW",
+  "import_folder": "Import Folder",
+  "no_folder": "No folder loaded",
+  "images_found": "{n} images found",
+  "select_folder_dialog": "Select Folder",
+  "batch_rename_button": "Batch Rename",
+  "metadata_button": "Metadata",
+  "preview_placeholder": "Open a folder and select an image",
+
+  "white_balance": "White Balance",
+  "temperature": "Temperature",
+  "tint": "Tint",
+  "tone": "Tone",
+  "exposure": "Exposure",
+  "contrast": "Contrast",
+  "detail": "Detail",
+  "sharpen": "Sharpen",
+  "noise_reduction": "Noise Reduction",
+  "luminance": "Luminance",
+  "color": "Color",
+  "dehaze": "Dehaze",
+  "amount": "Amount",
+  "watermark": "Watermark",
+  "add_watermark_button": "Add Watermark...",
+  "reset_all": "Reset All",
+  "export_image_button": "Export Image",
+
+  "load_error_title": "Load Error",
+  "export_title": "Export",
+  "export_no_image": "No image loaded.",
+  "export_success": "Image exported successfully.",
+  "export_dialog_title": "Export Image",
+
+  "batch_rename_title": "Batch Rename",
+  "batch_rename_no_folder": "No folder loaded.",
+  "pattern_label": "Pattern:",
+  "prefix_label": "Prefix:",
+  "preview_label": "Preview:",
+  "tokens_hint": "Tokens: {name} {n} {date} {prefix} {ext}",
+  "batch_rename_result": "{success} files renamed successfully.",
+  "batch_rename_failed": "{n} failed.",
+
+  "watermark_title": "Watermark",
+  "watermark_no_image": "No image loaded.",
+  "watermark_dialog_title": "Add Watermark",
+  "text_label": "Text:",
+  "position_label": "Position:",
+  "opacity_label": "Opacity:",
+  "export_watermarked_title": "Export Watermarked Image",
+  "watermark_success": "Watermarked image exported.",
+
+  "metadata_title": "Metadata",
+  "metadata_no_image": "No image loaded.",
+  "metadata_dialog_title": "Metadata Editor",
+  "exif_label": "EXIF Data:",
+  "artist_label": "Artist:",
+  "copyright_label": "Copyright:",
+  "description_label": "Description:",
+  "metadata_note": "Changes are written to exported JPEG files only.",
+  "metadata_jpeg_only": "Metadata writing is only supported for JPEG files.\nExport as JPEG first.",
+  "metadata_success": "Metadata saved successfully.",
+  "metadata_error_title": "Metadata Error",
+
+  "language_label": "Language"
 }
