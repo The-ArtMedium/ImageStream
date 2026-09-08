@@ -1,60 +1,66 @@
 {
-  "app": {
-    "name": "LocalClip",
-    "tagline": "Simples. Local. Seu.",
-    "version": "0.1.0"
-  },
-  "menu": {
-    "file": "Arquivo",
-    "import_video": "Importar Vídeo",
-    "exit": "Sair",
-    "help": "Ajuda",
-    "about": "Sobre LocalClip"
-  },
-  "buttons": {
-    "import_video": "Importar Vídeo",
-    "play": "Reproduzir",
-    "pause": "Pausar",
-    "mark_start": "Marcar Início (I)",
-    "mark_end": "Marcar Fim (O)",
-    "reset_markers": "Redefinir Marcadores",
-    "export_clip": "Exportar Clipe"
-  },
-  "labels": {
-    "no_video": "Nenhum vídeo carregado",
-    "loaded": "Carregado",
-    "duration": "Duração",
-    "in_point": "Início",
-    "out_point": "Fim",
-    "tagline_subtitle": "Corte vídeos. Sem nuvem. Sem marcas d'água."
-  },
-  "dialogs": {
-    "import_title": "Importar Vídeo",
-    "export_title": "Exportar Clipe",
-    "invalid_range": "Intervalo Inválido",
-    "invalid_range_msg": "O ponto final deve ser após o ponto inicial!",
-    "export_complete": "Exportação Completa",
-    "export_success": "Clipe exportado com sucesso!",
-    "export_failed": "Exportação Falhou",
-    "failed_msg": "Falha ao exportar clipe:",
-    "load_error": "Erro",
-    "load_error_msg": "Falha ao carregar arquivo de vídeo!"
-  },
-  "status": {
-    "ready": "Pronto - Importe um vídeo para começar",
-    "video_loaded": "Vídeo carregado",
-    "start_marked": "Início marcado em",
-    "end_marked": "Fim marcado em",
-    "markers_reset": "Marcadores redefinidos",
-    "exporting": "Exportando clipe...",
-    "export_complete": "Exportação completa!",
-    "export_failed": "Exportação falhou"
-  },
-  "about": {
-    "title": "Sobre LocalClip",
-    "description": "Uma ferramenta leve de corte de vídeo para criadores.",
-    "features": "Sem uploads na nuvem. Sem marcas d'água. Sem limites.",
-    "signature": "Baperebup!",
-    "license": "Licenciado sob Licença MIT"
-  }
+  "app_name": "LocalRAW",
+  "import_folder": "Importar Pasta",
+  "no_folder": "Nenhuma pasta carregada",
+  "images_found": "{n} imagens encontradas",
+  "select_folder_dialog": "Selecionar Pasta",
+  "batch_rename_button": "Renomear em Lote",
+  "metadata_button": "Metadados",
+  "preview_placeholder": "Abra uma pasta e selecione uma imagem",
+
+  "white_balance": "Balanço de Branco",
+  "temperature": "Temperatura",
+  "tint": "Matiz",
+  "tone": "Tom",
+  "exposure": "Exposição",
+  "contrast": "Contraste",
+  "detail": "Detalhe",
+  "sharpen": "Nitidez",
+  "noise_reduction": "Redução de Ruído",
+  "luminance": "Luminância",
+  "color": "Cor",
+  "dehaze": "Remover Névoa",
+  "amount": "Quantidade",
+  "watermark": "Marca de Água",
+  "add_watermark_button": "Adicionar Marca de Água...",
+  "reset_all": "Redefinir Tudo",
+  "export_image_button": "Exportar Imagem",
+
+  "load_error_title": "Erro de Carregamento",
+  "export_title": "Exportar",
+  "export_no_image": "Nenhuma imagem carregada.",
+  "export_success": "Imagem exportada com sucesso.",
+  "export_dialog_title": "Exportar Imagem",
+
+  "batch_rename_title": "Renomear em Lote",
+  "batch_rename_no_folder": "Nenhuma pasta carregada.",
+  "pattern_label": "Padrão:",
+  "prefix_label": "Prefixo:",
+  "preview_label": "Pré-visualização:",
+  "tokens_hint": "Tokens: {name} {n} {date} {prefix} {ext}",
+  "batch_rename_result": "{success} arquivos renomeados com sucesso.",
+  "batch_rename_failed": "{n} falharam.",
+
+  "watermark_title": "Marca de Água",
+  "watermark_no_image": "Nenhuma imagem carregada.",
+  "watermark_dialog_title": "Adicionar Marca de Água",
+  "text_label": "Texto:",
+  "position_label": "Posição:",
+  "opacity_label": "Opacidade:",
+  "export_watermarked_title": "Exportar Imagem com Marca de Água",
+  "watermark_success": "Imagem com marca de água exportada.",
+
+  "metadata_title": "Metadados",
+  "metadata_no_image": "Nenhuma imagem carregada.",
+  "metadata_dialog_title": "Editor de Metadados",
+  "exif_label": "Dados EXIF:",
+  "artist_label": "Artista:",
+  "copyright_label": "Direitos de Autor:",
+  "description_label": "Descrição:",
+  "metadata_note": "As alterações são gravadas apenas nos arquivos JPEG exportados.",
+  "metadata_jpeg_only": "A gravação de metadados só é suportada para arquivos JPEG.\nExporte como JPEG primeiro.",
+  "metadata_success": "Metadados salvos com sucesso.",
+  "metadata_error_title": "Erro de Metadados",
+
+  "language_label": "Idioma"
 }
