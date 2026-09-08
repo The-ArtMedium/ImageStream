@@ -1,0 +1,6 @@
+PySide6
+rawpy
+numpy
+opencv-python
+Pillow
+piexif
