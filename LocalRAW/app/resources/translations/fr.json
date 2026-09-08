@@ -1,60 +1,66 @@
 {
-  "app": {
-    "name": "LocalClip",
-    "tagline": "Simple. Local. À vous.",
-    "version": "0.1.0"
-  },
-  "menu": {
-    "file": "Fichier",
-    "import_video": "Importer une vidéo",
-    "exit": "Quitter",
-    "help": "Aide",
-    "about": "À propos de LocalClip"
-  },
-  "buttons": {
-    "import_video": "Importer une vidéo",
-    "play": "Lecture",
-    "pause": "Pause",
-    "mark_start": "Marquer le début (I)",
-    "mark_end": "Marquer la fin (O)",
-    "reset_markers": "Réinitialiser les marqueurs",
-    "export_clip": "Exporter le clip"
-  },
-  "labels": {
-    "no_video": "Aucune vidéo chargée",
-    "loaded": "Chargé",
-    "duration": "Durée",
-    "in_point": "Début",
-    "out_point": "Fin",
-    "tagline_subtitle": "Coupez des vidéos. Sans cloud. Sans filigrane."
-  },
-  "dialogs": {
-    "import_title": "Importer une vidéo",
-    "export_title": "Exporter le clip",
-    "invalid_range": "Plage invalide",
-    "invalid_range_msg": "Le point de fin doit être après le point de début!",
-    "export_complete": "Exportation terminée",
-    "export_success": "Clip exporté avec succès!",
-    "export_failed": "Échec de l'exportation",
-    "failed_msg": "Échec de l'exportation du clip:",
-    "load_error": "Erreur",
-    "load_error_msg": "Échec du chargement du fichier vidéo!"
-  },
-  "status": {
-    "ready": "Prêt - Importez une vidéo pour commencer",
-    "video_loaded": "Vidéo chargée",
-    "start_marked": "Début marqué à",
-    "end_marked": "Fin marquée à",
-    "markers_reset": "Marqueurs réinitialisés",
-    "exporting": "Exportation du clip...",
-    "export_complete": "Exportation terminée!",
-    "export_failed": "Échec de l'exportation"
-  },
-  "about": {
-    "title": "À propos de LocalClip",
-    "description": "Un outil léger de découpage vidéo pour les créateurs.",
-    "features": "Pas de téléchargements cloud. Pas de filigrane. Pas de limites.",
-    "signature": "Baperebup!",
-    "license": "Sous licence MIT"
-  }
+  "app_name": "LocalRAW",
+  "import_folder": "Importer un Dossier",
+  "no_folder": "Aucun dossier chargé",
+  "images_found": "{n} images trouvées",
+  "select_folder_dialog": "Sélectionner un Dossier",
+  "batch_rename_button": "Renommage en Lot",
+  "metadata_button": "Métadonnées",
+  "preview_placeholder": "Ouvrez un dossier et sélectionnez une image",
+
+  "white_balance": "Balance des Blancs",
+  "temperature": "Température",
+  "tint": "Teinte",
+  "tone": "Tonalité",
+  "exposure": "Exposition",
+  "contrast": "Contraste",
+  "detail": "Détail",
+  "sharpen": "Netteté",
+  "noise_reduction": "Réduction du Bruit",
+  "luminance": "Luminance",
+  "color": "Couleur",
+  "dehaze": "Anti-brume",
+  "amount": "Quantité",
+  "watermark": "Filigrane",
+  "add_watermark_button": "Ajouter un Filigrane...",
+  "reset_all": "Tout Réinitialiser",
+  "export_image_button": "Exporter l'Image",
+
+  "load_error_title": "Erreur de Chargement",
+  "export_title": "Exporter",
+  "export_no_image": "Aucune image chargée.",
+  "export_success": "Image exportée avec succès.",
+  "export_dialog_title": "Exporter l'Image",
+
+  "batch_rename_title": "Renommage en Lot",
+  "batch_rename_no_folder": "Aucun dossier chargé.",
+  "pattern_label": "Motif :",
+  "prefix_label": "Préfixe :",
+  "preview_label": "Aperçu :",
+  "tokens_hint": "Jetons : {name} {n} {date} {prefix} {ext}",
+  "batch_rename_result": "{success} fichiers renommés avec succès.",
+  "batch_rename_failed": "{n} échoués.",
+
+  "watermark_title": "Filigrane",
+  "watermark_no_image": "Aucune image chargée.",
+  "watermark_dialog_title": "Ajouter un Filigrane",
+  "text_label": "Texte :",
+  "position_label": "Position :",
+  "opacity_label": "Opacité :",
+  "export_watermarked_title": "Exporter l'Image avec Filigrane",
+  "watermark_success": "Image avec filigrane exportée.",
+
+  "metadata_title": "Métadonnées",
+  "metadata_no_image": "Aucune image chargée.",
+  "metadata_dialog_title": "Éditeur de Métadonnées",
+  "exif_label": "Données EXIF :",
+  "artist_label": "Artiste :",
+  "copyright_label": "Droits d'Auteur :",
+  "description_label": "Description :",
+  "metadata_note": "Les modifications sont écrites uniquement dans les fichiers JPEG exportés.",
+  "metadata_jpeg_only": "L'écriture de métadonnées n'est prise en charge que pour les fichiers JPEG.\nExportez d'abord en JPEG.",
+  "metadata_success": "Métadonnées enregistrées avec succès.",
+  "metadata_error_title": "Erreur de Métadonnées",
+
+  "language_label": "Langue"
 }
