@@ -1,0 +1,87 @@
+
+name: Release LocalBeat
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Configure git
+        run: git config --global core.protectNTFS false
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Windows
+        run: cargo tauri build
+        working-directory: LocalBeat
+      - name: Package Windows
+        run: |
+          mkdir LocalBeat-Windows
+          copy LocalBeat\src-tauri\target\release\bundle\msi\*.msi LocalBeat-Windows\
+          Compress-Archive -Path LocalBeat-Windows\* -DestinationPath LocalBeat-${{ github.ref_name }}-Windows.zip
+      - name: Release Windows
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalBeat-${{ github.ref_name }}-Windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Mac
+        run: cargo tauri build
+        working-directory: LocalBeat
+      - name: Package Mac
+        run: |
+          mkdir LocalBeat-Mac
+          cp LocalBeat/src-tauri/target/release/bundle/dmg/*.dmg LocalBeat-Mac/
+          zip -r LocalBeat-${{ github.ref_name }}-Mac.zip LocalBeat-Mac/
+      - name: Release Mac
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalBeat-${{ github.ref_name }}-Mac.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev \
+            libappindicator3-dev librsvg2-dev patchelf
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+      - name: Build Linux
+        run: cargo tauri build
+        working-directory: LocalBeat
+      - name: Package Linux
+        run: |
+          mkdir LocalBeat-Linux
+          cp LocalBeat/src-tauri/target/release/bundle/deb/*.deb LocalBeat-Linux/
+          zip -r LocalBeat-${{ github.ref_name }}-Linux.zip LocalBeat-Linux/
+      - name: Release Linux
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LocalBeat-${{ github.ref_name }}-Linux.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
