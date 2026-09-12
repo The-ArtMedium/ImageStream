@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LocalClip — Video Trimming for Everyone</title>
+<title>LocalEdit — Layer-Based Video Editor</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg:      #0f0f0f;
     --bg2:     #161616;
     --bg3:     #1f1f1f;
-    --bg4:     #282828;
     --accent:  #f5a623;
     --accent2: #ff6b35;
     --text:    #f0f0f0;
@@ -30,6 +29,7 @@
     overflow-x: hidden;
   }
 
+  /* ── HERO ── */
   .hero {
     position: relative;
     text-align: center;
@@ -61,7 +61,9 @@
     color: var(--text);
   }
 
-  .hero-content h1 span { color: var(--accent); }
+  .hero-content h1 span {
+    color: var(--accent);
+  }
 
   .tagline {
     font-size: clamp(1.1rem, 2.5vw, 1.4rem);
@@ -88,6 +90,7 @@
     padding: 6px 16px;
     border-radius: 999px;
     border: 1px solid #2a2a2a;
+    letter-spacing: 0.03em;
   }
 
   .badge.gold {
@@ -96,6 +99,7 @@
     border-color: #f5a62340;
   }
 
+  /* ── DOWNLOADS ── */
   .downloads {
     padding: 20px 20px 60px;
     max-width: 900px;
@@ -133,9 +137,24 @@
     transform: translateY(-3px);
   }
 
-  .platform-icon { font-size: 2.4rem; margin-bottom: 12px; display: block; }
-  .platform-name { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
-  .platform-info { font-size: 0.85rem; color: var(--text3); margin-bottom: 20px; }
+  .platform-icon {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .platform-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .platform-info {
+    font-size: 0.85rem;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
 
   .download-btn {
     display: inline-block;
@@ -148,6 +167,7 @@
     border-radius: 8px;
     text-decoration: none;
     transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
   }
 
   .download-btn:hover {
@@ -155,6 +175,18 @@
     transform: scale(1.04);
   }
 
+  .download-btn.secondary {
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid #2a2a2a;
+  }
+
+  .download-btn.secondary:hover {
+    background: #2a2a2a;
+    color: var(--text);
+  }
+
+  /* ── FEATURES ── */
   .features {
     background: var(--bg2);
     padding: 60px 20px;
@@ -180,9 +212,15 @@
     transition: border-color 0.2s;
   }
 
-  .feature-card:hover { border-color: #333; }
+  .feature-card:hover {
+    border-color: #333;
+  }
 
-  .feature-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 14px;
+    display: block;
+  }
 
   .feature-title {
     font-family: 'Syne', sans-serif;
@@ -198,6 +236,7 @@
     line-height: 1.65;
   }
 
+  /* ── WHY SECTION ── */
   .why {
     padding: 60px 20px;
     max-width: 760px;
@@ -222,6 +261,7 @@
     margin-bottom: 16px;
   }
 
+  /* ── LANGUAGES ── */
   .langs {
     display: flex;
     justify-content: center;
@@ -240,6 +280,7 @@
     font-weight: 500;
   }
 
+  /* ── FOOTER ── */
   footer {
     background: var(--bg2);
     border-top: 1px solid #1e1e1e;
@@ -251,6 +292,7 @@
 
   footer a { color: var(--accent); text-decoration: none; }
 
+  /* ── DIVIDER ── */
   .divider {
     height: 1px;
     background: linear-gradient(to right, transparent, #2a2a2a, transparent);
@@ -261,23 +303,25 @@
 </head>
 <body>
 
+<!-- HERO -->
 <section class="hero">
   <img class="hero-banner"
-       src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_000000001aa471f58709732daec60611.png"
-       alt="LocalClip">
+       src="https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000958071f5bca5dff8ac36475a.png"
+       alt="LocalEdit">
   <div class="hero-content">
-    <h1>Local<span>Clip</span></h1>
-    <p class="tagline">Trim videos. Instantly. Locally.<br>No cloud. No account. No tracking.</p>
+    <h1>Local<span>Edit</span></h1>
+    <p class="tagline">Video, image, text and audio — four layers, one timeline.<br>No cloud. No watermark. No subscription.</p>
     <div class="badges">
       <span class="badge gold">Free Forever</span>
       <span class="badge">100% Offline</span>
-      <span class="badge">Non-Destructive</span>
+      <span class="badge">4-Layer Timeline</span>
       <span class="badge">Windows · Mac · Linux</span>
-      <span class="badge">7 Languages</span>
+      <span class="badge">5 Languages</span>
     </div>
   </div>
 </section>
 
+<!-- DOWNLOADS -->
 <section class="downloads">
   <p class="section-title">Download</p>
   <div class="download-grid">
@@ -287,7 +331,7 @@
       <div class="platform-name">Windows</div>
       <div class="platform-info">Windows 10 / 11 · 64-bit</div>
       <a class="download-btn"
-         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localclip-v0.1.0/LocalClip-localclip-v0.1.0-Windows.zip">
+         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localedit-v0.4.0/LocalEdit-localedit-v0.4.0-Windows.zip">
         ↓ Download
       </a>
     </div>
@@ -297,7 +341,7 @@
       <div class="platform-name">Mac</div>
       <div class="platform-info">macOS 12+ · Apple & Intel</div>
       <a class="download-btn"
-         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localclip-v0.1.0/LocalClip-localclip-v0.1.0-Mac.zip">
+         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localedit-v0.4.0/LocalEdit-localedit-v0.4.0-Mac.zip">
         ↓ Download
       </a>
     </div>
@@ -307,7 +351,7 @@
       <div class="platform-name">Linux</div>
       <div class="platform-info">Ubuntu 20.04+ · Debian</div>
       <a class="download-btn"
-         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localclip-v0.1.0/LocalClip-localclip-v0.1.0-Linux.zip">
+         href="https://github.com/The-ArtMedium/ImageStream/releases/download/localedit-v0.4.0/LocalEdit-localedit-v0.4.0-Linux.zip">
         ↓ Download
       </a>
     </div>
@@ -317,45 +361,46 @@
 
 <div class="divider"></div>
 
+<!-- FEATURES -->
 <section class="features">
   <div class="features-inner">
-    <p class="section-title">What LocalClip Does</p>
+    <p class="section-title">What LocalEdit Does</p>
     <div class="feature-grid">
 
       <div class="feature-card">
-        <span class="feature-icon">✂️</span>
-        <div class="feature-title">Trim Any Video</div>
-        <p class="feature-desc">Cut any clip to exactly the length you need. Fast, precise, no re-encoding required.</p>
+        <span class="feature-icon">🎞️</span>
+        <div class="feature-title">Layer 1 — Video / Image</div>
+        <p class="feature-desc">Your background foundation. Drop in a video or image and it anchors the whole timeline.</p>
       </div>
 
       <div class="feature-card">
-        <span class="feature-icon">🛡️</span>
-        <div class="feature-title">Non-Destructive</div>
-        <p class="feature-desc">Your original files are never touched. Every edit is reversible. Your archive stays safe.</p>
+        <span class="feature-icon">🖼️</span>
+        <div class="feature-title">Layer 2 — Image Overlays</div>
+        <p class="feature-desc">Graphics, logos and posters with blend modes — normal, multiply, overlay, screen.</p>
       </div>
 
       <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <div class="feature-title">No Export Queue</div>
-        <p class="feature-desc">No waiting. No rendering progress bars. Clips are ready the moment you make them.</p>
+        <span class="feature-icon">🔤</span>
+        <div class="feature-title">Layer 3 — Text</div>
+        <p class="feature-desc">Titles, captions and subtitles with custom fonts, size, color and position.</p>
       </div>
 
       <div class="feature-card">
-        <span class="feature-icon">📁</span>
-        <div class="feature-title">Batch Processing</div>
-        <p class="feature-desc">Open a folder and work through multiple clips in one session. Built for volume.</p>
+        <span class="feature-icon">🎵</span>
+        <div class="feature-title">Layer 4 — Audio</div>
+        <p class="feature-desc">Music, voiceover or sound effects with volume and fade controls.</p>
       </div>
 
       <div class="feature-card">
-        <span class="feature-icon">🌍</span>
-        <div class="feature-title">7 Languages</div>
-        <p class="feature-desc">English, Español, Français, Português, العربية, 中文, हिन्दी — built in from day one.</p>
+        <span class="feature-icon">🖱️</span>
+        <div class="feature-title">Drag & Drop Timeline</div>
+        <p class="feature-desc">Trim and position every clip by hand. No menus to dig through, no bloat.</p>
       </div>
 
       <div class="feature-card">
         <span class="feature-icon">💾</span>
-        <div class="feature-title">Works on Anything</div>
-        <p class="feature-desc">Runs on old laptops, low-spec machines, no internet needed. Built for the real world.</p>
+        <div class="feature-title">Export to MP4</div>
+        <p class="feature-desc">Clean render, no watermark. Your file, your device, your terms.</p>
       </div>
 
     </div>
@@ -364,29 +409,32 @@
 
 <div class="divider"></div>
 
+<!-- WHY -->
 <section class="why">
-  <h2>Built for the <span>field journalist</span>.<br>The student editor.<br>The creator with no budget.</h2>
-  <p>Professional video tools demand subscriptions, fast internet, and powerful hardware. LocalClip demands nothing — just your video and your intent.</p>
-  <p style="color: var(--accent); font-weight: 500;">Simple. Local. Yours.</p>
+  <h2>Built for the musician<br>with a lyric video to cut. The <span>podcaster</span><br>on a deadline. Anyone who wants their edit private.</h2>
+  <p>Most editors mean cloud rendering, watermarked exports, or a subscription that outlives the project. LocalEdit skips all of it — four layers, your machine, your files.</p>
+  <p>Born from cutting lyric videos and promo clips end to end, entirely offline.</p>
+  <p style="color: var(--accent); font-weight: 500;">Edit locally. Share globally.</p>
 </section>
 
+<!-- LANGUAGES -->
 <div class="langs">
   <span class="lang-pill">🇺🇸 English</span>
   <span class="lang-pill">🇪🇸 Español</span>
-  <span class="lang-pill">🇫🇷 Français</span>
   <span class="lang-pill">🇵🇹 Português</span>
   <span class="lang-pill">🇸🇦 العربية</span>
-  <span class="lang-pill">🇨🇳 中文</span>
   <span class="lang-pill">🇮🇳 हिन्दी</span>
 </div>
 
 <div class="divider"></div>
 
+<!-- FOOTER -->
 <footer>
-  <p>LocalClip is part of the <a href="https://the-artmedium.github.io/ImageStream/">ImageStream Local Suite</a></p>
+  <p>LocalEdit is part of the <a href="https://the-artmedium.github.io/ImageStream/">ImageStream Local Suite</a></p>
   <p style="margin-top:8px;">Built by <a href="https://github.com/The-ArtMedium">The Art Medium</a> · Free forever · No cloud · No tracking</p>
   <p style="margin-top:8px; font-size:0.8rem;">MIT License with Commons Clause · theartsmedium@gmail.com</p>
 </footer>
 
 </body>
-</html>
+  </html>
+  
