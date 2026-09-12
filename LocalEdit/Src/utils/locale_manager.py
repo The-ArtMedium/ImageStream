@@ -18,10 +18,7 @@ class LocaleManager:
         'pt': 'Português',
         'hi': 'हिन्दी',
         'ar': 'العربية',
-        'fr': 'Français',
-        'de': 'Deutsch',
-        'zh': '中文',
-        'ja': '日本語'
+        'fr': 'Français'
     }
     
     # RTL (Right-to-Left) languages
@@ -194,3 +191,4 @@ def translate(key_path: str, default: str = None) -> str:
 
 # Shorthand alias
 t = translate
+                
