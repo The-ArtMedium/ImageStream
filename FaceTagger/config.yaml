@@ -1,12 +1,15 @@
-## **FILE 2: config.yaml**
+# ImageStream Athlete Tagger Configuration
+# Add your athletes below with paths to their reference photos
 
-```yaml
+# Match threshold: Lower = stricter (0.4-0.6 recommended)
+# 0.4 = very strict, 0.6 = more lenient
 match_threshold: 0.55
 
+# Athletes: Add name and path to reference photo
 athletes:
   "Usain Bolt": "references/usain_bolt.jpg"
   "Serena Williams": "references/serena_williams.jpg"
   "Lionel Messi": "references/lionel_messi.jpg"
   "Michael Jordan": "references/michael_jordan.jpg"
   "Cristiano Ronaldo": "references/cristiano_ronaldo.jpg"
-```
+
