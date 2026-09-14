@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Organizer — ImageStream Darkroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,500&family=Nunito:wght@400;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #1a1a14;
+    --bg2:     #232318;
+    --bg3:     #2c2c20;
+    --bg4:     #353528;
+    --border:  #3a3a2a;
+    --border2: #4a4a38;
+    --text:    #f5f0e3;
+    --text2:   #d4ccb8;
+    --text3:   #9a9278;
+    --gold:    #e8b84b;
+    --blue:    #7eb8f7;
+    --green:   #6bcf8a;
+    --code-bg: #111110;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 60px 24px 100px; }
+  .eyebrow { color: var(--gold); font-weight: 700; letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-family: 'Lora', serif; font-size: 2.4rem; margin-bottom: 8px; }
+  h1 em { color: var(--gold); font-style: italic; }
+  .lead { color: var(--text2); font-size: 1.15rem; margin: 20px 0 40px; }
+  h2 { font-family: 'Lora', serif; font-size: 1.6rem; margin: 48px 0 16px; color: var(--text); }
+  h3 { font-family: 'Lora', serif; font-size: 1.2rem; margin: 28px 0 12px; color: var(--gold); }
+  p { color: var(--text2); margin-bottom: 16px; }
+  strong { color: var(--text); }
+  code { background: var(--code-bg); color: var(--green); padding: 2px 7px; border-radius: 5px; font-family: 'Source Code Pro', monospace; font-size: 0.92em; }
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border2); border-radius: 10px;
+    padding: 18px 22px; font-family: 'Source Code Pro', monospace; font-size: 14px;
+    line-height: 1.9; color: #e8e0d0; margin: 16px 0 24px; overflow-x: auto;
+  }
+  .kw { color: var(--blue); font-weight: 600; }
+  .fn { color: var(--gold); }
+  .str { color: var(--green); }
+  .cmt { color: var(--text3); }
+  .tip {
+    background: var(--bg2); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0;
+    padding: 16px 20px; margin: 24px 0; color: var(--text2); font-size: 0.96rem;
+  }
+  .divider { height: 1px; background: var(--border); margin: 48px 0; }
+  ul, ol { color: var(--text2); margin: 0 0 16px 22px; }
+  li { margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 28px; font-size: 0.94rem; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  th { color: var(--gold); font-family: 'Lora', serif; font-weight: 600; }
+  @media (max-width: 640px) {
+    table, tbody, tr { display: block; width: 100%; }
+    tr.table-head { display: none; }
+    tr { border-bottom: 1px solid var(--border2); padding: 14px 0; }
+    td { display: block; padding: 4px 0; border-bottom: none; }
+    td:first-child { margin-bottom: 4px; }
+    td:nth-child(2)::before { content: "Written by: "; color: var(--text3); }
+    td:nth-child(3)::before { content: "Meaning: "; color: var(--text3); }
+  }
+  .back-link { display: inline-block; margin-top: 40px; color: var(--text3); text-decoration: none; }
+  .back-link:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="eyebrow">ImageStream Darkroom · Foundations Series</div>
+  <h1>Your Own Archive<br><em>Is Now a Database</em></h1>
+  <p class="lead">Everything in this course so far used a made-up dataset — a stand-in for a real photography archive, built so you could learn without pressure. This page is where that stops being make-believe. If you've used FocusCheck or AthleteTagger, some of your own photos are already sitting in a real, working database, right now, on your own machine.</p>
+
+  <h2>What actually happened</h2>
+  <p>FocusCheck and AthleteTagger have always done their job and then forgotten everything the moment they closed. FocusCheck would tell you a photo was sharp — and the instant the app shut, that judgment was gone. AthleteTagger would find Serena Williams in forty photos and rename them — and that knowledge lived nowhere except in the filenames themselves.</p>
+  <p>Now, quietly, both tools also write what they learn into one shared file: a small local database that lives at</p>
+  <div class="code-block"><span class="cmt"># On Mac and Linux, this is a full path from your home folder.</span>
+~/Documents/LocalSuite/index.db</div>
+  <p>That's it. One file. No server, no account, no setup. It's the exact same kind of database — SQLite — that this course has been teaching you to query all along.</p>
+
+  <div class="divider"></div>
+
+  <h2>What's actually in it</h2>
+  <p>One table, called <code>photos</code>. One row per photo. Each tool fills in whatever columns it knows about, and leaves the rest alone:</p>
+  <table>
+    <tr class="table-head"><th>Column</th><th>Who writes it</th><th>What it means</th></tr>
+    <tr><td><code>filepath</code></td><td>Whichever tool sees the photo first</td><td>Where the file actually lives, right now</td></tr>
+    <tr><td><code>sharpness_verdict</code></td><td>FocusCheck</td><td><code>sharp</code>, <code>fixable</code>, or <code>rejected</code></td></tr>
+    <tr><td><code>sharpness_score</code></td><td>FocusCheck</td><td>The actual number behind that verdict</td></tr>
+    <tr><td><code>athlete_tag</code></td><td>AthleteTagger</td><td>The name matched in that photo, if any</td></tr>
+    <tr><td><code>thumbnail_path</code></td><td>Whichever tool sees the photo first</td><td>A small preview image, shared by every tool</td></tr>
+  </table>
+  <p>The important part: if FocusCheck scores a photo <em>sharp</em>, and AthleteTagger later renames that same photo to tag an athlete in it — that's still <strong>one row</strong>, not two. Both facts live on the same photo. Renaming, moving, tagging — none of it splits the record in two or starts a new one by accident. That was tested deliberately, because it's the one thing that would have quietly broken the whole idea.</p>
+
+  <div class="tip"><strong>Nothing changes about how you use FocusCheck or AthleteTagger.</strong> You don't have to do anything differently. Run them exactly as you always have — the memory happens on its own, in the background, every time.</div>
+
+  <div class="divider"></div>
+
+  <h2>Try it on your own archive</h2>
+  <p>Open <code>~/Documents/LocalSuite/index.db</code> in any free SQLite browser (DB Browser for SQLite is a good one, and it's free), or use the <code>sqlite3</code> command line if that's more your speed. Then ask it something real:</p>
+
+  <h3>Every rejected photo you never actually deleted</h3>
+  <div class="code-block"><span class="kw">SELECT</span> filename, sharpness_score
+<span class="kw">FROM</span> photos
+<span class="kw">WHERE</span> sharpness_verdict = <span class="str">'rejected'</span>;</div>
+
+  <h3>How many sharp photos of one athlete you actually have</h3>
+  <div class="code-block"><span class="kw">SELECT</span> <span class="fn">COUNT</span>(*)
+<span class="kw">FROM</span> photos
+<span class="kw">WHERE</span> athlete_tag = <span class="str">'Serena Williams'</span>
+  <span class="kw">AND</span> sharpness_verdict = <span class="str">'sharp'</span>;</div>
+
+  <h3>Your best photo of every athlete you've tagged so far</h3>
+  <div class="code-block"><span class="kw">SELECT</span> athlete_tag, filename, <span class="fn">MAX</span>(sharpness_score) <span class="kw">AS</span> best_score
+<span class="kw">FROM</span> photos
+<span class="kw">WHERE</span> athlete_tag <span class="kw">IS NOT NULL</span>
+<span class="kw">GROUP BY</span> athlete_tag;</div>
+
+  <p>That last one is the exact shape of query this course already taught you — <code>GROUP BY</code>, an aggregate function, a real question about real data. The only thing that changed is whose data it is.</p>
+
+  <div class="divider"></div>
+
+  <h2>About "syncing"</h2>
+  <p>Right now: there isn't any, and that's on purpose, not a gap waiting to be filled.</p>
+  <p>The database is one plain file on one machine. Nothing to configure, nothing to connect, nothing that can leak, nothing that depends on a company staying in business. If you ever want your phone and your laptop to share the same archive knowledge, that's a real, separate decision — something to design deliberately once there's an actual reason for it, not something to bolt on now just because it sounds like the next feature. For today: it's yours, it's local, and it already works.</p>
+
+  <div class="divider"></div>
+
+  <h2>What's next</h2>
+  <p>Right now, two tools write into this shared memory: FocusCheck and AthleteTagger. LocalRAW is next. Each tool that joins adds its own honest piece — nothing invented, nothing guessed, just what that tool already knows about a photo, given somewhere permanent to say it.</p>
+  <p>You don't need to wait for that. Every photo FocusCheck or AthleteTagger has already touched is queryable today, using exactly what you've already learned here.</p>
+
+  <div class="tip"><strong>Worth sitting with:</strong> a working archive isn't just personal convenience — it's proof. A photographer who can hand someone a searchable, organized body of work across years is showing something a folder full of loose files never can. That's not a small feature to add later. That's the difference between "I have some photos" and "here is my catalog." A detailed, queryable record of your own work is worth building for its own sake — not just to find one photo faster today.</div>
+
+  <a class="back-link" href="index.html">← Back to Darkroom</a>
+
+</div>
+</body>
+</html>
