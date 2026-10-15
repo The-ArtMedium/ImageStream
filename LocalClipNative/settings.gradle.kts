@@ -6,4 +6,3 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "LocalClipNative"
-include(":app")
