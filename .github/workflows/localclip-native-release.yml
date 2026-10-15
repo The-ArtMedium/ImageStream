@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: LocalClipNative
@@ -21,7 +21,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - runs-on: ubuntu-24.04
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
