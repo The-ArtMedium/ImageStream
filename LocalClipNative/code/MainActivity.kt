@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -14,6 +15,7 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.media.MediaMuxer
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -27,6 +29,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.VideoView
@@ -40,17 +43,20 @@ class MainActivity : Activity() {
     private val GOLD = Color.parseColor("#F5A623")
     private val TEAL = Color.parseColor("#2EC4B6")
     private val DIM = Color.parseColor("#9AA7B4")
+    private val KEY = Color.parseColor("#2A3441")
     private val KOFI_URL = "https://ko-fi.com/1satdiva"
 
     private val ui = Handler(Looper.getMainLooper())
     private lateinit var video: VideoView
     private lateinit var seek: SeekBar
     private lateinit var posText: TextView
-    private lateinit var inText: TextView
-    private lateinit var outText: TextView
+    private lateinit var durText: TextView
+    private lateinit var rangeText: TextView
+    private lateinit var snapText: TextView
     private lateinit var hint: TextView
     private lateinit var status: TextView
     private lateinit var emptyView: View
+    private var mp: MediaPlayer? = null
     private var uri: Uri? = null
     private var durationMs = 0L
     private var inMs = 0L
@@ -63,6 +69,16 @@ class MainActivity : Activity() {
         window.statusBarColor = BG
         window.navigationBarColor = BG
         showSplash()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (mainShown) {
+            val keep = uri
+            val pos = if (keep != null) video.currentPosition else 0
+            buildUi()
+            if (keep != null) loadVideo(keep, pos)
+        }
     }
 
     override fun onDestroy() {
@@ -81,17 +97,19 @@ class MainActivity : Activity() {
         } catch (e: Exception) { null }
     }
 
-    private fun pill(label: String, bg: Int, fg: Int, onClick: () -> Unit): Button {
+    private fun pill(label: String, bg: Int, fg: Int, small: Boolean = false, onClick: () -> Unit): Button {
         val b = Button(this)
         b.text = label
         b.isAllCaps = false
-        b.textSize = 15f
+        b.textSize = if (small) 13f else 15f
         b.setTextColor(fg)
-        b.minHeight = dp(48)
-        b.minimumHeight = dp(48)
+        val h = if (small) dp(40) else dp(48)
+        b.minHeight = h
+        b.minimumHeight = h
+        b.setPadding(dp(4), 0, dp(4), 0)
         b.stateListAnimator = null
         val shape = GradientDrawable()
-        shape.cornerRadius = dp(26).toFloat()
+        shape.cornerRadius = dp(24).toFloat()
         shape.setColor(bg)
         b.background = shape
         b.setOnClickListener { onClick() }
@@ -103,7 +121,7 @@ class MainActivity : Activity() {
         r.orientation = LinearLayout.HORIZONTAL
         for (v in views) {
             val lp = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            lp.setMargins(dp(4), dp(4), dp(4), dp(4))
+            lp.setMargins(dp(3), dp(3), dp(3), dp(3))
             r.addView(v, lp)
         }
         return r
@@ -125,16 +143,18 @@ class MainActivity : Activity() {
     }
 
     private fun kofiButton(): Button {
-        val b = pill("\u2615 Ko-fi", GOLD, Color.BLACK) { openKofi() }
+        val b = pill("☕ Ko-fi", GOLD, Color.BLACK) { openKofi() }
         b.minHeight = dp(40)
         b.minimumHeight = dp(40)
         b.textSize = 14f
         return b
     }
 
+    /** mm:ss.mmm */
     private fun fmt(ms: Long): String {
-        val s = ms / 1000.0
-        return String.format(Locale.US, "%d:%05.2f", (s / 60).toInt(), s % 60)
+        val m = if (ms < 0) 0L else ms
+        val total = m / 1000
+        return String.format(Locale.US, "%02d:%02d.%03d", total / 60, total % 60, m % 1000)
     }
 
     // ---------- splash ----------
@@ -167,6 +187,8 @@ class MainActivity : Activity() {
     // ---------- main screen ----------
 
     private fun buildUi() {
+        val landscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
         val root = LinearLayout(this)
         root.orientation = LinearLayout.VERTICAL
         root.setBackgroundColor(BG)
@@ -176,20 +198,20 @@ class MainActivity : Activity() {
         val header = LinearLayout(this)
         header.orientation = LinearLayout.HORIZONTAL
         header.gravity = Gravity.CENTER_VERTICAL
-        header.setPadding(dp(16), dp(10), dp(16), dp(10))
+        header.setPadding(dp(16), dp(8), dp(16), dp(8))
         val logo = ImageView(this)
         logo.setImageBitmap(bmp(Images.logo))
-        header.addView(logo, LinearLayout.LayoutParams(dp(46), dp(46)))
+        header.addView(logo, LinearLayout.LayoutParams(dp(44), dp(44)))
         val titles = LinearLayout(this)
         titles.orientation = LinearLayout.VERTICAL
         titles.setPadding(dp(12), 0, 0, 0)
         titles.addView(label("LocalClip", 22f, GOLD, true))
-        titles.addView(label("Lossless \u00B7 Local \u00B7 No recompression", 11f, DIM))
+        titles.addView(label("Lossless · Local · No recompression", 11f, DIM))
         header.addView(titles, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         header.addView(kofiButton())
         root.addView(header)
 
-        // stage: video + empty-state
+        // stage: video + empty state
         val stage = FrameLayout(this)
         stage.setBackgroundColor(Color.BLACK)
         video = VideoView(this)
@@ -209,62 +231,99 @@ class MainActivity : Activity() {
         emptyView = empty
         stage.addView(empty, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        root.addView(stage, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
 
         // controls panel
         val panel = LinearLayout(this)
         panel.orientation = LinearLayout.VERTICAL
-        panel.setBackgroundColor(PANEL)
-        panel.setPadding(dp(12), dp(8), dp(12), dp(8))
+        panel.setPadding(dp(10), dp(8), dp(10), dp(8))
+
+        posText = label("00:00.000", 30f, Color.WHITE, true)
+        posText.gravity = Gravity.CENTER
+        panel.addView(posText)
+        durText = label("", 12f, DIM)
+        durText.gravity = Gravity.CENTER
+        panel.addView(durText)
 
         seek = SeekBar(this)
         seek.progressTintList = ColorStateList.valueOf(GOLD)
         seek.thumbTintList = ColorStateList.valueOf(GOLD)
         panel.addView(seek)
 
-        inText = label("", 14f, TEAL, true)
-        posText = label("0:00.00", 14f, Color.WHITE, true)
-        posText.gravity = Gravity.CENTER
-        outText = label("", 14f, GOLD, true)
-        outText.gravity = Gravity.END
-        panel.addView(row(inText, posText, outText))
-
+        // coarse, medium and fine steps (same ladder as the first LocalClip)
         panel.addView(row(
-            pill("\u2212 1 s", Color.parseColor("#2A3441"), Color.WHITE) { nudge(-1000) },
-            pill("Play / Pause", Color.parseColor("#2A3441"), Color.WHITE) {
+            pill("−60s", KEY, Color.WHITE, true) { nudge(-60000) },
+            pill("−30s", KEY, Color.WHITE, true) { nudge(-30000) },
+            pill("−10s", KEY, Color.WHITE, true) { nudge(-10000) },
+            pill("+10s", KEY, Color.WHITE, true) { nudge(10000) },
+            pill("+30s", KEY, Color.WHITE, true) { nudge(30000) },
+            pill("+60s", KEY, Color.WHITE, true) { nudge(60000) }
+        ))
+        panel.addView(row(
+            pill("−3s", Color.parseColor("#3A4757"), Color.WHITE, true) { nudge(-3000) },
+            pill("−1s", Color.parseColor("#3A4757"), Color.WHITE, true) { nudge(-1000) },
+            pill("+1s", Color.parseColor("#3A4757"), Color.WHITE, true) { nudge(1000) },
+            pill("+3s", Color.parseColor("#3A4757"), Color.WHITE, true) { nudge(3000) }
+        ))
+        panel.addView(row(
+            pill("−200ms", KEY, Color.WHITE, true) { nudge(-200) },
+            pill("−50ms", KEY, Color.WHITE, true) { nudge(-50) },
+            pill("+50ms", KEY, Color.WHITE, true) { nudge(50) },
+            pill("+200ms", KEY, Color.WHITE, true) { nudge(200) }
+        ))
+        panel.addView(row(
+            pill("Play / Pause", KEY, Color.WHITE) {
                 if (uri != null) { if (video.isPlaying) video.pause() else video.start() }
-            },
-            pill("+ 1 s", Color.parseColor("#2A3441"), Color.WHITE) { nudge(1000) }
+            }
         ))
         panel.addView(row(
             pill("Set IN", TEAL, Color.BLACK) {
-                if (uri != null) { inMs = video.currentPosition.toLong(); refresh() }
+                if (uri != null) { inMs = video.currentPosition.toLong(); refresh(); checkSnap() }
             },
             pill("Set OUT", GOLD, Color.BLACK) {
                 if (uri != null) { outMs = video.currentPosition.toLong(); refresh() }
             }
         ))
+
+        rangeText = label("", 13f, Color.WHITE, true)
+        rangeText.gravity = Gravity.CENTER
+        panel.addView(rangeText)
+        snapText = label("", 12f, TEAL)
+        snapText.gravity = Gravity.CENTER
+        panel.addView(snapText)
+
         panel.addView(row(
-            pill("Open video", Color.parseColor("#2A3441"), Color.WHITE) { pick() },
+            pill("Open video", KEY, Color.WHITE) { pick() },
             pill("Save lossless clip", GOLD, Color.BLACK) { save() }
         ))
-
-        hint = label("", 11f, DIM)
+        hint = label("Original quality, no re-encoding. The start snaps back to the nearest earlier keyframe; the end lands on the frame.", 11f, DIM)
         hint.gravity = Gravity.CENTER
         panel.addView(hint)
         status = label("", 13f, Color.parseColor("#52B788"))
         status.gravity = Gravity.CENTER
         panel.addView(status)
-        root.addView(panel, LinearLayout.LayoutParams(
+
+        val scroll = ScrollView(this)
+        scroll.setBackgroundColor(PANEL)
+        scroll.addView(panel, ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
+        val body = LinearLayout(this)
+        if (landscape) {
+            body.orientation = LinearLayout.HORIZONTAL
+            body.addView(stage, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 3f))
+            body.addView(scroll, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2f))
+        } else {
+            body.orientation = LinearLayout.VERTICAL
+            body.addView(stage, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+            body.addView(scroll, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.3f))
+        }
+        root.addView(body, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
         setContentView(root)
 
         seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar?, p: Int, fromUser: Boolean) {
                 if (fromUser && uri != null) {
-                    video.seekTo(p)
+                    seekExact(p)
                     posText.text = fmt(p.toLong())
                 }
             }
@@ -273,12 +332,13 @@ class MainActivity : Activity() {
         })
 
         refresh()
+        ui.removeCallbacks(tick)
         ui.post(tick)
     }
 
     private val tick: Runnable = object : Runnable {
         override fun run() {
-            if (uri != null && !dragging) {
+            if (uri != null && !dragging && mainShown) {
                 val p = video.currentPosition
                 seek.progress = p
                 posText.text = fmt(p.toLong())
@@ -287,21 +347,63 @@ class MainActivity : Activity() {
         }
     }
 
+    /** Frame-accurate seek (the plain VideoView.seekTo jumps to keyframes). */
+    private fun seekExact(ms: Int) {
+        val m = mp
+        if (m != null) {
+            try {
+                m.seekTo(ms.toLong(), MediaPlayer.SEEK_CLOSEST)
+            } catch (e: Exception) {
+                video.seekTo(ms)
+            }
+        } else {
+            video.seekTo(ms)
+        }
+    }
+
     private fun nudge(deltaMs: Int) {
         if (uri == null) return
         val target = (video.currentPosition + deltaMs).coerceIn(0, durationMs.toInt())
         video.pause()
-        video.seekTo(target)
+        seekExact(target)
         posText.text = fmt(target.toLong())
         seek.progress = target
     }
 
     private fun refresh() {
-        inText.text = "IN  " + fmt(inMs)
-        outText.text = "OUT  " + fmt(outMs)
-        val len = if (outMs > inMs) fmt(outMs - inMs) else "0:00.00"
-        hint.text = "Clip length " + len +
-            "  \u00B7  Cuts snap to the nearest earlier keyframe: no re-encoding, no quality loss."
+        durText.text = if (durationMs > 0) "of " + fmt(durationMs) else ""
+        val len = if (outMs > inMs) fmt(outMs - inMs) else fmt(0)
+        rangeText.text = "IN " + fmt(inMs) + "    OUT " + fmt(outMs) + "    LENGTH " + len
+    }
+
+    /** Shows where the lossless cut will really start (nearest earlier keyframe). */
+    private fun checkSnap() {
+        val src = uri ?: return
+        val at = inMs
+        Thread {
+            var txt = ""
+            val ex = MediaExtractor()
+            try {
+                contentResolver.openFileDescriptor(src, "r")!!.use { ex.setDataSource(it.fileDescriptor) }
+                var vt = -1
+                for (i in 0 until ex.trackCount) {
+                    val mime = ex.getTrackFormat(i).getString(MediaFormat.KEY_MIME) ?: continue
+                    if (mime.startsWith("video/")) { vt = i; break }
+                }
+                if (vt >= 0) {
+                    ex.selectTrack(vt)
+                    ex.seekTo(at * 1000, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
+                    val snapMs = ex.sampleTime / 1000
+                    txt = if (snapMs >= at - 20) "Start is on a keyframe: exact."
+                    else "Start will snap back to " + fmt(snapMs) + " (nearest earlier keyframe)."
+                }
+            } catch (e: Exception) {
+                txt = ""
+            } finally {
+                ex.release()
+            }
+            runOnUiThread { snapText.text = txt }
+        }.start()
     }
 
     // ---------- picking ----------
@@ -311,6 +413,18 @@ class MainActivity : Activity() {
         i.addCategory(Intent.CATEGORY_OPENABLE)
         i.type = "video/*"
         startActivityForResult(i, 1)
+    }
+
+    private fun loadVideo(u: Uri, startAt: Int) {
+        seek.max = durationMs.toInt()
+        seek.progress = startAt
+        emptyView.visibility = View.GONE
+        video.setVideoURI(u)
+        video.setOnPreparedListener { m ->
+            mp = m
+            seekExact(if (startAt > 0) startAt else 1)
+        }
+        refresh()
     }
 
     @Deprecated("Deprecated in Java")
@@ -329,20 +443,16 @@ class MainActivity : Activity() {
         uri = u
         inMs = 0
         outMs = durationMs
-        seek.max = durationMs.toInt()
-        seek.progress = 0
-        emptyView.visibility = View.GONE
-        video.setVideoURI(u)
-        video.setOnPreparedListener { video.seekTo(1) }
         status.text = ""
-        refresh()
+        snapText.text = ""
+        loadVideo(u, 0)
     }
 
     private fun save() {
         val src = uri
         if (src == null) { status.text = "Open a video first."; return }
         if (outMs <= inMs) { status.text = "OUT must be after IN."; return }
-        status.text = "Saving\u2026"
+        status.text = "Saving…"
         val a = inMs
         val b = outMs
         Thread {
