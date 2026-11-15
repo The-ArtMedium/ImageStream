@@ -1,0 +1,46 @@
+name: LocalShot Windows Installer
+
+on:
+  push:
+    tags:
+      - 'localshot-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install "Pillow>=10.0.0" "numpy>=1.24.0" pyinstaller
+
+      - name: Build the program (PyInstaller)
+        run: pyinstaller --noconfirm --windowed --name LocalShot LocalShot/src/localshot.py
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build the installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" LocalShot\localshot.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Windows-Setup
+          path: installer-out/LocalShot-Setup.exe
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer-out/LocalShot-Setup.exe
