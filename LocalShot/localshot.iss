@@ -1,6 +1,6 @@
 ; LocalShot Windows installer (built by GitHub Actions)
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.1.0"
 #endif
 
 [Setup]
@@ -12,6 +12,7 @@ AppPublisherURL=https://the-artmedium.github.io/ImageStream/
 DefaultDirName={autopf}\LocalShot
 DefaultGroupName=LocalShot
 DisableProgramGroupPage=yes
+LicenseFile=LICENSE
 OutputDir=..\installer-out
 OutputBaseFilename=LocalShot-Setup
 Compression=lzma2
