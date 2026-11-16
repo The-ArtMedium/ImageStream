@@ -23,12 +23,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unpack the LocalRAW source
-        shell: bash
+        shell: pwsh
         run: |
-          mkdir _src
-          unzip -q LocalRAW/releases/LocalRAW.zip -d _src
-          cp LocalRAW/installer/LocalRAW.spec _src/LocalRAW/LocalRAW.spec
-          cp LocalRAW/installer/windows.iss _src/LocalRAW/installer/windows.iss
+          New-Item -ItemType Directory -Path _src | Out-Null
+          Expand-Archive -Path LocalRAW/releases/LocalRAW.zip -DestinationPath _src
+          Copy-Item LocalRAW/installer/LocalRAW.spec _src/LocalRAW/LocalRAW.spec -Force
+          Copy-Item LocalRAW/installer/windows.iss _src/LocalRAW/installer/windows.iss -Force
       - name: Install build tools
         working-directory: _src/LocalRAW
         run: |
