@@ -1,0 +1,79 @@
+name: LocalShot Installers
+
+on:
+  push:
+    tags:
+      - 'localshot-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            LocalShot
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r LocalShot/requirements.txt pyinstaller
+      - name: Build the program
+        run: pyinstaller --noconfirm --clean --windowed --name LocalShot --collect-submodules send2trash LocalShot/src/localshot.py
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+      - name: Build the installer
+        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" LocalShot\localshot.iss'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Windows-Setup
+          path: installer-out/LocalShot-Setup.exe
+      - name: Put the Setup .exe on the Releases page (direct download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: localshot-latest
+          name: LocalShot (latest build)
+          files: installer-out/LocalShot-Setup.exe
+
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            LocalShot
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r LocalShot/requirements.txt pyinstaller
+      - name: Build the app
+        run: pyinstaller --noconfirm --clean --windowed --name LocalShot --osx-bundle-identifier com.imagestream.localshot --collect-submodules send2trash LocalShot/src/localshot.py
+      - name: Sign the app (ad hoc) and make the disk image
+        run: |
+          codesign --force --deep --sign - dist/LocalShot.app
+          mkdir -p dist/dmg
+          cp -R dist/LocalShot.app dist/dmg/
+          ln -s /Applications dist/dmg/Applications
+          hdiutil create -volname "LocalShot" -srcfolder dist/dmg -ov -format UDZO LocalShot-macOS.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocalShot-Mac-dmg
+          path: LocalShot-macOS.dmg
+      - name: Put the .dmg on the Releases page (direct download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: localshot-latest
+          name: LocalShot (latest build)
+          body: "Mac: download the .dmg, open it, drag LocalShot to Applications. Windows: download the Setup .exe. If your computer shows a security warning, see the notice on the ImageStream home page."
+          files: LocalShot-macOS.dmg
