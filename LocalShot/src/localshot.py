@@ -2,6 +2,9 @@
 LocalShot — Image Editor for Everyone
 Part of the ImageStream Local Suite by The Art Medium
 Simple. Offline. Private. Yours.
+
+Copyright (c) 2026 Satdiva / ImageStream (The-ArtMedium). All rights reserved.
+Free to use. Not to be modified, redistributed or sold. See LICENSE.
 """
 
 import tkinter as tk
@@ -9,7 +12,9 @@ from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk, ImageEnhance, ImageFilter, ImageOps
 import numpy as np
 import os
-import glob
+import sys
+import threading
+from fractions import Fraction
 
 # ─── LANGUAGES ───────────────────────────────────────────────────────────────
 
@@ -295,6 +300,168 @@ LANGUAGES = {
         "no_folder": "कोई फ़ोल्डर नहीं",
     },
 }
+# New texts (navigation, zoom, delete, Focus Check). English is the fallback.
+EXTRA = {
+    "English": {
+        "prev": "Previous", "next": "Next", "delete": "Delete", "fit": "Fit",
+        "before_after": "Before | After", "folder": "FOLDER",
+        "strip_empty": "Open a\nfolder\nto see\nimages",
+        "delete_confirm": "Move '{name}' to the Trash?\n\nYou can restore it from the Trash if you change your mind.",
+        "delete_fail": "Could not move the photo to the Trash.",
+        "moved_trash": "Moved to the Trash",
+        "focus_title": "FOCUS CHECK", "focus_run": "Check Focus", "stop": "Stop",
+        "checking": "Checking focus... {i} of {n}", "stopped": "Stopped. Nothing was changed.",
+        "sharp": "SHARP", "fixable": "FIXABLE", "rejected": "REJECTED",
+        "show_all": "Show: all photos", "show": "Show",
+        "recover": "Recover Sharpness", "trash_rejected": "Trash All Rejected",
+        "trash_confirm": "Move {n} rejected photos to the Trash?\n\nRejected means the softest photos of this folder. Look at them first if you are not sure.\nYou can restore them from the Trash.",
+        "no_rejected": "There are no rejected photos.",
+        "already_sharp": "This photo is already sharp.",
+        "need_scan": "Press Check Focus first, then click a photo.",
+        "need_folder": "Open a folder first.",
+        "motion_blur": "motion blur", "focus_error": "focus error", "of": "of",
+        "loading": "Loading previews... {i} of {n}",
+        "crop_hint": "Drag on the photo to crop. Esc cancels.",
+        "saving": "Saving...",
+    },
+    "Español": {
+        "prev": "Anterior", "next": "Siguiente", "delete": "Eliminar", "fit": "Ajustar",
+        "before_after": "Antes | Después", "folder": "CARPETA",
+        "strip_empty": "Abre una\ncarpeta\npara ver\nimágenes",
+        "delete_confirm": "¿Mover '{name}' a la Papelera?\n\nPuedes restaurarla desde la Papelera si cambias de opinión.",
+        "delete_fail": "No se pudo mover la foto a la Papelera.",
+        "moved_trash": "Movida a la Papelera",
+        "focus_title": "CONTROL DE ENFOQUE", "focus_run": "Revisar Enfoque", "stop": "Detener",
+        "checking": "Revisando enfoque... {i} de {n}", "stopped": "Detenido. No se cambió nada.",
+        "sharp": "NÍTIDA", "fixable": "RECUPERABLE", "rejected": "RECHAZADA",
+        "show_all": "Ver: todas las fotos", "show": "Ver",
+        "recover": "Recuperar Nitidez", "trash_rejected": "Rechazadas a la Papelera",
+        "trash_confirm": "¿Mover {n} fotos rechazadas a la Papelera?\n\nRechazada significa las fotos menos nítidas de esta carpeta. Míralas primero si no estás seguro.\nPuedes restaurarlas desde la Papelera.",
+        "no_rejected": "No hay fotos rechazadas.",
+        "already_sharp": "Esta foto ya está nítida.",
+        "need_scan": "Pulsa primero Revisar Enfoque y luego haz clic en una foto.",
+        "need_folder": "Abre primero una carpeta.",
+        "motion_blur": "foto movida", "focus_error": "error de enfoque", "of": "de",
+        "loading": "Cargando vistas... {i} de {n}",
+        "crop_hint": "Arrastra sobre la foto para recortar. Esc cancela.",
+        "saving": "Guardando...",
+    },
+    "Français": {
+        "prev": "Précédente", "next": "Suivante", "delete": "Supprimer", "fit": "Ajuster",
+        "before_after": "Avant | Après", "folder": "DOSSIER",
+        "strip_empty": "Ouvrez un\ndossier\npour voir\nles images",
+        "delete_confirm": "Mettre '{name}' à la Corbeille ?\n\nVous pourrez la restaurer depuis la Corbeille.",
+        "delete_fail": "Impossible de mettre la photo à la Corbeille.",
+        "moved_trash": "Mise à la Corbeille",
+        "focus_title": "CONTRÔLE DE NETTETÉ", "focus_run": "Vérifier la Netteté", "stop": "Arrêter",
+        "checking": "Vérification... {i} sur {n}", "stopped": "Arrêté. Rien n'a été modifié.",
+        "sharp": "NETTE", "fixable": "RÉCUPÉRABLE", "rejected": "REJETÉE",
+        "show_all": "Voir : toutes les photos", "show": "Voir",
+        "recover": "Récupérer la Netteté", "trash_rejected": "Rejetées à la Corbeille",
+        "trash_confirm": "Mettre {n} photos rejetées à la Corbeille ?\n\nRejetée signifie les photos les moins nettes de ce dossier. Regardez-les d'abord en cas de doute.\nVous pourrez les restaurer depuis la Corbeille.",
+        "no_rejected": "Il n'y a aucune photo rejetée.",
+        "already_sharp": "Cette photo est déjà nette.",
+        "need_scan": "Appuyez d'abord sur Vérifier la Netteté, puis cliquez sur une photo.",
+        "need_folder": "Ouvrez d'abord un dossier.",
+        "motion_blur": "flou de bougé", "focus_error": "erreur de mise au point", "of": "sur",
+        "loading": "Chargement des aperçus... {i} sur {n}",
+        "crop_hint": "Faites glisser sur la photo pour rogner. Échap annule.",
+        "saving": "Enregistrement...",
+    },
+    "Português": {
+        "prev": "Anterior", "next": "Próxima", "delete": "Apagar", "fit": "Ajustar",
+        "before_after": "Antes | Depois", "folder": "PASTA",
+        "strip_empty": "Abra uma\npasta\npara ver\nas imagens",
+        "delete_confirm": "Mover '{name}' para a Lixeira?\n\nVocê pode restaurá-la da Lixeira se mudar de ideia.",
+        "delete_fail": "Não foi possível mover a foto para a Lixeira.",
+        "moved_trash": "Movida para a Lixeira",
+        "focus_title": "VERIFICAR FOCO", "focus_run": "Verificar Foco", "stop": "Parar",
+        "checking": "Verificando foco... {i} de {n}", "stopped": "Parado. Nada foi alterado.",
+        "sharp": "NÍTIDA", "fixable": "RECUPERÁVEL", "rejected": "REJEITADA",
+        "show_all": "Ver: todas as fotos", "show": "Ver",
+        "recover": "Recuperar Nitidez", "trash_rejected": "Rejeitadas para a Lixeira",
+        "trash_confirm": "Mover {n} fotos rejeitadas para a Lixeira?\n\nRejeitada significa as fotos menos nítidas desta pasta. Veja-as primeiro se não tiver certeza.\nVocê pode restaurá-las da Lixeira.",
+        "no_rejected": "Não há fotos rejeitadas.",
+        "already_sharp": "Esta foto já está nítida.",
+        "need_scan": "Clique primeiro em Verificar Foco e depois em uma foto.",
+        "need_folder": "Abra uma pasta primeiro.",
+        "motion_blur": "foto tremida", "focus_error": "erro de foco", "of": "de",
+        "loading": "Carregando miniaturas... {i} de {n}",
+        "crop_hint": "Arraste sobre a foto para recortar. Esc cancela.",
+        "saving": "Salvando...",
+    },
+    "العربية": {
+        "prev": "السابقة", "next": "التالية", "delete": "حذف", "fit": "ملاءمة",
+        "before_after": "قبل | بعد", "folder": "المجلد",
+        "strip_empty": "افتح مجلداً\nلعرض الصور",
+        "delete_confirm": "نقل '{name}' إلى سلة المهملات؟\n\nيمكنك استعادتها من سلة المهملات.",
+        "delete_fail": "تعذر نقل الصورة إلى سلة المهملات.",
+        "moved_trash": "نُقلت إلى سلة المهملات",
+        "focus_title": "فحص الوضوح", "focus_run": "فحص الوضوح", "stop": "إيقاف",
+        "checking": "جارٍ الفحص... {i} من {n}", "stopped": "تم الإيقاف. لم يتغير شيء.",
+        "sharp": "واضحة", "fixable": "قابلة للإصلاح", "rejected": "مرفوضة",
+        "show_all": "عرض: كل الصور", "show": "عرض",
+        "recover": "استعادة الوضوح", "trash_rejected": "المرفوضة إلى السلة",
+        "trash_confirm": "نقل {n} صورة مرفوضة إلى سلة المهملات؟\n\nالمرفوضة تعني أقل الصور وضوحاً في هذا المجلد. راجعها أولاً إن لم تكن متأكداً.\nيمكنك استعادتها من سلة المهملات.",
+        "no_rejected": "لا توجد صور مرفوضة.",
+        "already_sharp": "هذه الصورة واضحة بالفعل.",
+        "need_scan": "اضغط فحص الوضوح أولاً ثم انقر على صورة.",
+        "need_folder": "افتح مجلداً أولاً.",
+        "motion_blur": "اهتزاز الحركة", "focus_error": "خطأ في التركيز", "of": "من",
+        "loading": "جارٍ تحميل المعاينات... {i} من {n}",
+        "crop_hint": "اسحب على الصورة للقص. Esc للإلغاء.",
+        "saving": "جارٍ الحفظ...",
+    },
+    "中文": {
+        "prev": "上一张", "next": "下一张", "delete": "删除", "fit": "适合窗口",
+        "before_after": "修改前 | 修改后", "folder": "文件夹",
+        "strip_empty": "打开文件夹\n查看图片",
+        "delete_confirm": "将“{name}”移到废纸篓？\n\n如果改变主意，可以从废纸篓恢复。",
+        "delete_fail": "无法将照片移到废纸篓。",
+        "moved_trash": "已移到废纸篓",
+        "focus_title": "对焦检查", "focus_run": "检查对焦", "stop": "停止",
+        "checking": "正在检查对焦... {i} / {n}", "stopped": "已停止，未作任何更改。",
+        "sharp": "清晰", "fixable": "可修复", "rejected": "淘汰",
+        "show_all": "显示：全部照片", "show": "显示",
+        "recover": "恢复清晰度", "trash_rejected": "淘汰的全部移到废纸篓",
+        "trash_confirm": "将 {n} 张淘汰的照片移到废纸篓？\n\n“淘汰”是指此文件夹中最不清晰的照片。如不确定，请先查看。\n可以从废纸篓恢复。",
+        "no_rejected": "没有淘汰的照片。",
+        "already_sharp": "这张照片已经清晰。",
+        "need_scan": "请先点击“检查对焦”，再点击一张照片。",
+        "need_folder": "请先打开文件夹。",
+        "motion_blur": "运动模糊", "focus_error": "对焦失误", "of": "/",
+        "loading": "正在加载预览... {i} / {n}",
+        "crop_hint": "在照片上拖动以裁剪。按 Esc 取消。",
+        "saving": "正在保存...",
+    },
+    "हिन्दी": {
+        "prev": "पिछला", "next": "अगला", "delete": "हटाएँ", "fit": "फ़िट",
+        "before_after": "पहले | बाद में", "folder": "फ़ोल्डर",
+        "strip_empty": "चित्र देखने\nके लिए\nफ़ोल्डर खोलें",
+        "delete_confirm": "'{name}' को ट्रैश में भेजें?\n\nमन बदलने पर आप इसे ट्रैश से वापस ला सकते हैं।",
+        "delete_fail": "फ़ोटो को ट्रैश में नहीं भेजा जा सका।",
+        "moved_trash": "ट्रैश में भेजा गया",
+        "focus_title": "फ़ोकस जाँच", "focus_run": "फ़ोकस जाँचें", "stop": "रोकें",
+        "checking": "फ़ोकस जाँच रहे हैं... {n} में से {i}", "stopped": "रोक दिया गया। कुछ नहीं बदला।",
+        "sharp": "स्पष्ट", "fixable": "सुधार योग्य", "rejected": "अस्वीकृत",
+        "show_all": "दिखाएँ: सभी फ़ोटो", "show": "दिखाएँ",
+        "recover": "स्पष्टता वापस लाएँ", "trash_rejected": "अस्वीकृत ट्रैश में भेजें",
+        "trash_confirm": "{n} अस्वीकृत फ़ोटो ट्रैश में भेजें?\n\nअस्वीकृत का अर्थ है इस फ़ोल्डर की सबसे धुंधली फ़ोटो। पक्का न हो तो पहले देख लें।\nआप इन्हें ट्रैश से वापस ला सकते हैं।",
+        "no_rejected": "कोई अस्वीकृत फ़ोटो नहीं है।",
+        "already_sharp": "यह फ़ोटो पहले से स्पष्ट है।",
+        "need_scan": "पहले फ़ोकस जाँचें दबाएँ, फिर किसी फ़ोटो पर क्लिक करें।",
+        "need_folder": "पहले एक फ़ोल्डर खोलें।",
+        "motion_blur": "गति से धुंधलापन", "focus_error": "फ़ोकस की गलती", "of": "/",
+        "loading": "पूर्वावलोकन लोड हो रहे हैं... {n} में से {i}",
+        "crop_hint": "काटने के लिए फ़ोटो पर खींचें। Esc से रद्द करें।",
+        "saving": "सहेज रहे हैं...",
+    },
+}
+for _name, _texts in EXTRA.items():
+    LANGUAGES[_name].update(_texts)
+for _name in LANGUAGES:                       # anything missing falls back to English
+    for _key, _value in LANGUAGES["English"].items():
+        LANGUAGES[_name].setdefault(_key, _value)
 
 # ─── COLORS ───────────────────────────────────────────────────────────────────
 
@@ -302,21 +469,26 @@ C = {
     "bg":       "#141414",
     "bg2":      "#1e1e1e",
     "bg3":      "#282828",
-    "bg4":      "#323232",
+    "bg4":      "#3a3a3a",
     "accent":   "#f5a623",
     "accent2":  "#ffb940",
     "text":     "#f0f0f0",
     "text2":    "#999999",
-    "text3":    "#555555",
+    "text3":    "#666666",
     "border":   "#333333",
-    "success":  "#52b788",
+    "success":  "#2f7d5b",
     "danger":   "#e05252",
     "blue":     "#5b9cf6",
-    "section":  "#f5a62322",
 }
+FOCUS_COLORS = {"sharp": "#4caf50", "fixable": "#ffd54f", "rejected": "#ff6b6b"}
 
-THUMB_W, THUMB_H = 90, 68
-IMG_EXTENSIONS = ("*.jpg","*.jpeg","*.png","*.webp","*.bmp","*.tiff","*.tif","*.JPG","*.JPEG","*.PNG")
+THUMB_W, THUMB_H = 132, 99
+STRIP_W = 176
+PREVIEW_MAX = 1600
+IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff", ".tif")
+SCORE_LONG_SIDE = 1600
+MOTION_SHUTTER = Fraction(1, 250)
+MAX_ZOOM = 4.0
 
 
 # ─── HELPER: IMAGE PROCESSING ────────────────────────────────────────────────
@@ -326,14 +498,9 @@ def apply_white_balance(img, temperature, tint):
     if img.mode != "RGB":
         img = img.convert("RGB")
     arr = np.array(img, dtype=np.float32)
-    # Temperature affects R and B channels
-    r_shift = temperature * 0.5
-    b_shift = -temperature * 0.5
-    # Tint affects G channel
-    g_shift = -tint * 0.3
-    arr[:,:,0] = np.clip(arr[:,:,0] + r_shift, 0, 255)
-    arr[:,:,1] = np.clip(arr[:,:,1] + g_shift, 0, 255)
-    arr[:,:,2] = np.clip(arr[:,:,2] + b_shift, 0, 255)
+    arr[:, :, 0] = np.clip(arr[:, :, 0] + temperature * 0.5, 0, 255)
+    arr[:, :, 1] = np.clip(arr[:, :, 1] - tint * 0.3, 0, 255)
+    arr[:, :, 2] = np.clip(arr[:, :, 2] - temperature * 0.5, 0, 255)
     return Image.fromarray(arr.astype(np.uint8))
 
 def apply_whites_blacks(img, whites, blacks):
@@ -341,15 +508,9 @@ def apply_whites_blacks(img, whites, blacks):
     if img.mode != "RGB":
         img = img.convert("RGB")
     arr = np.array(img, dtype=np.float32)
-    # Whites: lift the top end
-    w_factor = 1.0 + whites / 100.0
-    # Blacks: crush the bottom end
-    b_factor = 1.0 + blacks / 200.0
-    # Apply: scale around midpoint for whites, offset for blacks
-    arr = arr * w_factor
-    arr = np.where(arr < 128, arr * b_factor, arr)
-    arr = np.clip(arr, 0, 255)
-    return Image.fromarray(arr.astype(np.uint8))
+    arr = arr * (1.0 + whites / 100.0)
+    arr = np.where(arr < 128, arr * (1.0 + blacks / 200.0), arr)
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
 
 def apply_dehaze(img, strength):
     """Simple dehazing using contrast enhancement + slight saturation boost."""
@@ -357,10 +518,8 @@ def apply_dehaze(img, strength):
         return img
     if img.mode != "RGB":
         img = img.convert("RGB")
-    factor = 1.0 + strength / 50.0
-    img = ImageEnhance.Contrast(img).enhance(factor)
-    img = ImageEnhance.Color(img).enhance(1.0 + strength / 100.0)
-    return img
+    img = ImageEnhance.Contrast(img).enhance(1.0 + strength / 50.0)
+    return ImageEnhance.Color(img).enhance(1.0 + strength / 100.0)
 
 def apply_sharpening(img, strength):
     if strength == 0:
@@ -370,6 +529,99 @@ def apply_sharpening(img, strength):
     for _ in range(max(1, int(strength / 30))):
         img = img.filter(ImageFilter.SHARPEN)
     return img
+
+
+# ─── HELPER: FOCUS CHECK (same method as FocusCheck / LocalRAW) ──────────────
+
+def score_image(path):
+    """Sharpness as Laplacian variance, measured at one fixed size for every photo."""
+    try:
+        with Image.open(path) as img:
+            img.draft("L", (SCORE_LONG_SIDE, SCORE_LONG_SIDE))     # fast JPEG decode
+            img = img.convert("L")
+            if max(img.size) > SCORE_LONG_SIDE:
+                k = SCORE_LONG_SIDE / float(max(img.size))
+                img = img.resize((int(img.width * k), int(img.height * k)), Image.BOX)
+            g = np.asarray(img, dtype=np.float32)
+        if g.shape[0] < 3 or g.shape[1] < 3:
+            return 0.0
+        lap = (g[:-2, 1:-1] + g[2:, 1:-1] + g[1:-1, :-2] + g[1:-1, 2:] - 4.0 * g[1:-1, 1:-1])
+        return float(lap.var())
+    except Exception:
+        return 0.0
+
+def get_shutter(path):
+    try:
+        with Image.open(path) as img:
+            exif = img.getexif()
+            value = exif.get_ifd(0x8769).get(0x829A) or exif.get(0x829A)
+        if value is None:
+            return None
+        if isinstance(value, tuple):
+            return Fraction(int(value[0]), int(value[1]))
+        return Fraction(float(value)).limit_denominator(100000)
+    except Exception:
+        return None
+
+def blur_type(shutter):
+    if shutter is None:
+        return "unknown"
+    return "motion" if shutter >= MOTION_SHUTTER else "focus"
+
+def shutter_str(shutter):
+    if shutter is None:
+        return ""
+    if shutter >= 1:
+        return f"{float(shutter):.1f}s"
+    return f"1/{int(round(1 / shutter))}s"
+
+def calibrate(scores):
+    """Limits relative to this shoot: (sharp_limit, fixable_limit)."""
+    if not scores:
+        return 150.0, 50.0
+    s = sorted(scores)
+    n = len(s)
+    return max(s[int(n * 0.60)], 80.0), max(s[int(n * 0.30)], 20.0)
+
+def category(score, sharp_t, fix_t):
+    if score >= sharp_t:
+        return "sharp"
+    if score >= fix_t:
+        return "fixable"
+    return "rejected"
+
+
+# ─── HELPER: BUTTON THAT KEEPS ITS COLORS ON EVERY SYSTEM ────────────────────
+
+class FlatButton(tk.Label):
+    """A Label that behaves like a button. Real Tk buttons ignore their colors
+    on macOS, which made light text unreadable there."""
+
+    def __init__(self, parent, text, command, bg, fg=None, font=("Helvetica", 11),
+                 padx=12, pady=5, **kw):
+        super().__init__(parent, text=text, bg=bg, fg=fg or C["text"], font=font,
+                         padx=padx, pady=pady, cursor="hand2", **kw)
+        self._bg = bg
+        self._fg = fg or C["text"]
+        self._command = command
+        self._enabled = True
+        self.bind("<Button-1>", self._click)
+        self.bind("<Enter>", lambda e: self._enabled and self.config(bg=C["bg4"]))
+        self.bind("<Leave>", lambda e: self.config(bg=self._bg))
+
+    def _click(self, _event):
+        if self._enabled and self._command:
+            self._command()
+
+    def set_enabled(self, on):
+        self._enabled = bool(on)
+        self.config(fg=self._fg if on else C["text3"], cursor="hand2" if on else "arrow")
+
+    def set_colors(self, bg, fg=None):
+        self._bg = bg
+        if fg:
+            self._fg = fg
+        self.config(bg=bg, fg=self._fg if self._enabled else C["text3"])
 
 
 # ─── MAIN APP ─────────────────────────────────────────────────────────────────
@@ -382,11 +634,28 @@ class LocalShot:
         self.advanced = False
 
         self.image_path = None
-        self.original_image = None
-        self.current_image = None
+        self.base = None              # full-size photo (after rotate / crop / resize)
+        self.preview_base = None      # small copy used while editing
+        self.exif = None
         self.photo_image = None
         self.folder_images = []
-        self.thumb_images = []
+        self.thumb_cache = {}
+        self.cells = {}
+        self._strip_job = None
+        self._strip_queue = []
+
+        self.focus = {}               # Focus Check results per photo
+        self.focus_limits = None
+        self.filter_index = 0         # 0 all, 1 sharp, 2 fixable, 3 rejected
+        self._scan = None
+
+        self.zoom = None              # None = fit the window; 1.0 = 100 %
+        self.center = None
+        self.compare = False
+        self._view = None
+        self._render_job = None
+        self._proc_cache = (None, None)
+        self._pan_from = None
 
         self._cropping = False
         self.crop_start = None
@@ -405,122 +674,192 @@ class LocalShot:
 
         self._setup_window()
         self._build_ui()
+        self._bind_keys()
 
     def _setup_window(self):
         self.root.title(self.t["title"])
         self.root.configure(bg=C["bg"])
-        self.root.geometry("1280x800")
-        self.root.minsize(900, 600)
+        # never taller or wider than the screen, so nothing hides under the Dock
+        sw, sh = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
+        w, h = min(1280, sw - 40), min(800, sh - 110)
+        self.root.geometry(f"{w}x{h}+{max(0, (sw - w) // 2)}+20")
+        self.root.minsize(900, 540)
+
+    def _bind_keys(self):
+        r = self.root
+        r.bind("<Left>", lambda e: self.show_neighbor(-1))
+        r.bind("<Right>", lambda e: self.show_neighbor(1))
+        r.bind("<Delete>", lambda e: self.delete_current())
+        r.bind("<BackSpace>", lambda e: self.delete_current())      # the Mac delete key
+        r.bind("<Escape>", lambda e: self.cancel_crop())
+        for key in ("<plus>", "<equal>", "<KP_Add>"):
+            r.bind(key, lambda e: self.zoom_by(1.5))
+        for key in ("<minus>", "<KP_Subtract>"):
+            r.bind(key, lambda e: self.zoom_by(1 / 1.5))
+        r.bind("<Key-0>", lambda e: self.zoom_fit())
+        r.bind("<Key-1>", lambda e: self.zoom_to(1.0))
+        r.protocol("WM_DELETE_WINDOW", self._quit)
+
+    def _quit(self):
+        if self._scan:
+            self._scan["stop"] = True
+        self.root.destroy()
 
     # ─── UI BUILD ─────────────────────────────────────────────────────────────
 
     def _build_ui(self):
         self._build_topbar()
-        self._build_body()
         self._build_statusbar()
+        self._build_body()
 
     def _build_topbar(self):
         bar = tk.Frame(self.root, bg=C["bg2"], height=52)
         bar.pack(fill=tk.X)
         bar.pack_propagate(False)
 
-        tk.Label(bar, text="📸 LocalShot",
+        tk.Label(bar, text="LocalShot",
                  bg=C["bg2"], fg=C["accent"],
                  font=("Helvetica", 15, "bold")).pack(side=tk.LEFT, padx=20)
 
-        # Open folder
-        self._topbtn(bar, "📁 " + self.t["open_folder"], self.open_folder, C["bg3"]).pack(side=tk.LEFT, padx=4, pady=8)
-        # Open image
-        self._topbtn(bar, "🖼 " + self.t["open"], self.open_image, C["bg3"]).pack(side=tk.LEFT, padx=4, pady=8)
-        # Save
-        self._topbtn(bar, "💾 " + self.t["save"], self.save_image, C["success"]).pack(side=tk.LEFT, padx=4, pady=8)
+        self._topbtn(bar, self.t["open_folder"], self.open_folder, C["bg3"]).pack(side=tk.LEFT, padx=4, pady=8)
+        self._topbtn(bar, self.t["open"], self.open_image, C["bg3"]).pack(side=tk.LEFT, padx=4, pady=8)
+        self._topbtn(bar, self.t["save"], self.save_image, C["success"]).pack(side=tk.LEFT, padx=4, pady=8)
 
-        # Right
         right = tk.Frame(bar, bg=C["bg2"])
         right.pack(side=tk.RIGHT, padx=16)
 
-        # Language
         self.lang_var = tk.StringVar(value=self.lang)
         lang_cb = ttk.Combobox(right, textvariable=self.lang_var,
                                 values=list(LANGUAGES.keys()),
                                 width=9, state="readonly")
-        lang_cb.pack(side=tk.LEFT, padx=(0,12))
+        lang_cb.pack(side=tk.LEFT, padx=(0, 12))
         lang_cb.bind("<<ComboboxSelected>>", self._change_language)
 
-        # Mode toggle
-        self.mode_btn = tk.Button(right,
-                                   text="⚙ " + self.t["advanced_mode"],
-                                   bg=C["bg4"], fg=C["text"],
-                                   font=("Helvetica", 11),
-                                   relief=tk.FLAT, cursor="hand2",
-                                   padx=12, pady=4,
-                                   command=self._toggle_mode)
+        self.mode_btn = FlatButton(
+            right, (self.t["simple_mode"] if self.advanced else self.t["advanced_mode"]),
+            self._toggle_mode, C["bg3"])
         self.mode_btn.pack(side=tk.LEFT)
 
     def _topbtn(self, parent, text, cmd, bg):
-        return tk.Button(parent, text=text, bg=bg, fg=C["text"],
-                         font=("Helvetica", 11), relief=tk.FLAT,
-                         cursor="hand2", padx=12, pady=4, command=cmd)
+        return FlatButton(parent, text, cmd, bg)
 
     def _build_body(self):
         self.body = tk.Frame(self.root, bg=C["bg"])
         self.body.pack(fill=tk.BOTH, expand=True)
 
         self._build_filmstrip()
-        self._build_canvas_area()
         self._build_right_panel()
+        self._build_canvas_area()
 
     def _build_filmstrip(self):
-        """Left filmstrip — folder thumbnails"""
-        self.filmstrip_frame = tk.Frame(self.body, bg=C["bg2"], width=110)
+        """Left side — Focus Check and the folder thumbnails"""
+        self.filmstrip_frame = tk.Frame(self.body, bg=C["bg2"], width=STRIP_W)
         self.filmstrip_frame.pack(side=tk.LEFT, fill=tk.Y)
         self.filmstrip_frame.pack_propagate(False)
 
-        tk.Label(self.filmstrip_frame, text="FOLDER",
-                 bg=C["bg2"], fg=C["text3"],
-                 font=("Helvetica", 9, "bold")).pack(pady=(10,4))
+        # Focus Check
+        tk.Label(self.filmstrip_frame, text=self.t["focus_title"],
+                 bg=C["bg2"], fg=C["accent"],
+                 font=("Helvetica", 9, "bold")).pack(pady=(8, 2))
+        scanning = bool(self._scan)
+        self.focus_btn = FlatButton(self.filmstrip_frame,
+                                    self.t["stop"] if scanning else self.t["focus_run"],
+                                    self.run_focus_check, C["bg3"], font=("Helvetica", 10), padx=6)
+        self.focus_btn.pack(fill=tk.X, padx=6, pady=2)
+        self.focus_summary = tk.Label(self.filmstrip_frame, text="", bg=C["bg2"], fg=C["text2"],
+                                      font=("Helvetica", 9), wraplength=STRIP_W - 12, justify=tk.CENTER)
+        self.focus_summary.pack(fill=tk.X, padx=4)
+        self.filter_var = tk.StringVar()
+        self.filter_cb = ttk.Combobox(self.filmstrip_frame, textvariable=self.filter_var,
+                                      values=self._filter_names(), state="readonly", width=18)
+        self.filter_cb.current(self.filter_index)
+        self.filter_cb.pack(fill=tk.X, padx=6, pady=2)
+        self.filter_cb.bind("<<ComboboxSelected>>", self._filter_changed)
+        self.recover_btn = FlatButton(self.filmstrip_frame, self.t["recover"], self.recover_current,
+                                      C["bg3"], font=("Helvetica", 10), padx=6)
+        self.recover_btn.pack(fill=tk.X, padx=6, pady=2)
+        self.trash_btn = FlatButton(self.filmstrip_frame, self.t["trash_rejected"], self.trash_rejected,
+                                    C["bg3"], fg="#ff8a80", font=("Helvetica", 10), padx=6)
+        self.trash_btn.pack(fill=tk.X, padx=6, pady=2)
+
+        self.folder_lbl = tk.Label(self.filmstrip_frame, text=self.t["folder"],
+                                   bg=C["bg2"], fg=C["text3"],
+                                   font=("Helvetica", 9, "bold"))
+        self.folder_lbl.pack(pady=(8, 2))
 
         # Scrollable canvas for thumbs
         self.strip_canvas = tk.Canvas(self.filmstrip_frame,
-                                       bg=C["bg2"], width=108,
+                                       bg=C["bg2"], width=STRIP_W - 18,
                                        highlightthickness=0)
         strip_scroll = ttk.Scrollbar(self.filmstrip_frame,
                                       orient=tk.VERTICAL,
                                       command=self.strip_canvas.yview)
         self.strip_canvas.configure(yscrollcommand=strip_scroll.set)
+        strip_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         self.strip_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.strip_inner = tk.Frame(self.strip_canvas, bg=C["bg2"])
-        self.strip_canvas.create_window((0,0), window=self.strip_inner, anchor=tk.NW)
+        self.strip_canvas.create_window((0, 0), window=self.strip_inner, anchor=tk.NW)
         self.strip_inner.bind("<Configure>",
                                lambda e: self.strip_canvas.configure(
                                    scrollregion=self.strip_canvas.bbox("all")))
+        self._wheel_scroll(self.strip_canvas, self.filmstrip_frame)
 
-        # Welcome label
         self.strip_label = tk.Label(self.strip_inner,
-                                     text="Open a\nfolder\nto see\nimages",
+                                     text=self.t["strip_empty"],
                                      bg=C["bg2"], fg=C["text3"],
                                      font=("Helvetica", 9),
                                      justify=tk.CENTER)
-        self.strip_label.pack(pady=20)
+        self.strip_label.pack(pady=20, padx=30)
+        self._update_focus_controls()
 
     def _build_canvas_area(self):
         self.canvas_wrap = tk.Frame(self.body, bg=C["bg"])
         self.canvas_wrap.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Top bar: always visible, never under the Dock
+        nav = tk.Frame(self.canvas_wrap, bg=C["bg2"])
+        nav.pack(fill=tk.X)
+        FlatButton(nav, "◀  " + self.t["prev"], lambda: self.show_neighbor(-1), C["bg3"]).pack(side=tk.LEFT, padx=4, pady=4)
+        FlatButton(nav, "✖  " + self.t["delete"], self.delete_current, C["bg3"],
+                   fg="#ff8a80", font=("Helvetica", 11, "bold")).pack(side=tk.RIGHT, padx=4, pady=4)
+        FlatButton(nav, self.t["next"] + "  ▶", lambda: self.show_neighbor(1), C["bg3"]).pack(side=tk.RIGHT, padx=4, pady=4)
+        self.info_lbl = tk.Label(nav, text="", bg=C["bg2"], fg=C["accent"],
+                                 font=("Helvetica", 11, "bold"))
+        self.info_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        zbar = tk.Frame(self.canvas_wrap, bg=C["bg"])
+        zbar.pack(fill=tk.X)
+        zin = tk.Frame(zbar, bg=C["bg"])
+        zin.pack()
+        FlatButton(zin, "−", lambda: self.zoom_by(1 / 1.5), C["bg3"], padx=14, pady=3).pack(side=tk.LEFT, padx=2, pady=3)
+        FlatButton(zin, self.t["fit"], self.zoom_fit, C["bg3"], pady=3).pack(side=tk.LEFT, padx=2)
+        FlatButton(zin, "100%", lambda: self.zoom_to(1.0), C["bg3"], pady=3).pack(side=tk.LEFT, padx=2)
+        FlatButton(zin, "+", lambda: self.zoom_by(1.5), C["bg3"], padx=14, pady=3).pack(side=tk.LEFT, padx=2)
+        self.zoom_lbl = tk.Label(zin, text=self.t["fit"], bg=C["bg"], fg=C["text2"],
+                                 font=("Helvetica", 10), width=8)
+        self.zoom_lbl.pack(side=tk.LEFT, padx=6)
+        self.compare_btn = FlatButton(zin, self.t["before_after"], self.toggle_compare, C["bg3"], pady=3)
+        self.compare_btn.pack(side=tk.LEFT, padx=2)
+        self._paint_compare_btn()
 
         self.canvas = tk.Canvas(self.canvas_wrap, bg=C["bg"],
                                  cursor="crosshair", highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         self.canvas.create_text(400, 300,
-                                 text="📸\n\n" + self.t["open_prompt"],
+                                 text=self.t["open_prompt"],
                                  fill=C["text3"], font=("Helvetica", 14),
                                  justify=tk.CENTER, tags="welcome")
 
-        self.canvas.bind("<Configure>", lambda e: self._refresh_display())
-        self.canvas.bind("<ButtonPress-1>",   self._crop_press)
-        self.canvas.bind("<B1-Motion>",        self._crop_drag)
-        self.canvas.bind("<ButtonRelease-1>",  self._crop_release)
+        self.canvas.bind("<Configure>", lambda e: self._schedule_render())
+        self.canvas.bind("<ButtonPress-1>",   self._press)
+        self.canvas.bind("<B1-Motion>",        self._drag)
+        self.canvas.bind("<ButtonRelease-1>",  self._release)
+        self.canvas.bind("<Double-Button-1>",  self._double_click)
+        self.canvas.bind("<MouseWheel>", self._wheel_zoom)
+        self.canvas.bind("<Button-4>", lambda e: self.zoom_by(1.25, (e.x, e.y)))
+        self.canvas.bind("<Button-5>", lambda e: self.zoom_by(1 / 1.25, (e.x, e.y)))
 
     def _build_right_panel(self):
         """Right panel — adjustments"""
@@ -528,7 +867,6 @@ class LocalShot:
         self.right.pack(side=tk.RIGHT, fill=tk.Y)
         self.right.pack_propagate(False)
 
-        # Scrollable
         rcanvas = tk.Canvas(self.right, bg=C["bg2"],
                              highlightthickness=0, width=238)
         rscroll = ttk.Scrollbar(self.right, orient=tk.VERTICAL,
@@ -538,20 +876,43 @@ class LocalShot:
         rcanvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.adj_frame = tk.Frame(rcanvas, bg=C["bg2"])
-        rcanvas.create_window((0,0), window=self.adj_frame, anchor=tk.NW)
+        adj_window = rcanvas.create_window((0, 0), window=self.adj_frame, anchor=tk.NW)
+        rcanvas.bind("<Configure>", lambda e: rcanvas.itemconfigure(adj_window, width=e.width))
         self.adj_frame.bind("<Configure>",
                              lambda e: rcanvas.configure(
                                  scrollregion=rcanvas.bbox("all")))
+        self._wheel_scroll(rcanvas, self.right)
 
         self._build_simple_adjustments()
         self._build_advanced_adjustments()
         self._build_transform_section()
 
-        self.advanced_section.pack_forget()
+        if self.advanced:
+            self.advanced_section.pack(fill=tk.X, after=self.simple_section)
+
+    def _wheel_scroll(self, target, area):
+        """Mouse wheel scrolls this list while the pointer is over it."""
+        def on_wheel(e):
+            if getattr(e, "num", 0) == 4:
+                step = -2
+            elif getattr(e, "num", 0) == 5:
+                step = 2
+            else:
+                step = -int(e.delta / 120) if abs(e.delta) >= 120 else -int(e.delta)
+            target.yview_scroll(step, "units")
+            return "break"
+        def enter(_e):
+            for seq in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
+                area.bind_all(seq, on_wheel)
+        def leave(_e):
+            for seq in ("<MouseWheel>", "<Button-4>", "<Button-5>"):
+                area.unbind_all(seq)
+        area.bind("<Enter>", enter)
+        area.bind("<Leave>", leave)
 
     def _section_label(self, parent, text):
         f = tk.Frame(parent, bg=C["bg3"])
-        f.pack(fill=tk.X, padx=0, pady=(8,0))
+        f.pack(fill=tk.X, padx=0, pady=(8, 0))
         tk.Label(f, text=text, bg=C["bg3"], fg=C["accent"],
                  font=("Helvetica", 9, "bold"),
                  padx=12, pady=5).pack(anchor=tk.W)
@@ -568,18 +929,21 @@ class LocalShot:
                             font=("Helvetica", 9, "bold"), width=5)
         val_lbl.pack(side=tk.RIGHT)
 
-        def update_label(*a):
+        def show(*_a):
             val_lbl.config(text=f"{var.get():.0f}" if resolution >= 1
                            else f"{var.get():.2f}")
-            self._apply_all()
+        def moved(*_a):
+            self._schedule_render()
 
         tk.Scale(f, from_=from_, to=to, resolution=resolution,
                   orient=tk.HORIZONTAL, variable=var,
                   bg=C["bg2"], fg=C["text"], troughcolor=C["bg4"],
                   highlightthickness=0, sliderrelief=tk.FLAT,
                   activebackground=C["accent"], showvalue=False,
-                  command=update_label).pack(fill=tk.X)
-        update_label()
+                  command=moved).pack(fill=tk.X)
+        trace = var.trace_add("write", show)
+        val_lbl.bind("<Destroy>", lambda e: var.trace_remove("write", trace))
+        show()
 
     def _build_simple_adjustments(self):
         self.simple_section = tk.Frame(self.adj_frame, bg=C["bg2"])
@@ -593,17 +957,14 @@ class LocalShot:
     def _build_advanced_adjustments(self):
         self.advanced_section = tk.Frame(self.adj_frame, bg=C["bg2"])
 
-        # TONE
         self._section_label(self.advanced_section, self.t["tone"])
         self._slider(self.advanced_section, self.t["whites"], self.whites_var, -100, 100, 1)
         self._slider(self.advanced_section, self.t["blacks"], self.blacks_var, -100, 100, 1)
 
-        # COLOR
         self._section_label(self.advanced_section, self.t["color"])
         self._slider(self.advanced_section, self.t["temperature"], self.temperature_var, -100, 100, 1)
         self._slider(self.advanced_section, self.t["tint"],        self.tint_var,        -100, 100, 1)
 
-        # DETAIL
         self._section_label(self.advanced_section, self.t["detail"])
         self._slider(self.advanced_section, self.t["sharpening"], self.sharpening_var, 0, 100, 1)
         self._slider(self.advanced_section, self.t["dehaze"],     self.dehaze_var,     0, 100, 1)
@@ -619,35 +980,18 @@ class LocalShot:
 
         btns = [
             ("↺", self.rotate_left),  ("↻", self.rotate_right),
-            ("↔", self.flip_h),        ("↕", self.flip_v),
+            ("↔", self.flip_h),       ("↕", self.flip_v),
         ]
         for i, (icon, cmd) in enumerate(btns):
-            tk.Button(btn_grid, text=icon, bg=C["bg3"], fg=C["text"],
-                      font=("Helvetica", 16), relief=tk.FLAT,
-                      cursor="hand2", width=3, pady=4,
-                      command=cmd).grid(row=0, column=i, padx=2)
+            FlatButton(btn_grid, icon, cmd, C["bg3"], font=("Helvetica", 16),
+                       padx=10, pady=4).grid(row=0, column=i, padx=2)
 
-        tk.Button(self.transform_section,
-                  text="✂️  " + self.t["crop"],
-                  bg=C["bg3"], fg=C["text"],
-                  font=("Helvetica", 11), relief=tk.FLAT,
-                  cursor="hand2", padx=8, pady=6,
-                  command=self.start_crop).pack(fill=tk.X, padx=12, pady=3)
-
-        tk.Button(self.transform_section,
-                  text="⊞  " + self.t["resize"],
-                  bg=C["bg3"], fg=C["text"],
-                  font=("Helvetica", 11), relief=tk.FLAT,
-                  cursor="hand2", padx=8, pady=6,
-                  command=self.resize_dialog).pack(fill=tk.X, padx=12, pady=3)
-
-        # Reset
-        tk.Button(self.transform_section,
-                  text="🔄  " + self.t["reset"],
-                  bg=C["bg2"], fg=C["text2"],
-                  font=("Helvetica", 11), relief=tk.FLAT,
-                  cursor="hand2", padx=8, pady=6,
-                  command=self.reset_all).pack(fill=tk.X, padx=12, pady=(12,6))
+        FlatButton(self.transform_section, "✂  " + self.t["crop"], self.start_crop,
+                   C["bg3"], padx=8, pady=6).pack(fill=tk.X, padx=12, pady=3)
+        FlatButton(self.transform_section, self.t["resize"], self.resize_dialog,
+                   C["bg3"], padx=8, pady=6).pack(fill=tk.X, padx=12, pady=3)
+        FlatButton(self.transform_section, self.t["reset"], self.reset_all,
+                   C["bg2"], fg=C["text2"], padx=8, pady=6).pack(fill=tk.X, padx=12, pady=(12, 6))
 
     def _build_statusbar(self):
         bar = tk.Frame(self.root, bg=C["bg2"], height=28)
@@ -668,79 +1012,355 @@ class LocalShot:
         self.advanced = not self.advanced
         if self.advanced:
             self.advanced_section.pack(fill=tk.X, after=self.simple_section)
-            self.mode_btn.config(text="✦ " + self.t["simple_mode"])
+            self.mode_btn.config(text=self.t["simple_mode"])
         else:
             self.advanced_section.pack_forget()
-            self.mode_btn.config(text="⚙ " + self.t["advanced_mode"])
+            self.mode_btn.config(text=self.t["advanced_mode"])
 
     def _change_language(self, event=None):
         self.lang = self.lang_var.get()
         self.t = LANGUAGES[self.lang]
-        # Rebuild UI preserving state
-        img_backup = self.current_image
-        orig_backup = self.original_image
-        path_backup = self.image_path
-        folder_backup = self.folder_images
+        self.root.title(self.t["title"])
+        if self._strip_job:
+            self.root.after_cancel(self._strip_job)
+            self._strip_job = None
+        if self._render_job:
+            self.root.after_cancel(self._render_job)
+            self._render_job = None
+        self._cropping = False
         for w in self.root.winfo_children():
             w.destroy()
+        self.cells = {}
         self._build_ui()
-        self.current_image = img_backup
-        self.original_image = orig_backup
-        self.image_path = path_backup
-        self.folder_images = folder_backup
-        if self.current_image:
-            self._refresh_display()
         if self.folder_images:
             self._populate_filmstrip()
+        self._update_status()
+        self._schedule_render()
 
     # ─── FOLDER & FILMSTRIP ───────────────────────────────────────────────────
 
-    def open_folder(self):
-        folder = filedialog.askdirectory()
+    def _filter_names(self):
+        return [self.t["show_all"]] + [f"{self.t['show']}: {self.t[k].lower()}"
+                                       for k in ("sharp", "fixable", "rejected")]
+
+    def _shown(self):
+        """Photos in the strip: all of them, or one Focus Check group."""
+        wanted = (None, "sharp", "fixable", "rejected")[self.filter_index]
+        if not wanted or not self.focus:
+            return self.folder_images
+        return [p for p in self.folder_images if self.focus.get(p, {}).get("cat") == wanted]
+
+    def open_folder(self, folder=None):
+        folder = folder or filedialog.askdirectory()
         if not folder:
             return
-        files = []
-        for ext in IMG_EXTENSIONS:
-            files.extend(glob.glob(os.path.join(folder, ext)))
-        files.sort()
+        self.stop_focus_check()
+        files = [os.path.join(folder, name) for name in sorted(os.listdir(folder), key=str.lower)
+                 if name.lower().endswith(IMG_EXTENSIONS) and not name.startswith(".")]
         self.folder_images = files
+        self.thumb_cache = {}
+        self.focus = {}
+        self.focus_limits = None
+        self.filter_index = 0
+        self.filter_cb.current(0)
+        self._update_focus_controls()
         self._populate_filmstrip()
         if files:
             self._load_image(files[0])
 
     def _populate_filmstrip(self):
+        if self._strip_job:
+            self.root.after_cancel(self._strip_job)
+            self._strip_job = None
         for w in self.strip_inner.winfo_children():
             w.destroy()
-        self.thumb_images = []
-        for path in self.folder_images:
+        self.cells = {}
+        self.strip_canvas.yview_moveto(0)
+        self._strip_queue = list(self._shown())
+        self._strip_total = len(self._strip_queue)
+        if not self._strip_queue:
+            tk.Label(self.strip_inner, text=self.t["strip_empty"] if not self.folder_images else "—",
+                     bg=C["bg2"], fg=C["text3"], font=("Helvetica", 9),
+                     justify=tk.CENTER).pack(pady=20, padx=30)
+        self._strip_step()
+
+    def _strip_step(self):
+        """Adds thumbnails a few at a time so a big folder never freezes the window."""
+        self._strip_job = None
+        made = 0
+        while self._strip_queue and made < 8:
+            path = self._strip_queue.pop(0)
+            fresh = path not in self.thumb_cache
             self._add_thumb(path)
+            made += 1 if fresh else 0.1
+        if self._strip_queue:
+            done = self._strip_total - len(self._strip_queue)
+            self.folder_lbl.config(text=self.t["loading"].format(i=done, n=self._strip_total))
+            self._strip_job = self.root.after(1, self._strip_step)
+        else:
+            shown, total = self._strip_total, len(self.folder_images)
+            self.folder_lbl.config(
+                text=f"{self.t['folder']}  {shown}" if shown == total
+                else f"{self.t['folder']}  {shown} / {total}")
+            self._highlight()
+
+    def _make_thumb(self, path):
+        try:
+            with Image.open(path) as img:
+                img.draft("RGB", (THUMB_W * 2, THUMB_H * 2))      # fast for big JPEGs
+                img = ImageOps.exif_transpose(img).convert("RGB")
+                img.thumbnail((THUMB_W, THUMB_H), Image.BILINEAR)
+                thumb = Image.new("RGB", (THUMB_W, THUMB_H), (30, 30, 30))
+                thumb.paste(img, ((THUMB_W - img.width) // 2, (THUMB_H - img.height) // 2))
+        except Exception:
+            thumb = Image.new("RGB", (THUMB_W, THUMB_H), (60, 30, 30))
+        return ImageTk.PhotoImage(thumb)
 
     def _add_thumb(self, path):
+        tk_img = self.thumb_cache.get(path)
+        if tk_img is None:
+            tk_img = self.thumb_cache[path] = self._make_thumb(path)
+        frame = tk.Frame(self.strip_inner, bg=C["bg2"], cursor="hand2",
+                         highlightthickness=3, highlightbackground=C["bg2"])
+        frame.pack(pady=2, padx=6)
+        lbl = tk.Label(frame, image=tk_img, bg=C["bg3"], cursor="hand2", bd=0)
+        lbl.pack()
+        name = os.path.basename(path)
+        name_lbl = tk.Label(frame, text=name if len(name) <= 22 else name[:20] + "…",
+                            bg=C["bg2"], fg=C["text3"], font=("Helvetica", 8))
+        name_lbl.pack()
+        cap = tk.Label(frame, text="", bg=C["bg2"], font=("Helvetica", 9, "bold"))
+        for w in (frame, lbl, name_lbl, cap):
+            w.bind("<Button-1>", lambda e, p=path: self._load_image(p))
+        self.cells[path] = (frame, cap)
+        self._set_caption(path)
+
+    def _set_caption(self, path):
+        cell = self.cells.get(path)
+        if not cell:
+            return
+        info = self.focus.get(path)
+        if info:
+            cell[1].config(text=f"● {self.t[info['cat']]}  {info['score']:.0f}",
+                           fg=FOCUS_COLORS[info["cat"]])
+            cell[1].pack()
+        else:
+            cell[1].pack_forget()
+
+    def _highlight(self):
+        """Light up the thumbnail being edited and say which photo it is."""
+        for path, (frame, _cap) in self.cells.items():
+            frame.config(highlightbackground=C["accent"] if path == self.image_path else C["bg2"])
+        shown = self._shown()
+        text = ""
+        if self.image_path:
+            text = os.path.basename(self.image_path)
+            if self.image_path in shown:
+                text += f"   ·   {shown.index(self.image_path) + 1} {self.t['of']} {len(shown)}"
+            info = self.focus.get(self.image_path)
+            if info:
+                text += f"   ·   {self.t[info['cat']]} {info['score']:.0f}"
+                if info["cat"] != "sharp" and info["blur"] != "unknown":
+                    kind = self.t["motion_blur"] if info["blur"] == "motion" else self.t["focus_error"]
+                    text += f" ({kind}, {shutter_str(info['shutter'])})"
+        self.info_lbl.config(text=text)
+        cell = self.cells.get(self.image_path)
+        if cell:
+            self.root.after_idle(lambda f=cell[0]: self._scroll_to(f))
+
+    def _scroll_to(self, frame):
         try:
-            img = Image.open(path)
-            img.thumbnail((THUMB_W, THUMB_H), Image.LANCZOS)
-            # Pad to fixed size
-            thumb = Image.new("RGB", (THUMB_W, THUMB_H), (30,30,30))
-            x = (THUMB_W - img.width) // 2
-            y = (THUMB_H - img.height) // 2
-            thumb.paste(img, (x, y))
-            tk_img = ImageTk.PhotoImage(thumb)
-            self.thumb_images.append(tk_img)
-
-            frame = tk.Frame(self.strip_inner, bg=C["bg2"],
-                              cursor="hand2")
-            frame.pack(pady=2, padx=4)
-
-            lbl = tk.Label(frame, image=tk_img, bg=C["bg3"],
-                            cursor="hand2")
-            lbl.pack()
-            lbl.bind("<Button-1>", lambda e, p=path: self._load_image(p))
-
-            name = os.path.basename(path)[:10]
-            tk.Label(frame, text=name, bg=C["bg2"], fg=C["text3"],
-                      font=("Helvetica", 7)).pack()
-        except Exception:
+            total = max(1, self.strip_inner.winfo_height())
+            top, bottom = frame.winfo_y(), frame.winfo_y() + frame.winfo_height()
+            view_top = self.strip_canvas.canvasy(0)
+            view_bottom = view_top + self.strip_canvas.winfo_height()
+            if top < view_top:
+                self.strip_canvas.yview_moveto(top / total)
+            elif bottom > view_bottom:
+                self.strip_canvas.yview_moveto((bottom - self.strip_canvas.winfo_height()) / total)
+        except tk.TclError:
             pass
+
+    def show_neighbor(self, step):
+        shown = self._shown()
+        if not shown:
+            return
+        index = shown.index(self.image_path) + step if self.image_path in shown else 0
+        if 0 <= index < len(shown):
+            self._load_image(shown[index])
+
+    # ─── DELETE ───────────────────────────────────────────────────────────────
+
+    def _to_trash(self, path):
+        from send2trash import send2trash
+        send2trash(os.path.normpath(path))
+
+    def _forget(self, path):
+        if path in self.folder_images:
+            self.folder_images.remove(path)
+        self.focus.pop(path, None)
+        self.thumb_cache.pop(path, None)
+
+    def _clear_photo(self, message):
+        self.image_path = None
+        self.base = None
+        self.preview_base = None
+        self.canvas.delete("all")
+        self.canvas.create_text(self.canvas.winfo_width() // 2, self.canvas.winfo_height() // 2,
+                                text=message, fill=C["text3"], font=("Helvetica", 14))
+        self.size_lbl.config(text="")
+
+    def delete_current(self):
+        path = self.image_path
+        if not path or not self.base:
+            return
+        if not messagebox.askyesno(self.t["delete"],
+                                   self.t["delete_confirm"].format(name=os.path.basename(path))):
+            return
+        try:
+            self._to_trash(path)
+        except Exception as ex:
+            messagebox.showerror(self.t["error"], f"{self.t['delete_fail']}\n\n{ex}")
+            return
+        shown = self._shown()
+        index = shown.index(path) if path in shown else 0
+        self._forget(path)
+        self._clear_photo(self.t["moved_trash"])
+        self._update_focus_controls()
+        self._populate_filmstrip()
+        shown = self._shown()
+        if shown:
+            self._load_image(shown[min(index, len(shown) - 1)])
+        else:
+            self._highlight()
+
+    # ─── FOCUS CHECK ──────────────────────────────────────────────────────────
+
+    def stop_focus_check(self):
+        if self._scan:
+            self._scan["stop"] = True
+            self._scan = None
+        try:
+            self.focus_btn.config(text=self.t["focus_run"])
+        except tk.TclError:
+            pass
+
+    def run_focus_check(self):
+        if self._scan:                         # the button says Stop while scanning
+            self.stop_focus_check()
+            self.focus_summary.config(text=self.t["stopped"], fg=C["text2"])
+            return
+        if not self.folder_images:
+            messagebox.showinfo(self.t["focus_run"], self.t["need_folder"])
+            return
+        scan = {"stop": False, "done": 0, "results": {}, "finished": False,
+                "files": list(self.folder_images)}
+        self._scan = scan
+
+        def work():
+            for path in scan["files"]:
+                if scan["stop"]:
+                    return
+                scan["results"][path] = {"score": score_image(path), "shutter": get_shutter(path)}
+                scan["done"] += 1
+            scan["finished"] = True
+
+        threading.Thread(target=work, daemon=True).start()
+        self.focus_btn.config(text=self.t["stop"])
+        self._poll_scan(scan)
+
+    def _poll_scan(self, scan):
+        if self._scan is not scan:
+            return
+        if not scan["finished"]:
+            try:
+                self.focus_summary.config(
+                    text=self.t["checking"].format(i=scan["done"], n=len(scan["files"])), fg=C["text2"])
+            except tk.TclError:
+                pass
+            self.root.after(120, lambda: self._poll_scan(scan))
+            return
+        self._scan = None
+        results = {p: r for p, r in scan["results"].items() if p in self.folder_images}
+        limits = calibrate([r["score"] for r in results.values()])
+        for r in results.values():
+            r["cat"] = category(r["score"], *limits)
+            r["blur"] = blur_type(r["shutter"])
+        self.focus = results
+        self.focus_limits = limits
+        self.focus_btn.config(text=self.t["focus_run"])
+        self._update_focus_controls()
+        for path in self.cells:
+            self._set_caption(path)
+        self._highlight()
+
+    def _update_focus_controls(self):
+        have = bool(self.focus)
+        self.recover_btn.set_enabled(have)
+        self.trash_btn.set_enabled(have)
+        self.filter_cb.config(state="readonly" if have else "disabled")
+        if not have:
+            if not self._scan:
+                self.focus_summary.config(text="")
+            return
+        count = {"sharp": 0, "fixable": 0, "rejected": 0}
+        for r in self.focus.values():
+            count[r["cat"]] += 1
+        self.focus_summary.config(
+            fg=C["text"],
+            text=f"{self.t['sharp']} {count['sharp']}  ·  {self.t['fixable']} {count['fixable']}"
+                 f"  ·  {self.t['rejected']} {count['rejected']}")
+
+    def _filter_changed(self, _event=None):
+        self.filter_index = self.filter_cb.current()
+        self._populate_filmstrip()
+        shown = self._shown()
+        if shown and self.image_path not in shown:
+            self._load_image(shown[0])
+
+    def recover_current(self):
+        info = self.focus.get(self.image_path)
+        if not info or not self.focus_limits:
+            messagebox.showinfo(self.t["recover"], self.t["need_scan"])
+            return
+        sharp_t = self.focus_limits[0]
+        deficit = sharp_t - info["score"]
+        if deficit <= 0:
+            messagebox.showinfo(self.t["recover"], self.t["already_sharp"])
+            return
+        self.sharpening_var.set(30 if deficit <= sharp_t * 0.3 else 60 if deficit <= sharp_t * 0.7 else 90)
+        if not self.advanced:
+            self._toggle_mode()                # the Sharpening slider lives in Advanced
+        self.compare = True                    # show before | after straight away
+        self._paint_compare_btn()
+        self._schedule_render()
+
+    def trash_rejected(self):
+        rejected = [p for p in self.folder_images if self.focus.get(p, {}).get("cat") == "rejected"]
+        if not rejected:
+            messagebox.showinfo(self.t["trash_rejected"], self.t["no_rejected"])
+            return
+        if not messagebox.askyesno(self.t["trash_rejected"],
+                                   self.t["trash_confirm"].format(n=len(rejected))):
+            return
+        failed = 0
+        for path in rejected:
+            try:
+                self._to_trash(path)
+            except Exception:
+                failed += 1
+                continue
+            self._forget(path)
+        if self.image_path not in self.folder_images:
+            self._clear_photo(self.t["moved_trash"])
+        self.filter_index = 0
+        self.filter_cb.current(0)
+        self._update_focus_controls()
+        self._populate_filmstrip()
+        if failed:
+            messagebox.showwarning(self.t["error"], f"{self.t['delete_fail']} ({failed})")
+        if self.image_path is None and self.folder_images:
+            self._load_image(self.folder_images[0])
 
     # ─── IMAGE LOAD & DISPLAY ─────────────────────────────────────────────────
 
@@ -751,12 +1371,39 @@ class LocalShot:
         if path:
             self._load_image(path)
 
+    def _read(self, path):
+        with Image.open(path) as img:
+            exif = img.getexif()
+            img = ImageOps.exif_transpose(img).convert("RGB")     # vertical shots upright
+        if 0x0112 in exif:
+            exif[0x0112] = 1
+        try:
+            self.exif = exif.tobytes()
+        except Exception:
+            self.exif = None
+        return img
+
     def _load_image(self, path):
+        try:
+            img = self._read(path)
+        except Exception as ex:
+            messagebox.showerror(self.t["error"], str(ex))
+            return
         self.image_path = path
-        self.original_image = Image.open(path)
-        self.current_image = self.original_image.copy()
+        self._cropping = False
         self._reset_vars()
-        self._refresh_display()
+        self._set_base(img)
+        self._highlight()
+
+    def _set_base(self, img):
+        """A new full-size picture: after loading, rotating, cropping or resizing."""
+        self.base = img
+        self.preview_base = img.copy()
+        self.preview_base.thumbnail((PREVIEW_MAX, PREVIEW_MAX), Image.BILINEAR)
+        self.zoom = None
+        self.center = None
+        self._proc_cache = (None, None)
+        self._render()
         self._update_status()
 
     def _reset_vars(self):
@@ -770,209 +1417,353 @@ class LocalShot:
         self.sharpening_var.set(0.0)
         self.dehaze_var.set(0.0)
 
-    def _apply_all(self):
-        if not self.original_image:
-            return
-        img = self.original_image.copy()
+    def _values(self):
+        return (self.brightness_var.get(), self.contrast_var.get(), self.exposure_var.get(),
+                self.whites_var.get(), self.blacks_var.get(), self.temperature_var.get(),
+                self.tint_var.get(), self.dehaze_var.get(), self.sharpening_var.get())
 
-        # Basic
-        img = ImageEnhance.Brightness(img).enhance(self.brightness_var.get())
-        img = ImageEnhance.Contrast(img).enhance(self.contrast_var.get())
-
-        # Exposure
-        exp = self.exposure_var.get()
+    def process(self, img):
+        """All the slider corrections, applied to any copy of the photo."""
+        bright, contrast, exp, w, b, temp, tint, dh, sh = self._values()
+        if bright != 1.0:
+            img = ImageEnhance.Brightness(img).enhance(bright)
+        if contrast != 1.0:
+            img = ImageEnhance.Contrast(img).enhance(contrast)
         if exp != 0:
-            factor = 1.0 + exp / 100.0
-            img = ImageEnhance.Brightness(img).enhance(max(0.01, factor))
-
-        # Whites / Blacks
-        w, b = self.whites_var.get(), self.blacks_var.get()
+            img = ImageEnhance.Brightness(img).enhance(max(0.01, 1.0 + exp / 100.0))
         if w != 0 or b != 0:
             img = apply_whites_blacks(img, w, b)
-
-        # White Balance
-        temp, tint = self.temperature_var.get(), self.tint_var.get()
         if temp != 0 or tint != 0:
             img = apply_white_balance(img, temp, tint)
-
-        # Dehaze
-        dh = self.dehaze_var.get()
         if dh > 0:
             img = apply_dehaze(img, dh)
-
-        # Sharpening
-        sh = self.sharpening_var.get()
         if sh > 0:
             img = apply_sharpening(img, sh)
+        return img
 
-        self.current_image = img
-        self._refresh_display()
+    @staticmethod
+    def _split(before, after):
+        """Left half before the corrections, right half after."""
+        out = after.copy()
+        mid = out.width // 2
+        out.paste(before.crop((0, 0, mid, before.height)), (0, 0))
+        out.paste((255, 255, 255), (max(0, mid - 1), 0, mid + 1, out.height))
+        return out
+
+    def _schedule_render(self):
+        if self._render_job:
+            self.root.after_cancel(self._render_job)
+        self._render_job = self.root.after(30, self._render)
+
+    def _apply_all(self):
+        self._schedule_render()
 
     def _refresh_display(self):
-        if not self.current_image:
+        self._render()
+
+    def _render(self):
+        self._render_job = None
+        if not self.base:
             return
-        self.canvas.delete("all")
-        cw = self.canvas.winfo_width() or 800
-        ch = self.canvas.winfo_height() or 600
-        iw, ih = self.current_image.size
-        scale = min(cw / iw, ch / ih, 1.0)
-        nw = int(iw * scale)
-        nh = int(ih * scale)
-        display = self.current_image.copy()
-        display.thumbnail((nw, nh), Image.LANCZOS)
+        cw = max(50, self.canvas.winfo_width())
+        ch = max(50, self.canvas.winfo_height())
+        bw, bh = self.base.size
+        if self.zoom is None:
+            scale = min(cw / bw, ch / bh, 1.0)
+            nw, nh = max(1, int(bw * scale)), max(1, int(bh * scale))
+            key = (self._values(), id(self.preview_base), self.compare)
+            if self._proc_cache[0] != key:
+                shown = self.process(self.preview_base)
+                if self.compare:
+                    shown = self._split(self.preview_base, shown)
+                self._proc_cache = (key, shown)
+            display = self._proc_cache[1]
+            if display.size != (nw, nh):
+                display = display.resize((nw, nh), Image.BILINEAR)
+            x0 = y0 = 0
+            self.zoom_lbl.config(text=self.t["fit"])
+        else:
+            s = self.zoom
+            vw, vh = min(bw, cw / s), min(bh, ch / s)       # part of the photo on screen
+            cx, cy = self.center or (bw / 2.0, bh / 2.0)
+            cx = min(max(cx, vw / 2.0), bw - vw / 2.0)
+            cy = min(max(cy, vh / 2.0), bh - vh / 2.0)
+            self.center = (cx, cy)
+            x0, y0 = int(cx - vw / 2.0), int(cy - vh / 2.0)
+            x1, y1 = min(bw, x0 + int(round(vw))), min(bh, y0 + int(round(vh)))
+            m = 16                                          # margin so edges sharpen cleanly
+            ex0, ey0, ex1, ey1 = max(0, x0 - m), max(0, y0 - m), min(bw, x1 + m), min(bh, y1 + m)
+            region = self.base.crop((ex0, ey0, ex1, ey1))
+            k = min(s, 1.0)
+            if k < 1.0:
+                region = region.resize((max(1, int(round(region.width * k))),
+                                        max(1, int(round(region.height * k)))), Image.BOX)
+            box = (int(round((x0 - ex0) * k)), int(round((y0 - ey0) * k)))
+            box = box + (box[0] + max(1, int(round((x1 - x0) * k))),
+                         box[1] + max(1, int(round((y1 - y0) * k))))
+            display = self.process(region).crop(box)
+            if self.compare:
+                display = self._split(region.crop(box), display)
+            if s > 1.0:
+                display = display.resize((int(round((x1 - x0) * s)), int(round((y1 - y0) * s))),
+                                         Image.NEAREST if s >= 3 else Image.BILINEAR)
+            scale = s
+            self.zoom_lbl.config(text=f"{s * 100:.0f}%")
         self.photo_image = ImageTk.PhotoImage(display)
-        x = (cw - nw) // 2
-        y = (ch - nh) // 2
+        x = (cw - display.width) // 2
+        y = (ch - display.height) // 2
+        self.canvas.delete("all")
         self.canvas.create_image(x, y, anchor=tk.NW, image=self.photo_image)
+        self._view = {"x": x, "y": y, "scale": scale, "x0": x0, "y0": y0,
+                      "w": display.width, "h": display.height}
         self._img_offset = (x, y, scale)
 
     def _update_status(self):
-        if self.current_image:
-            w, h = self.current_image.size
+        if self.base:
+            w, h = self.base.size
             name = os.path.basename(self.image_path) if self.image_path else ""
-            self.status_lbl.config(text=f"📸  {name}")
+            self.status_lbl.config(text=name)
             self.size_lbl.config(text=f"{w} × {h} px")
+        else:
+            self.size_lbl.config(text="")
+
+    # ─── ZOOM ─────────────────────────────────────────────────────────────────
+
+    def _fit_scale(self):
+        bw, bh = self.base.size
+        return min(max(50, self.canvas.winfo_width()) / bw, max(50, self.canvas.winfo_height()) / bh)
+
+    def _photo_point(self, pos):
+        """Which pixel of the photo is under this spot of the screen."""
+        v = self._view
+        return (v["x0"] + (pos[0] - v["x"]) / v["scale"], v["y0"] + (pos[1] - v["y"]) / v["scale"])
+
+    def zoom_to(self, scale, pos=None):
+        if not self.base:
+            return
+        fit = self._fit_scale()
+        scale = min(scale, max(MAX_ZOOM, fit))
+        if scale <= fit * 1.01 and fit <= 1.0:
+            return self.zoom_fit()
+        v = self._view
+        inside = (pos is not None and v and v["x"] <= pos[0] <= v["x"] + v["w"]
+                  and v["y"] <= pos[1] <= v["y"] + v["h"])
+        if inside:        # keep the spot under the pointer where it is
+            px, py = self._photo_point(pos)
+            cw, ch = self.canvas.winfo_width(), self.canvas.winfo_height()
+            self.center = (px - (pos[0] - cw / 2.0) / scale, py - (pos[1] - ch / 2.0) / scale)
+        elif self.center is None:
+            self.center = (self.base.width / 2.0, self.base.height / 2.0)
+        self.zoom = scale
+        self._render()
+
+    def zoom_by(self, factor, pos=None):
+        if not self.base:
+            return
+        self.zoom_to((self.zoom or min(self._fit_scale(), 1.0)) * factor, pos)
+
+    def zoom_fit(self):
+        self.zoom = None
+        self.center = None
+        if self.base:
+            self._render()
+
+    def _wheel_zoom(self, e):
+        steps = e.delta / 120.0 if abs(e.delta) >= 120 else float(e.delta)   # Windows / Mac
+        steps = max(-3.0, min(3.0, steps))
+        if steps:
+            self.zoom_by(1.2 ** steps, (e.x, e.y))
+
+    def _double_click(self, e):
+        """Double-click: jump to 100 % on that spot, or back to the whole photo."""
+        if not self.base or self._cropping:
+            return
+        self._pan_from = None
+        if self.zoom is None:
+            self.zoom_to(1.0, (e.x, e.y))
+        else:
+            self.zoom_fit()
+
+    def toggle_compare(self):
+        self.compare = not self.compare
+        self._paint_compare_btn()
+        self._schedule_render()
+
+    def _paint_compare_btn(self):
+        if self.compare:
+            self.compare_btn.set_colors(C["accent"], C["bg"])
+        else:
+            self.compare_btn.set_colors(C["bg3"], C["text"])
 
     # ─── SAVE ─────────────────────────────────────────────────────────────────
 
-    def save_image(self):
-        if not self.current_image:
+    def save_image(self, path=None):
+        if not self.base:
             return
-        path = filedialog.asksaveasfilename(
+        path = path or filedialog.asksaveasfilename(
             defaultextension=".jpg",
             filetypes=[("JPEG", "*.jpg"), ("PNG", "*.png"),
                        ("WebP", "*.webp"), ("BMP", "*.bmp"),
                        ("TIFF", "*.tiff")])
         if not path:
             return
-        img = self.current_image
-        if path.lower().endswith((".jpg", ".jpeg")) and img.mode in ["RGBA","P"]:
-            img = img.convert("RGB")
-        img.save(path, quality=95)
-        self.status_lbl.config(text="✅ " + self.t["saved"])
+        self.status_lbl.config(text=self.t["saving"])
+        self.root.update_idletasks()
+        try:
+            img = self.process(self.base)              # full size, full quality
+            extra = {}
+            if self.exif and path.lower().endswith((".jpg", ".jpeg", ".webp", ".tif", ".tiff", ".png")):
+                extra["exif"] = self.exif              # keep camera data and captions
+            try:
+                img.save(path, quality=95, **extra)
+            except Exception:
+                img.save(path, quality=95)
+        except Exception as ex:
+            messagebox.showerror(self.t["error"], str(ex))
+            self._update_status()
+            return
+        self.status_lbl.config(text=self.t["saved"])
         self.root.after(3000, self._update_status)
 
     # ─── TRANSFORMS ───────────────────────────────────────────────────────────
 
     def rotate_left(self):
-        if not self.current_image: return
-        self.original_image = self.current_image.rotate(90, expand=True)
-        self.current_image = self.original_image.copy()
-        self._refresh_display()
+        if self.base:
+            self._set_base(self.base.transpose(Image.ROTATE_90))
 
     def rotate_right(self):
-        if not self.current_image: return
-        self.original_image = self.current_image.rotate(-90, expand=True)
-        self.current_image = self.original_image.copy()
-        self._refresh_display()
+        if self.base:
+            self._set_base(self.base.transpose(Image.ROTATE_270))
 
     def flip_h(self):
-        if not self.current_image: return
-        self.original_image = self.current_image.transpose(Image.FLIP_LEFT_RIGHT)
-        self.current_image = self.original_image.copy()
-        self._refresh_display()
+        if self.base:
+            self._set_base(self.base.transpose(Image.FLIP_LEFT_RIGHT))
 
     def flip_v(self):
-        if not self.current_image: return
-        self.original_image = self.current_image.transpose(Image.FLIP_TOP_BOTTOM)
-        self.current_image = self.original_image.copy()
-        self._refresh_display()
+        if self.base:
+            self._set_base(self.base.transpose(Image.FLIP_TOP_BOTTOM))
 
     def reset_all(self):
-        if not self.image_path: return
-        self.original_image = Image.open(self.image_path)
-        self.current_image = self.original_image.copy()
+        if not self.image_path:
+            return
+        try:
+            img = self._read(self.image_path)
+        except Exception as ex:
+            messagebox.showerror(self.t["error"], str(ex))
+            return
         self._reset_vars()
-        self._refresh_display()
+        self._set_base(img)
 
-    # ─── CROP ─────────────────────────────────────────────────────────────────
+    # ─── MOUSE ON THE PHOTO: CROP OR MOVE ─────────────────────────────────────
 
     def start_crop(self):
-        if not self.current_image: return
+        if not self.base:
+            return
         self._cropping = True
-        self.status_lbl.config(text="✂️  Drag on image to crop")
+        self.crop_start = None
+        self.status_lbl.config(text=self.t["crop_hint"])
 
-    def _crop_press(self, e):
+    def cancel_crop(self):
+        if self._cropping:
+            self._cropping = False
+            self.crop_start = None
+            if self.crop_rect:
+                self.canvas.delete(self.crop_rect)
+            self._update_status()
+
+    def _press(self, e):
         if self._cropping:
             self.crop_start = (e.x, e.y)
             if self.crop_rect:
                 self.canvas.delete(self.crop_rect)
+        elif self.zoom is not None:
+            self._pan_from = (e.x, e.y)
+            self.canvas.config(cursor="fleur")
 
-    def _crop_drag(self, e):
+    def _drag(self, e):
         if self._cropping and self.crop_start:
             if self.crop_rect:
                 self.canvas.delete(self.crop_rect)
             self.crop_rect = self.canvas.create_rectangle(
                 self.crop_start[0], self.crop_start[1], e.x, e.y,
-                outline=C["accent"], width=2, dash=(5,3))
+                outline=C["accent"], width=2, dash=(5, 3))
+        elif self._pan_from and self.zoom is not None and self.center:
+            dx, dy = e.x - self._pan_from[0], e.y - self._pan_from[1]
+            self._pan_from = (e.x, e.y)
+            self.center = (self.center[0] - dx / self.zoom, self.center[1] - dy / self.zoom)
+            self._render()
 
-    def _crop_release(self, e):
+    def _release(self, e):
+        if self._pan_from:
+            self._pan_from = None
+            self.canvas.config(cursor="crosshair")
         if not self._cropping or not self.crop_start:
             return
-        x1, y1 = self.crop_start
-        x2, y2 = e.x, e.y
-        if abs(x2-x1) < 10 or abs(y2-y1) < 10:
-            self._cropping = False
-            return
-        if hasattr(self, '_img_offset'):
-            ox, oy, scale = self._img_offset
-            iw, ih = self.current_image.size
-            ix1 = int((min(x1,x2) - ox) / scale)
-            iy1 = int((min(y1,y2) - oy) / scale)
-            ix2 = int((max(x1,x2) - ox) / scale)
-            iy2 = int((max(y1,y2) - oy) / scale)
-            ix1 = max(0,ix1); iy1 = max(0,iy1)
-            ix2 = min(iw,ix2); iy2 = min(ih,iy2)
-            if ix2 > ix1 and iy2 > iy1:
-                self.current_image = self.current_image.crop((ix1,iy1,ix2,iy2))
-                self.original_image = self.current_image.copy()
-                self._refresh_display()
-                self._update_status()
+        (x1, y1), (x2, y2) = self.crop_start, (e.x, e.y)
+        self.crop_start = None
         if self.crop_rect:
             self.canvas.delete(self.crop_rect)
+        if abs(x2 - x1) < 10 or abs(y2 - y1) < 10 or not self._view:
+            return                                  # a tap, not a drag: keep waiting
+        bw, bh = self.base.size
+        ax, ay = self._photo_point((min(x1, x2), min(y1, y2)))
+        bx, by = self._photo_point((max(x1, x2), max(y1, y2)))
+        ix1, iy1 = max(0, int(ax)), max(0, int(ay))
+        ix2, iy2 = min(bw, int(bx)), min(bh, int(by))
         self._cropping = False
-        self._update_status()
+        if ix2 - ix1 >= 2 and iy2 - iy1 >= 2:
+            self._set_base(self.base.crop((ix1, iy1, ix2, iy2)))
+        else:
+            self._update_status()
 
     # ─── RESIZE ───────────────────────────────────────────────────────────────
 
     def resize_dialog(self):
-        if not self.current_image: return
-        w, h = self.current_image.size
+        if not self.base:
+            return
+        w, h = self.base.size
         d = tk.Toplevel(self.root)
         d.title(self.t["resize_title"])
         d.configure(bg=C["bg"])
-        d.geometry("280x180")
+        d.geometry("300x190")
         d.resizable(False, False)
 
-        for row, (label, var_val) in enumerate([(self.t["width"], w), (self.t["height"], h)]):
+        for row, label in enumerate([self.t["width"], self.t["height"]]):
             tk.Label(d, text=label + ":", bg=C["bg"], fg=C["text"],
                      font=("Helvetica", 12)).grid(row=row, column=0, padx=20, pady=12, sticky=tk.W)
-        w_v = tk.IntVar(value=w)
-        h_v = tk.IntVar(value=h)
-        tk.Entry(d, textvariable=w_v, width=8, bg=C["bg3"], fg=C["text"],
-                 insertbackground=C["text"]).grid(row=0, column=1, padx=10)
-        tk.Entry(d, textvariable=h_v, width=8, bg=C["bg3"], fg=C["text"],
-                 insertbackground=C["text"]).grid(row=1, column=1, padx=10)
+        w_v = tk.StringVar(value=str(w))
+        h_v = tk.StringVar(value=str(h))
+        w_e = tk.Entry(d, textvariable=w_v, width=8, bg=C["bg3"], fg=C["text"],
+                       insertbackground=C["text"])
+        h_e = tk.Entry(d, textvariable=h_v, width=8, bg=C["bg3"], fg=C["text"],
+                       insertbackground=C["text"])
+        w_e.grid(row=0, column=1, padx=10)
+        h_e.grid(row=1, column=1, padx=10)
+
+        # typing one side fills the other, so the photo keeps its shape
+        def follow(source, target, ratio):
+            try:
+                target.set(str(max(1, int(round(int(source.get()) * ratio)))))
+            except ValueError:
+                pass
+        w_e.bind("<KeyRelease>", lambda e: follow(w_v, h_v, h / float(w)))
+        h_e.bind("<KeyRelease>", lambda e: follow(h_v, w_v, w / float(h)))
 
         def apply():
             try:
-                self.current_image = self.current_image.resize(
-                    (w_v.get(), h_v.get()), Image.LANCZOS)
-                self.original_image = self.current_image.copy()
-                self._refresh_display()
-                self._update_status()
+                nw, nh = int(w_v.get()), int(h_v.get())
+                if nw < 1 or nh < 1 or nw > 30000 or nh > 30000:
+                    raise ValueError(f"{nw} × {nh}")
+                self._set_base(self.base.resize((nw, nh), Image.LANCZOS))
                 d.destroy()
             except Exception as ex:
                 messagebox.showerror(self.t["error"], str(ex))
 
         bf = tk.Frame(d, bg=C["bg"])
         bf.grid(row=2, column=0, columnspan=2, pady=14)
-        tk.Button(bf, text=self.t["apply"], bg=C["accent"], fg=C["bg"],
-                  font=("Helvetica",11,"bold"), relief=tk.FLAT,
-                  cursor="hand2", padx=14, pady=5, command=apply).pack(side=tk.LEFT, padx=6)
-        tk.Button(bf, text=self.t["cancel"], bg=C["bg3"], fg=C["text"],
-                  font=("Helvetica",11), relief=tk.FLAT,
-                  cursor="hand2", padx=14, pady=5, command=d.destroy).pack(side=tk.LEFT, padx=6)
+        FlatButton(bf, self.t["apply"], apply, C["accent"], fg=C["bg"],
+                   font=("Helvetica", 11, "bold"), padx=14).pack(side=tk.LEFT, padx=6)
+        FlatButton(bf, self.t["cancel"], d.destroy, C["bg3"], padx=14).pack(side=tk.LEFT, padx=6)
 
 
 # ─── ENTRY ────────────────────────────────────────────────────────────────────
