@@ -303,6 +303,9 @@ LANGUAGES = {
 # New texts (navigation, zoom, delete, Focus Check). English is the fallback.
 EXTRA = {
     "English": {
+        "grey_picker": "Grey Picker", "grey_hint": "Now click something that should be neutral grey or white.", "grey_bad": "That spot is too dark or too bright to read. Try another one.",
+        "order": "Order", "auto": "Auto",
+        "highlights": "Highlights", "shadows": "Shadows", "saturation": "Saturation", "greens_first": "Greens first",
         "prev": "Previous", "next": "Next", "delete": "Delete", "fit": "Fit",
         "before_after": "Before | After", "folder": "FOLDER",
         "strip_empty": "Open a\nfolder\nto see\nimages",
@@ -311,7 +314,7 @@ EXTRA = {
         "moved_trash": "Moved to the Trash",
         "focus_title": "FOCUS CHECK", "focus_run": "Check Focus", "stop": "Stop",
         "checking": "Checking focus... {i} of {n}", "stopped": "Stopped. Nothing was changed.",
-        "sharp": "SHARP", "fixable": "FIXABLE", "rejected": "REJECTED",
+        "sharp": "IN FOCUS", "fixable": "FIXABLE", "rejected": "REJECTED",
         "show_all": "Show: all photos", "show": "Show",
         "recover": "Recover Sharpness", "trash_rejected": "Trash All Rejected",
         "trash_confirm": "Move {n} rejected photos to the Trash?\n\nRejected means the softest photos of this folder. Look at them first if you are not sure.\nYou can restore them from the Trash.",
@@ -325,6 +328,9 @@ EXTRA = {
         "saving": "Saving...",
     },
     "Español": {
+        "grey_picker": "Cuentagotas de Gris", "grey_hint": "Ahora haz clic en algo que deba ser gris neutro o blanco.", "grey_bad": "Ese punto es demasiado oscuro o claro. Prueba otro.",
+        "order": "Orden", "auto": "Auto",
+        "highlights": "Luces", "shadows": "Sombras", "saturation": "Saturación", "greens_first": "Verdes primero",
         "prev": "Anterior", "next": "Siguiente", "delete": "Eliminar", "fit": "Ajustar",
         "before_after": "Antes | Después", "folder": "CARPETA",
         "strip_empty": "Abre una\ncarpeta\npara ver\nimágenes",
@@ -347,6 +353,9 @@ EXTRA = {
         "saving": "Guardando...",
     },
     "Français": {
+        "grey_picker": "Pipette de Gris", "grey_hint": "Cliquez maintenant sur quelque chose qui doit être gris neutre ou blanc.", "grey_bad": "Ce point est trop sombre ou trop clair. Essayez-en un autre.",
+        "order": "Ordre", "auto": "Auto",
+        "highlights": "Hautes lumières", "shadows": "Ombres", "saturation": "Saturation", "greens_first": "Vertes d'abord",
         "prev": "Précédente", "next": "Suivante", "delete": "Supprimer", "fit": "Ajuster",
         "before_after": "Avant | Après", "folder": "DOSSIER",
         "strip_empty": "Ouvrez un\ndossier\npour voir\nles images",
@@ -369,6 +378,9 @@ EXTRA = {
         "saving": "Enregistrement...",
     },
     "Português": {
+        "grey_picker": "Conta-gotas de Cinza", "grey_hint": "Agora clique em algo que deveria ser cinza neutro ou branco.", "grey_bad": "Esse ponto é escuro ou claro demais. Tente outro.",
+        "order": "Ordem", "auto": "Auto",
+        "highlights": "Realces", "shadows": "Sombras", "saturation": "Saturação", "greens_first": "Verdes primeiro",
         "prev": "Anterior", "next": "Próxima", "delete": "Apagar", "fit": "Ajustar",
         "before_after": "Antes | Depois", "folder": "PASTA",
         "strip_empty": "Abra uma\npasta\npara ver\nas imagens",
@@ -391,6 +403,9 @@ EXTRA = {
         "saving": "Salvando...",
     },
     "العربية": {
+        "grey_picker": "قطّارة الرمادي", "grey_hint": "انقر الآن على شيء يجب أن يكون رمادياً محايداً أو أبيض.", "grey_bad": "هذه النقطة داكنة جداً أو ساطعة جداً. جرّب نقطة أخرى.",
+        "order": "الترتيب", "auto": "تلقائي",
+        "highlights": "الإضاءات", "shadows": "الظلال", "saturation": "التشبع", "greens_first": "الواضحة أولاً",
         "prev": "السابقة", "next": "التالية", "delete": "حذف", "fit": "ملاءمة",
         "before_after": "قبل | بعد", "folder": "المجلد",
         "strip_empty": "افتح مجلداً\nلعرض الصور",
@@ -413,6 +428,9 @@ EXTRA = {
         "saving": "جارٍ الحفظ...",
     },
     "中文": {
+        "grey_picker": "灰点吸管", "grey_hint": "现在点击照片中应为中性灰或白色的地方。", "grey_bad": "该处太暗或太亮，无法读取。请换一处。",
+        "order": "顺序", "auto": "自动",
+        "highlights": "高光", "shadows": "阴影", "saturation": "饱和度", "greens_first": "清晰的排前面",
         "prev": "上一张", "next": "下一张", "delete": "删除", "fit": "适合窗口",
         "before_after": "修改前 | 修改后", "folder": "文件夹",
         "strip_empty": "打开文件夹\n查看图片",
@@ -435,6 +453,9 @@ EXTRA = {
         "saving": "正在保存...",
     },
     "हिन्दी": {
+        "grey_picker": "ग्रे पिकर", "grey_hint": "अब फ़ोटो में ऐसी जगह क्लिक करें जो तटस्थ ग्रे या सफ़ेद होनी चाहिए।", "grey_bad": "यह जगह बहुत गहरी या बहुत चमकीली है। कोई और जगह चुनें।",
+        "order": "क्रम", "auto": "ऑटो",
+        "highlights": "हाइलाइट", "shadows": "छाया", "saturation": "संतृप्ति", "greens_first": "स्पष्ट पहले",
         "prev": "पिछला", "next": "अगला", "delete": "हटाएँ", "fit": "फ़िट",
         "before_after": "पहले | बाद में", "folder": "फ़ोल्डर",
         "strip_empty": "चित्र देखने\nके लिए\nफ़ोल्डर खोलें",
@@ -489,7 +510,7 @@ IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff", ".tif")
 SCORE_LONG_SIDE = 1600
 MOTION_SHUTTER = Fraction(1, 250)
 MAX_ZOOM = 4.0
-APP_VERSION = "1.3"      # shown in the window title, so an old copy is easy to spot
+APP_VERSION = "1.6"      # shown in the window title, so an old copy is easy to spot
 GRIP = 14                # how close the pointer must be to grab a corner or side of the crop frame
 
 
@@ -501,17 +522,50 @@ def apply_white_balance(img, temperature, tint):
         img = img.convert("RGB")
     arr = np.array(img, dtype=np.float32)
     arr[:, :, 0] = np.clip(arr[:, :, 0] + temperature * 0.5, 0, 255)
-    arr[:, :, 1] = np.clip(arr[:, :, 1] - tint * 0.3, 0, 255)
+    arr[:, :, 1] = np.clip(arr[:, :, 1] - tint * 0.5, 0, 255)
     arr[:, :, 2] = np.clip(arr[:, :, 2] - temperature * 0.5, 0, 255)
     return Image.fromarray(arr.astype(np.uint8))
 
 def apply_whites_blacks(img, whites, blacks):
-    """Whites: boost highlights. Blacks: crush shadows."""
+    """Whites: +100 brightens the white point. Blacks: -100 deepens the black point."""
     if img.mode != "RGB":
         img = img.convert("RGB")
-    arr = np.array(img, dtype=np.float32)
-    arr = arr * (1.0 + whites / 100.0)
-    arr = np.where(arr < 128, arr * (1.0 + blacks / 200.0), arr)
+    black_point = -blacks / 100.0 * 0.12
+    white_point = 1.0 - whites / 100.0 * 0.20
+    arr = np.asarray(img, dtype=np.float32) / 255.0
+    arr = (arr - black_point) / max(0.05, white_point - black_point)
+    return Image.fromarray((np.clip(arr, 0, 1) * 255).astype(np.uint8))
+
+def auto_tone_values(lum):
+    """From the brightness of a photo (0..1): exposure gain, then
+    (highlights, shadows, whites, blacks), each -1..1."""
+    hi = float(np.percentile(lum, 99.5))
+    # an underexposed photo is first lifted so its brightest tones reach near white
+    gain = min(2.0, max(1.0, 0.96 / max(hi, 0.02))) if hi < 0.90 else 1.0
+    lum = np.clip(lum * gain, 0, 1)
+    lo, hi = np.percentile(lum, 0.5), np.percentile(lum, 99.5)
+    blacks = -min(1.0, lo / 0.12) if lo > 0.01 else 0.0
+    whites = min(1.0, max(0.0, (1.0 - hi) / 0.20))
+    black_point, white_point = -blacks * 0.12, 1.0 - whites * 0.20
+    mid = (float(np.median(lum)) - black_point) / max(0.05, white_point - black_point)
+    shadows = min(0.7, (0.32 - mid) / 0.32 * 1.2) if mid < 0.32 else 0.0
+    highlights = -min(0.6, (mid - 0.62) / 0.38) if mid > 0.62 else 0.0
+    return gain, highlights, shadows, whites, blacks
+
+def apply_highlights_shadows(img, highlights, shadows):
+    """Highlights: -100 recovers bright areas, +100 brightens them.
+    Shadows: +100 opens dark areas, -100 deepens them. Tones are never flipped."""
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+    h, sh = highlights / 100.0, shadows / 100.0
+    radius = max(1.0, min(img.size) / 150.0)       # soft mask keeps fine detail
+    soft = np.asarray(img.convert("L").filter(ImageFilter.GaussianBlur(radius)), dtype=np.float32) / 255.0
+    dark = np.clip(1.0 - soft / 0.5, 0, 1)
+    bright = np.clip((soft - 0.5) / 0.5, 0, 1)
+    delta = h * 0.22 * bright ** 2
+    delta = delta + (sh * 0.22 * dark ** 2 if sh > 0 else sh * 0.6 * dark * soft)
+    gain = np.clip((soft + delta) / np.maximum(soft, 0.02), 0, 4)
+    arr = np.asarray(img, dtype=np.float32) * gain[..., None]
     return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
 
 def apply_dehaze(img, strength):
@@ -648,7 +702,7 @@ class LocalShot:
 
         self.focus = {}               # Focus Check results per photo
         self.focus_limits = None
-        self.filter_index = 0         # 0 all, 1 sharp, 2 fixable, 3 rejected
+        self.focus_show = set()       # colours switched on; empty = everything, in shooting order
         self._scan = None
 
         self.zoom = None              # None = fit the window; 1.0 = 100 %
@@ -662,6 +716,7 @@ class LocalShot:
         self._cropping = False
         self.crop_box = None          # the crop frame, in pixels of the photo
         self._crop_mode = None
+        self.picking_grey = False
 
         # Adjustment vars
         self.brightness_var  = tk.DoubleVar(value=1.0)
@@ -669,6 +724,9 @@ class LocalShot:
         self.exposure_var    = tk.DoubleVar(value=0.0)
         self.whites_var      = tk.DoubleVar(value=0.0)
         self.blacks_var      = tk.DoubleVar(value=0.0)
+        self.highlights_var  = tk.DoubleVar(value=0.0)
+        self.shadows_var     = tk.DoubleVar(value=0.0)
+        self.saturation_var  = tk.DoubleVar(value=0.0)
         self.temperature_var = tk.DoubleVar(value=0.0)
         self.tint_var        = tk.DoubleVar(value=0.0)
         self.sharpening_var  = tk.DoubleVar(value=0.0)
@@ -772,12 +830,20 @@ class LocalShot:
         self.focus_summary = tk.Label(self.filmstrip_frame, text="", bg=C["bg2"], fg=C["text2"],
                                       font=("Helvetica", 9), wraplength=STRIP_W - 12, justify=tk.CENTER)
         self.focus_summary.pack(fill=tk.X, padx=4)
-        self.filter_var = tk.StringVar()
-        self.filter_cb = ttk.Combobox(self.filmstrip_frame, textvariable=self.filter_var,
-                                      values=self._filter_names(), state="readonly", width=18)
-        self.filter_cb.current(self.filter_index)
-        self.filter_cb.pack(fill=tk.X, padx=6, pady=2)
-        self.filter_cb.bind("<<ComboboxSelected>>", self._filter_changed)
+        # one strip of four toggles: shooting order, greens, yellows, reds
+        show_row = tk.Frame(self.filmstrip_frame, bg=C["bg2"])
+        show_row.pack(fill=tk.X, padx=6, pady=2)
+        show_row.columnconfigure(0, weight=1, uniform="show")
+        show_row.columnconfigure(1, weight=1, uniform="show")
+        self.order_btn = FlatButton(show_row, self.t["order"], self.show_order, C["bg3"],
+                                    font=("Helvetica", 9, "bold"), padx=2, pady=4)
+        self.order_btn.grid(row=0, column=0, sticky="ew", padx=1, pady=1)
+        self.show_btns = {}
+        for cat, cell in (("sharp", (0, 1)), ("fixable", (1, 0)), ("rejected", (1, 1))):
+            btn = FlatButton(show_row, self._show_name(cat), lambda c=cat: self.toggle_group(c), C["bg3"],
+                             fg=FOCUS_COLORS[cat], font=("Helvetica", 9, "bold"), padx=2, pady=4)
+            btn.grid(row=cell[0], column=cell[1], sticky="ew", padx=1, pady=1)
+            self.show_btns[cat] = btn
         self.recover_btn = FlatButton(self.filmstrip_frame, self.t["recover"], self.recover_current,
                                       C["bg3"], font=("Helvetica", 10), padx=6)
         self.recover_btn.pack(fill=tk.X, padx=6, pady=2)
@@ -953,6 +1019,8 @@ class LocalShot:
         self.simple_section.pack(fill=tk.X)
 
         self._section_label(self.simple_section, self.t["basic"])
+        FlatButton(self.simple_section, "✨  " + self.t["auto"], self.auto_tone,
+                   C["bg3"], padx=8, pady=5).pack(fill=tk.X, padx=12, pady=(6, 2))
         self._slider(self.simple_section, self.t["brightness"], self.brightness_var, 0.1, 3.0, 0.05)
         self._slider(self.simple_section, self.t["contrast"],   self.contrast_var,   0.1, 3.0, 0.05)
         self._slider(self.simple_section, self.t["exposure"],   self.exposure_var,  -100, 100, 1)
@@ -961,12 +1029,19 @@ class LocalShot:
         self.advanced_section = tk.Frame(self.adj_frame, bg=C["bg2"])
 
         self._section_label(self.advanced_section, self.t["tone"])
+        self._slider(self.advanced_section, self.t["highlights"], self.highlights_var, -100, 100, 1)
+        self._slider(self.advanced_section, self.t["shadows"],    self.shadows_var,    -100, 100, 1)
         self._slider(self.advanced_section, self.t["whites"], self.whites_var, -100, 100, 1)
         self._slider(self.advanced_section, self.t["blacks"], self.blacks_var, -100, 100, 1)
 
         self._section_label(self.advanced_section, self.t["color"])
+        self.grey_btn = FlatButton(self.advanced_section, self.t["grey_picker"], self.toggle_grey,
+                                   C["bg3"], padx=8, pady=5)
+        self.grey_btn.pack(fill=tk.X, padx=12, pady=(6, 2))
+        self._paint_grey_btn()
         self._slider(self.advanced_section, self.t["temperature"], self.temperature_var, -100, 100, 1)
         self._slider(self.advanced_section, self.t["tint"],        self.tint_var,        -100, 100, 1)
+        self._slider(self.advanced_section, self.t["saturation"],  self.saturation_var,  -100, 100, 1)
 
         self._section_label(self.advanced_section, self.t["detail"])
         self._slider(self.advanced_section, self.t["sharpening"], self.sharpening_var, 0, 100, 1)
@@ -1045,16 +1120,37 @@ class LocalShot:
 
     # ─── FOLDER & FILMSTRIP ───────────────────────────────────────────────────
 
-    def _filter_names(self):
-        return [self.t["show_all"]] + [f"{self.t['show']}: {self.t[k].lower()}"
-                                       for k in ("sharp", "fixable", "rejected")]
+    def _show_name(self, cat):
+        """The word on a colour button, so nobody has to guess what a colour means."""
+        word = self.t[cat]
+        return word.capitalize() if word.isupper() else word
 
     def _shown(self):
-        """Photos in the strip: all of them, or one Focus Check group."""
-        wanted = (None, "sharp", "fixable", "rejected")[self.filter_index]
-        if not wanted or not self.focus:
+        """Photos in the strip: everything in shooting order, or the colours switched on."""
+        if not self.focus or not self.focus_show:
             return self.folder_images
-        return [p for p in self.folder_images if self.focus.get(p, {}).get("cat") == wanted]
+        # greens, then yellows, then reds; the sort is stable, so shooting order
+        # is kept inside each colour, and files on disk are never touched
+        rank = {"sharp": 0, "fixable": 1, "rejected": 2}
+        chosen = [p for p in self.folder_images if self.focus.get(p, {}).get("cat") in self.focus_show]
+        return sorted(chosen, key=lambda p: rank[self.focus[p]["cat"]])
+
+    def show_order(self):
+        if self.focus:
+            self.focus_show.clear()
+            self._show_changed()
+
+    def toggle_group(self, cat):
+        if self.focus:
+            self.focus_show.symmetric_difference_update({cat})
+            self._show_changed()
+
+    def _show_changed(self):
+        self._update_focus_controls()
+        self._populate_filmstrip()
+        shown = self._shown()
+        if shown and self.image_path not in shown:
+            self._load_image(shown[0])
 
     def open_folder(self, folder=None):
         folder = folder or filedialog.askdirectory()
@@ -1067,8 +1163,7 @@ class LocalShot:
         self.thumb_cache = {}
         self.focus = {}
         self.focus_limits = None
-        self.filter_index = 0
-        self.filter_cb.current(0)
+        self.focus_show.clear()
         self._update_focus_controls()
         self._populate_filmstrip()
         if files:
@@ -1302,9 +1397,25 @@ class LocalShot:
 
     def _update_focus_controls(self):
         have = bool(self.focus)
+        if not have:
+            self.focus_show.clear()
+        count = {"sharp": 0, "fixable": 0, "rejected": 0}
+        for r in self.focus.values():
+            count[r["cat"]] += 1
+        self.order_btn.set_enabled(have)
+        if have and not self.focus_show:
+            self.order_btn.set_colors(C["accent"], C["bg"])
+        else:
+            self.order_btn.set_colors(C["bg3"], C["text"])
+        for cat, btn in self.show_btns.items():
+            btn.config(text=f"{self._show_name(cat)} {count[cat]}" if have else self._show_name(cat))
+            if cat in self.focus_show:
+                btn.set_colors(FOCUS_COLORS[cat], "#111111")
+            else:
+                btn.set_colors(C["bg3"], FOCUS_COLORS[cat])
+            btn.set_enabled(have)
         self.recover_btn.set_enabled(have)
         self.trash_btn.set_enabled(have)
-        self.filter_cb.config(state="readonly" if have else "disabled")
         if not have:
             if not self._scan:
                 self.focus_summary.config(text="")
@@ -1316,13 +1427,6 @@ class LocalShot:
             fg=C["text"],
             text=f"{self.t['sharp']} {count['sharp']}  ·  {self.t['fixable']} {count['fixable']}"
                  f"  ·  {self.t['rejected']} {count['rejected']}")
-
-    def _filter_changed(self, _event=None):
-        self.filter_index = self.filter_cb.current()
-        self._populate_filmstrip()
-        shown = self._shown()
-        if shown and self.image_path not in shown:
-            self._load_image(shown[0])
 
     def recover_current(self):
         info = self.focus.get(self.image_path)
@@ -1359,8 +1463,7 @@ class LocalShot:
             self._forget(path)
         if self.image_path not in self.folder_images:
             self._clear_photo(self.t["moved_trash"])
-        self.filter_index = 0
-        self.filter_cb.current(0)
+        self.focus_show.clear()
         self._update_focus_controls()
         self._populate_filmstrip()
         if failed:
@@ -1399,6 +1502,8 @@ class LocalShot:
         self._cropping = False
         self.crop_box = None
         self._paint_crop_btn()
+        self.picking_grey = False
+        self._paint_grey_btn()
         self._reset_vars()
         self._set_base(img)
         self._highlight()
@@ -1420,6 +1525,9 @@ class LocalShot:
         self.exposure_var.set(0.0)
         self.whites_var.set(0.0)
         self.blacks_var.set(0.0)
+        self.highlights_var.set(0.0)
+        self.shadows_var.set(0.0)
+        self.saturation_var.set(0.0)
         self.temperature_var.set(0.0)
         self.tint_var.set(0.0)
         self.sharpening_var.set(0.0)
@@ -1428,11 +1536,12 @@ class LocalShot:
     def _values(self):
         return (self.brightness_var.get(), self.contrast_var.get(), self.exposure_var.get(),
                 self.whites_var.get(), self.blacks_var.get(), self.temperature_var.get(),
-                self.tint_var.get(), self.dehaze_var.get(), self.sharpening_var.get())
+                self.tint_var.get(), self.dehaze_var.get(), self.sharpening_var.get(),
+                self.highlights_var.get(), self.shadows_var.get(), self.saturation_var.get())
 
     def process(self, img):
         """All the slider corrections, applied to any copy of the photo."""
-        bright, contrast, exp, w, b, temp, tint, dh, sh = self._values()
+        bright, contrast, exp, w, b, temp, tint, dh, sh, hl, shd, sat = self._values()
         if bright != 1.0:
             img = ImageEnhance.Brightness(img).enhance(bright)
         if contrast != 1.0:
@@ -1441,13 +1550,96 @@ class LocalShot:
             img = ImageEnhance.Brightness(img).enhance(max(0.01, 1.0 + exp / 100.0))
         if w != 0 or b != 0:
             img = apply_whites_blacks(img, w, b)
+        if hl != 0 or shd != 0:
+            img = apply_highlights_shadows(img, hl, shd)
         if temp != 0 or tint != 0:
             img = apply_white_balance(img, temp, tint)
+        if sat != 0:
+            img = ImageEnhance.Color(img).enhance(1.0 + sat / 100.0)
         if dh > 0:
             img = apply_dehaze(img, dh)
         if sh > 0:
             img = apply_sharpening(img, sh)
         return img
+
+    # ─── GREY PICKER (white balance) ──────────────────────────────────────────
+
+    def _paint_grey_btn(self):
+        try:
+            if self.picking_grey:
+                self.grey_btn.set_colors(C["accent"], C["bg"])
+            else:
+                self.grey_btn.set_colors(C["bg3"], C["text"])
+        except (tk.TclError, AttributeError):
+            pass
+
+    def toggle_grey(self):
+        if not self.base:
+            return
+        self.picking_grey = not self.picking_grey
+        if self.picking_grey:
+            self.cancel_crop()
+            self.status_lbl.config(text=self.t["grey_hint"])
+        else:
+            self._update_status()
+        self._paint_grey_btn()
+
+    def _patch_rgb(self, x, y):
+        """Average colour of a small patch of the picture on screen, or None."""
+        v = self._view
+        px, py = int(x - v["x"]), int(y - v["y"])
+        if not (0 <= px < v["w"] and 0 <= py < v["h"]):
+            return None
+        box = (max(0, px - 5), max(0, py - 5), min(v["w"], px + 6), min(v["h"], py + 6))
+        return np.asarray(self._display.crop(box), dtype=np.float32).reshape(-1, 3).mean(axis=0)
+
+    def pick_grey(self, x, y):
+        """Set Temperature and Tint so the clicked spot has no colour cast."""
+        compare, self.compare = self.compare, False      # measure the corrected picture
+        self._render()
+        rgb = self._patch_rgb(x, y)
+        message = None
+        if rgb is None:
+            message = self.t["grey_hint"]
+        elif rgb.mean() < 12 or rgb.mean() > 247:
+            message = self.t["grey_bad"]
+        else:
+            for _round in range(4):                      # set, look at the same spot again, refine
+                r, g, b = rgb
+                temp = max(-100.0, min(100.0, self.temperature_var.get() + (b - r)))
+                moved = (temp - self.temperature_var.get()) * 0.5
+                tint = max(-100.0, min(100.0, self.tint_var.get() + (g - (r + moved + b - moved) / 2.0) / 0.5))
+                self.temperature_var.set(round(temp))
+                self.tint_var.set(round(tint))
+                self._render()
+                rgb = self._patch_rgb(x, y)
+                if rgb is None or (max(rgb) - min(rgb)) < 2.5:
+                    break
+        self.compare = compare
+        self.picking_grey = False
+        self._paint_grey_btn()
+        self._render()
+        if message:
+            self.status_lbl.config(text=message)
+        else:
+            self._update_status()
+
+    def auto_tone(self):
+        """One click: exposure, white point, black point, shadows, highlights. A starting point."""
+        if not self.preview_base:
+            return
+        for var in (self.exposure_var, self.highlights_var, self.shadows_var, self.whites_var, self.blacks_var):
+            var.set(0.0)
+        small = self.preview_base.copy()
+        small.thumbnail((800, 800), Image.BILINEAR)
+        lum = np.asarray(self.process(small).convert("L"), dtype=np.float32) / 255.0
+        gain, hl, sh, wh, bl = auto_tone_values(lum)
+        self.exposure_var.set(round((gain - 1.0) * 100))
+        self.highlights_var.set(round(hl * 100))
+        self.shadows_var.set(round(sh * 100))
+        self.whites_var.set(round(wh * 100))
+        self.blacks_var.set(round(bl * 100))
+        self._schedule_render()
 
     @staticmethod
     def _split(before, after):
@@ -1589,6 +1781,8 @@ class LocalShot:
         """Click on the photo: jump to 100 % on that spot; click again for the whole photo."""
         if not self.base or self._cropping:
             return
+        if self.picking_grey:
+            return self.pick_grey(e.x, e.y)
         if self.zoom is None:
             self.zoom_to(1.0, (e.x, e.y))
         else:
@@ -1685,6 +1879,8 @@ class LocalShot:
             return
         if self._cropping:
             return self.apply_crop()
+        self.picking_grey = False
+        self._paint_grey_btn()
         bw, bh = self.base.size
         self.crop_box = [bw * 0.08, bh * 0.08, bw * 0.92, bh * 0.92]
         self._cropping = True
