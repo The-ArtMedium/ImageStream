@@ -41,17 +41,21 @@ jobs:
         run: choco install innosetup -y --no-progress
       - name: Build the installer
         working-directory: _src/LocalRAW
-        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows.iss'
+        shell: pwsh
+        run: |
+          $v = (Select-String -Path app/ui/main_window.py -Pattern 'APP_VERSION = "([^"]+)"').Matches[0].Groups[1].Value
+          Write-Host "LocalRAW version $v"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$v" installer\windows.iss
       - uses: actions/upload-artifact@v4
         with:
           name: LocalRAW-Windows-Setup
-          path: _src/LocalRAW/dist/installer/LocalRAW-Setup-1.0.0-Windows.exe
+          path: _src/LocalRAW/dist/installer/LocalRAW-Setup-Windows.exe
       - name: Put the Setup .exe on the Releases page (direct download)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: localraw-latest
           name: LocalRAW (latest build)
-          files: _src/LocalRAW/dist/installer/LocalRAW-Setup-1.0.0-Windows.exe
+          files: _src/LocalRAW/dist/installer/LocalRAW-Setup-Windows.exe
 
   mac:
     runs-on: macos-latest
@@ -85,15 +89,15 @@ jobs:
           mkdir -p dist/dmg
           cp -R dist/LocalRAW.app dist/dmg/
           ln -s /Applications dist/dmg/Applications
-          hdiutil create -volname "LocalRAW" -srcfolder dist/dmg -ov -format UDZO LocalRAW-1.0.0-macOS.dmg
+          hdiutil create -volname "LocalRAW" -srcfolder dist/dmg -ov -format UDZO LocalRAW-macOS.dmg
       - uses: actions/upload-artifact@v4
         with:
           name: LocalRAW-Mac-dmg
-          path: _src/LocalRAW/LocalRAW-1.0.0-macOS.dmg
+          path: _src/LocalRAW/LocalRAW-macOS.dmg
       - name: Put the .dmg on the Releases page (direct download)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: localraw-latest
           name: LocalRAW (latest build)
           body: "Mac: download the .dmg, open it, drag LocalRAW to Applications. Windows: download the Setup .exe. If your computer shows a security warning, see the notice on the ImageStream home page."
-          files: _src/LocalRAW/LocalRAW-1.0.0-macOS.dmg
+          files: _src/LocalRAW/LocalRAW-macOS.dmg
