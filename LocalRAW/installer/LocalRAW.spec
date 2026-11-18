@@ -8,6 +8,7 @@ a = Analysis(
     datas=[
         ('resources/style.qss', 'resources'),
         ('resources/translations/*.json', 'resources/translations'),
+        ('resources/models/*', 'resources/models'),          # the small offline face finder
     ],
     hiddenimports=['rawpy', 'cv2', 'numpy', 'PIL', 'piexif'],
     hookspath=[],
@@ -39,6 +40,13 @@ coll = COLLECT(
     name='LocalRAW',
 )
 
+# one version for everything: read it from the app itself
+import re as _re
+try:
+    _VERSION = _re.search(r'APP_VERSION = "([^"]+)"', open('app/ui/main_window.py', encoding='utf-8').read()).group(1)
+except Exception:
+    _VERSION = '0'
+
 if sys.platform == 'darwin':
     app = BUNDLE(
         coll,
@@ -47,8 +55,8 @@ if sys.platform == 'darwin':
         info_plist={
             'CFBundleName': 'LocalRAW',
             'CFBundleDisplayName': 'LocalRAW',
-            'CFBundleVersion': '1.0.0',
-            'CFBundleShortVersionString': '1.0.0',
+            'CFBundleVersion': _VERSION,
+            'CFBundleShortVersionString': _VERSION,
             'NSHighResolutionCapable': True,
         },
     )
