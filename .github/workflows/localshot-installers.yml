@@ -2,6 +2,8 @@ name: LocalShot Installers
 
 on:
   push:
+    paths:
+      - 'LocalShot/src/localshot.py'     # a new localshot.py builds the installers by itself
     tags:
       - 'localshot-v*'
   workflow_dispatch:
