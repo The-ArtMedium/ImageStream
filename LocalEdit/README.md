@@ -1,3 +1,5 @@
+![LocalEdit](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/file_00000000958071f5bca5dff8ac36475a.png)
+
 # 🎬 LocalEdit
 
 **Simple. Local. Yours.**
@@ -132,14 +134,13 @@ Check out `examples/standup_ai_promo/` for a sample project!
 
 ## 🤝 Contributing
 
-LocalEdit is open source and community-driven. We welcome:
+LocalEdit is built with its community in mind. We welcome:
 
-- **Code contributions**: Features, bug fixes, optimizations
+- **Ideas and feature requests**
 - **Translations**: Help make LocalEdit accessible worldwide
-- **Documentation**: Improve guides and tutorials
 - **Bug reports**: Help us make it better
 
-See `docs/CONTRIBUTING.md` for guidelines.
+Write to jeenajah@gmail.com. The code itself is not to be modified or redistributed.
 
 ---
 
@@ -161,13 +162,9 @@ See `docs/CONTRIBUTING.md` for guidelines.
 
 ## 📜 License
 
-LocalEdit is released under the [MIT License](LICENSE).
-
-**What this means:**
-- ✅ Use it for free (personal or commercial)
-- ✅ Modify it as you need
-- ✅ Share it with others
-- ✅ No attribution required (but appreciated!)
+Free to use for everyone, for personal and professional work.
+Not allowed without written permission: modifying it, redistributing it, or selling it — please share the official link instead: https://the-artmedium.github.io/ImageStream/
+All rights reserved. See the [LICENSE](LICENSE) file. Contact: jeenajah@gmail.com
 
 ---
 
@@ -178,8 +175,8 @@ LocalEdit is released under the [MIT License](LICENSE).
 LocalEdit is built on the principle that **creative sovereignty matters**. Your content is yours. Your tools should be yours too.
 
 If this project helps you, consider:
-- Sharing it with other creators
-- Contributing improvements
+- Sharing the official link with other creators
+- Sending ideas and bug reports
 - Using it to make something beautiful
 
 ---
