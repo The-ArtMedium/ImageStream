@@ -1,8 +1,10 @@
+![Bokeh Studio Pro](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/copilot_image_1770505565806.jpeg)
+
 # 📸 Bokeh Studio Pro
 
 > Controle profissional de profundidade de campo para fotógrafos que recusam pagar assinaturas
 
-**Grátis Para Sempre • Código Aberto • Privacidade Primeiro**
+**Grátis Para Sempre • Offline • Privacidade Primeiro**
 
 ---
 
@@ -147,9 +149,11 @@ Construído para combater a fadiga de assinaturas e democratizar ferramentas cri
 
 ## Licença
 
-Licença MIT - Use como quiser. Apenas mantenha grátis.
+Uso livre e gratuito para todos, pessoal e profissional.
+Sem permissão por escrito não é permitido modificar, redistribuir ou vender; compartilhe o link oficial: https://the-artmedium.github.io/ImageStream/
+Todos os direitos reservados. Veja [LICENSE](LICENSE). Contato: jeenajah@gmail.com
 
-**Compartilhe livremente. Crie ousadamente. Faça amor, não guerra.** 📸✨
+**Compartilhe o link livremente. Crie ousadamente. Faça amor, não guerra.** 📸✨
 
 ---
 

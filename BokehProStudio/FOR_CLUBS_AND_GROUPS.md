@@ -175,7 +175,7 @@ Good examples:
 ## FAQ for Club Leaders
 
 **Q: Is this really free to share?**
-A: Yes! MIT license. Share unlimited copies with zero restrictions.
+A: It's free for every member, forever. Please share the official link rather than copies: https://the-artmedium.github.io/ImageStream/
 
 **Q: Do members need to install anything?**
 A: No. Just open the HTML file in any web browser.
@@ -188,8 +188,8 @@ A: The package includes complete documentation. They can also share
 questions in the club group.
 
 **Q: Can we modify it for our needs?**
-A: Absolutely! It's open source. If someone in your club codes, they 
-can customize it.
+A: The code itself stays as it is — it is not to be modified or redistributed.
+If your club needs something, write to jeenajah@gmail.com and we'll look at it.
 
 **Q: Should we credit anyone?**
 A: Not required, but nice to mention "Created by Claude" if you want.

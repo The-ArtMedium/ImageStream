@@ -1,8 +1,10 @@
+![Bokeh Studio Pro](https://raw.githubusercontent.com/The-ArtMedium/ImageStream/main/banners/copilot_image_1770505565806.jpeg)
+
 # 📸 Bokeh Studio Pro
 
 > Professional depth of field control for photographers who refuse to pay subscriptions
 
-**Free Forever • Open Source • Privacy First**
+**Free Forever • Offline • Privacy First**
 
 ---
 
@@ -229,13 +231,10 @@ Because when we share freely, everyone's creativity rises.
 
 ---
 
-## Contributing
+## Ideas and Feedback
 
-This tool is free to:
-- Use commercially
-- Modify and distribute
-- Fork and improve
-- Include in other projects
+Free to use for personal and professional work. The code itself is not to be
+modified or redistributed — found a bug or have an idea? Write to jeenajah@gmail.com.
 
 ### Ideas for Enhancement
 - [ ] Multi-point focus (keep multiple subjects sharp)
@@ -246,7 +245,7 @@ This tool is free to:
 - [ ] Chromatic aberration simulation
 - [ ] Lens-specific character profiles
 
-Pull requests welcome. Keep it free. Keep it clean. Keep it powerful.
+Keep it free. Keep it clean. Keep it powerful.
 
 ---
 
@@ -264,9 +263,11 @@ Built to fight subscription fatigue and democratize creative tools.
 
 ## License
 
-MIT License - Use it however you want. Just keep it free.
+Free to use for everyone, for personal and professional work.
+Not allowed without written permission: modifying it, redistributing it, or selling it — please share the official link instead: https://the-artmedium.github.io/ImageStream/
+All rights reserved. See the [LICENSE](LICENSE) file. Contact: jeenajah@gmail.com
 
-**Share freely. Create boldly. Make love, not war.** 📸✨
+**Share the link freely. Create boldly. Make love, not war.** 📸✨
 
 ---
 
