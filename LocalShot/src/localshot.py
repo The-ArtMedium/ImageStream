@@ -14,6 +14,8 @@ import numpy as np
 import os
 import sys
 import threading
+import json
+import webbrowser
 from fractions import Fraction
 
 # ─── LANGUAGES ───────────────────────────────────────────────────────────────
@@ -484,6 +486,176 @@ for _name in LANGUAGES:                       # anything missing falls back to E
     for _key, _value in LANGUAGES["English"].items():
         LANGUAGES[_name].setdefault(_key, _value)
 
+# ─── QUICK START, KO-FI, AUTOMATIC LANGUAGE ──────────────────────────────────
+
+QS_TEXT = {
+    "English": {
+        "auto_lang": "Automatic", "quick_start": "Quick Start", "got_it": "Got it",
+        "show_at_start": "Show this when LocalShot starts",
+        "kofi_tip": "LocalShot is free. If it helps your work, a coffee on Ko-fi keeps it going.",
+        "kofi_thanks": "☕ Thank you! Say thanks on Ko-fi",
+        "qs_intro": "LocalShot sorts, fixes and saves your photos on your own computer. Here is how, step by step.",
+        "qs1": "Open your photos", "qs1b": "Click Open Folder to see all the photos of a shoot in the strip on the left, or Open Image for a single photo. Your originals are never changed.",
+        "qs2": "Check the focus", "qs2b": "Press Check Focus. Every photo gets a colour: green in focus, yellow fixable, red rejected. The colour buttons show only those photos. Recover Sharpness helps a yellow one.",
+        "qs3": "Look closely", "qs3b": "Press + and − to zoom, 1 for 100 %, 0 to fit the window. Drag to move around. Before | After compares your edit with the original.",
+        "qs4": "Adjust", "qs4b": "Use the sliders on the right. Auto sets the tone for you. Grey Picker: click something white or grey and the colour cast is gone. Advanced shows more controls.",
+        "qs5": "Crop and turn", "qs5b": "Crop: pull the corners or sides, drag inside the frame to move it, then press Apply. Rotate and Flip are in the same section.",
+        "qs6": "Save", "qs6b": "Save / Export writes a new file, JPEG or PNG, wherever you choose. The original stays exactly as it was.",
+        "qs7": "Next photo", "qs7b": "← → move through the photos. Delete sends the current photo to the Trash, where you can still restore it. Trash All Rejected clears the red ones in one go.",
+        "qs_tip": "Everything happens on your computer: no internet, no account, no tracking.",
+    },
+    "Español": {
+        "auto_lang": "Automático", "quick_start": "Guía rápida", "got_it": "Entendido",
+        "show_at_start": "Mostrar al abrir LocalShot",
+        "kofi_tip": "LocalShot es gratis. Si le sirve en su trabajo, un café en Ko-fi lo mantiene vivo.",
+        "kofi_thanks": "☕ ¡Gracias! Agradezca en Ko-fi",
+        "qs_intro": "LocalShot ordena, corrige y guarda sus fotos en su propia computadora. Así se hace, paso a paso.",
+        "qs1": "Abrir sus fotos", "qs1b": "Haga clic en Abrir carpeta para ver todas las fotos de una sesión en la tira de la izquierda, o en Abrir imagen para una sola foto. Sus originales nunca cambian.",
+        "qs2": "Revisar el foco", "qs2b": "Pulse Revisar foco. Cada foto recibe un color: verde en foco, amarillo recuperable, rojo descartada. Los botones de color muestran solo esas fotos. Recuperar nitidez ayuda a una amarilla.",
+        "qs3": "Mirar de cerca", "qs3b": "Pulse + y − para acercar, 1 para el 100 %, 0 para ajustar a la ventana. Arrastre para moverse. Antes | Después compara su ajuste con el original.",
+        "qs4": "Ajustar", "qs4b": "Use los controles de la derecha. Auto ajusta el tono por usted. Selector de gris: haga clic en algo blanco o gris y el tinte desaparece. Avanzado muestra más controles.",
+        "qs5": "Recortar y girar", "qs5b": "Recortar: tire de las esquinas o lados, arrastre dentro del marco para moverlo y pulse Aplicar. Girar y Voltear están en la misma sección.",
+        "qs6": "Guardar", "qs6b": "Guardar / Exportar crea un archivo nuevo, JPEG o PNG, donde usted elija. El original queda exactamente igual.",
+        "qs7": "Siguiente foto", "qs7b": "← → recorren las fotos. Borrar envía la foto actual a la papelera, de donde aún puede recuperarla. Enviar descartadas a la papelera quita las rojas de una vez.",
+        "qs_tip": "Todo sucede en su computadora: sin internet, sin cuenta, sin rastreo.",
+    },
+    "Français": {
+        "auto_lang": "Automatique", "quick_start": "Prise en main", "got_it": "Compris",
+        "show_at_start": "Afficher à l'ouverture de LocalShot",
+        "kofi_tip": "LocalShot est gratuit. S'il vous aide dans votre travail, un café sur Ko-fi le fait vivre.",
+        "kofi_thanks": "☕ Merci ! Dites merci sur Ko-fi",
+        "qs_intro": "LocalShot trie, corrige et enregistre vos photos sur votre propre ordinateur. Voici comment, pas à pas.",
+        "qs1": "Ouvrir vos photos", "qs1b": "Cliquez sur Ouvrir un dossier pour voir toutes les photos d'une séance dans le bandeau de gauche, ou sur Ouvrir une image pour une seule photo. Vos originaux ne sont jamais modifiés.",
+        "qs2": "Contrôler la netteté", "qs2b": "Appuyez sur Contrôler la netteté. Chaque photo reçoit une couleur : vert net, jaune récupérable, rouge rejeté. Les boutons de couleur n'affichent que ces photos. Récupérer la netteté aide une jaune.",
+        "qs3": "Regarder de près", "qs3b": "Appuyez sur + et − pour zoomer, 1 pour 100 %, 0 pour ajuster à la fenêtre. Faites glisser pour vous déplacer. Avant | Après compare votre réglage avec l'original.",
+        "qs4": "Régler", "qs4b": "Utilisez les curseurs à droite. Auto règle les tons pour vous. Pipette grise : cliquez sur quelque chose de blanc ou gris et la dominante disparaît. Avancé affiche plus de réglages.",
+        "qs5": "Recadrer et tourner", "qs5b": "Recadrer : tirez les coins ou les côtés, faites glisser dans le cadre pour le déplacer, puis Appliquer. Pivoter et Retourner sont dans la même section.",
+        "qs6": "Enregistrer", "qs6b": "Enregistrer / Exporter crée un nouveau fichier, JPEG ou PNG, à l'endroit choisi. L'original reste exactement tel quel.",
+        "qs7": "Photo suivante", "qs7b": "← → parcourent les photos. Supprimer met la photo à la corbeille, d'où vous pouvez encore la récupérer. Mettre les rejetées à la corbeille retire les rouges d'un coup.",
+        "qs_tip": "Tout se passe sur votre ordinateur : sans internet, sans compte, sans pistage.",
+    },
+    "Português": {
+        "auto_lang": "Automático", "quick_start": "Guia rápido", "got_it": "Entendi",
+        "show_at_start": "Mostrar ao abrir o LocalShot",
+        "kofi_tip": "LocalShot é grátis. Se ajuda no seu trabalho, um café no Ko-fi o mantém vivo.",
+        "kofi_thanks": "☕ Obrigado! Agradeça no Ko-fi",
+        "qs_intro": "LocalShot organiza, corrige e salva suas fotos no seu próprio computador. Veja como, passo a passo.",
+        "qs1": "Abrir suas fotos", "qs1b": "Clique em Abrir pasta para ver todas as fotos de um trabalho na faixa à esquerda, ou em Abrir imagem para uma só foto. Seus originais nunca mudam.",
+        "qs2": "Verificar o foco", "qs2b": "Aperte Verificar foco. Cada foto ganha uma cor: verde em foco, amarelo recuperável, vermelho descartada. Os botões de cor mostram só essas fotos. Recuperar nitidez ajuda uma amarela.",
+        "qs3": "Olhar de perto", "qs3b": "Aperte + e − para dar zoom, 1 para 100 %, 0 para caber na janela. Arraste para se mover. Antes | Depois compara seu ajuste com o original.",
+        "qs4": "Ajustar", "qs4b": "Use os controles à direita. Auto ajusta o tom para você. Seletor de cinza: clique em algo branco ou cinza e a dominante some. Avançado mostra mais controles.",
+        "qs5": "Cortar e girar", "qs5b": "Cortar: puxe os cantos ou lados, arraste dentro do quadro para movê-lo e aperte Aplicar. Girar e Espelhar ficam na mesma seção.",
+        "qs6": "Salvar", "qs6b": "Salvar / Exportar cria um arquivo novo, JPEG ou PNG, onde você escolher. O original fica exatamente como estava.",
+        "qs7": "Próxima foto", "qs7b": "← → passam pelas fotos. Apagar manda a foto atual para o lixo, de onde ainda dá para recuperar. Mandar descartadas para o lixo tira as vermelhas de uma vez.",
+        "qs_tip": "Tudo acontece no seu computador: sem internet, sem conta, sem rastreamento.",
+    },
+    "العربية": {
+        "auto_lang": "تلقائي", "quick_start": "البدء السريع", "got_it": "فهمت",
+        "show_at_start": "اعرض هذا عند فتح LocalShot",
+        "kofi_tip": "LocalShot مجاني. إن كان يفيد عملك، فقهوة على Ko-fi تُبقيه مستمرًا.",
+        "kofi_thanks": "☕ شكرًا! قل شكرًا على Ko-fi",
+        "qs_intro": "يرتّب LocalShot صورك ويصلحها ويحفظها على جهازك. إليك الطريقة خطوة بخطوة.",
+        "qs1": "افتح صورك", "qs1b": "انقر «فتح مجلد» لترى كل صور الجلسة في الشريط على اليسار، أو «فتح صورة» لصورة واحدة. أصولك لا تتغير أبدًا.",
+        "qs2": "افحص التركيز", "qs2b": "اضغط «فحص التركيز». تحصل كل صورة على لون: أخضر واضحة، أصفر قابلة للإصلاح، أحمر مرفوضة. أزرار الألوان تعرض تلك الصور فقط. «استعادة الحدة» تساعد الصفراء.",
+        "qs3": "انظر عن قرب", "qs3b": "اضغط + و − للتكبير، 1 لحجم 100 %، 0 لملاءمة النافذة. اسحب للتنقل. «قبل | بعد» يقارن تعديلك بالأصل.",
+        "qs4": "اضبط", "qs4b": "استخدم المنزلقات على اليمين. «تلقائي» يضبط الدرجات عنك. منتقي الرمادي: انقر شيئًا أبيض أو رماديًا فتزول الصبغة اللونية. «متقدم» يعرض أدوات أكثر.",
+        "qs5": "قص ودوّر", "qs5b": "القص: اسحب الزوايا أو الجوانب، واسحب داخل الإطار لتحريكه، ثم اضغط «تطبيق». التدوير والقلب في القسم نفسه.",
+        "qs6": "احفظ", "qs6b": "«حفظ / تصدير» ينشئ ملفًا جديدًا، JPEG أو PNG، حيث تختار. يبقى الأصل كما هو تمامًا.",
+        "qs7": "الصورة التالية", "qs7b": "← → للتنقل بين الصور. «حذف» يرسل الصورة الحالية إلى المهملات، ويمكنك استعادتها. «نقل كل المرفوضة إلى المهملات» يزيل الحمراء دفعة واحدة.",
+        "qs_tip": "كل شيء يحدث على جهازك: بلا إنترنت، بلا حساب، بلا تتبّع.",
+    },
+    "中文": {
+        "auto_lang": "自动", "quick_start": "快速入门", "got_it": "知道了",
+        "show_at_start": "启动 LocalShot 时显示",
+        "kofi_tip": "LocalShot 免费。如果它对你的工作有帮助，在 Ko-fi 请杯咖啡就能让它继续下去。",
+        "kofi_thanks": "☕ 谢谢！在 Ko-fi 上表达感谢",
+        "qs_intro": "LocalShot 在你自己的电脑上整理、修正并保存照片。下面一步步说明。",
+        "qs1": "打开照片", "qs1b": "点击“打开文件夹”，在左侧缩略图条中查看一次拍摄的所有照片；或点击“打开图片”打开单张照片。原片永远不会被改动。",
+        "qs2": "检查对焦", "qs2b": "按“检查对焦”。每张照片会得到一种颜色：绿色清晰，黄色可修复，红色淘汰。颜色按钮只显示对应的照片。“恢复锐度”可帮助黄色照片。",
+        "qs3": "仔细查看", "qs3b": "按 + 和 − 缩放，按 1 为 100 %，按 0 适合窗口。拖动可移动画面。“前 | 后”把你的调整与原片对比。",
+        "qs4": "调整", "qs4b": "使用右侧滑块。“自动”会替你设置影调。灰色吸管：点击白色或灰色的地方即可去除偏色。“高级”显示更多控制。",
+        "qs5": "裁剪和旋转", "qs5b": "裁剪：拖动角或边，在框内拖动以移动，然后按“应用”。旋转和翻转在同一区域。",
+        "qs6": "保存", "qs6b": "“保存 / 导出”会在你选择的位置生成新的 JPEG 或 PNG 文件。原片保持原样。",
+        "qs7": "下一张", "qs7b": "← → 浏览照片。“删除”把当前照片移到废纸篓，仍可恢复。“将淘汰照片全部移到废纸篓”一次清除红色照片。",
+        "qs_tip": "一切都在你的电脑上完成：无需联网，无需账号，没有跟踪。",
+    },
+    "हिन्दी": {
+        "auto_lang": "अपने-आप", "quick_start": "जल्दी शुरुआत", "got_it": "समझ गया",
+        "show_at_start": "LocalShot खुलने पर यह दिखाएँ",
+        "kofi_tip": "LocalShot मुफ़्त है। अगर यह आपके काम आता है, तो Ko-fi पर एक कॉफ़ी इसे चलाए रखती है।",
+        "kofi_thanks": "☕ धन्यवाद! Ko-fi पर शुक्रिया कहें",
+        "qs_intro": "LocalShot आपकी फ़ोटो आपके ही कंप्यूटर पर छाँटता, सुधारता और सेव करता है। यह रहा तरीका, कदम दर कदम।",
+        "qs1": "फ़ोटो खोलें", "qs1b": "किसी शूट की सारी फ़ोटो बाईं पट्टी में देखने के लिए 'फ़ोल्डर खोलें' पर क्लिक करें, या एक फ़ोटो के लिए 'तस्वीर खोलें'। आपकी मूल फ़ोटो कभी नहीं बदलतीं।",
+        "qs2": "फ़ोकस जाँचें", "qs2b": "'फ़ोकस जाँचें' दबाएँ। हर फ़ोटो को एक रंग मिलता है: हरा साफ़, पीला सुधार योग्य, लाल अस्वीकृत। रंग वाले बटन सिर्फ़ वही फ़ोटो दिखाते हैं। 'शार्पनेस वापस लाएँ' पीली फ़ोटो की मदद करता है।",
+        "qs3": "पास से देखें", "qs3b": "ज़ूम के लिए + और − दबाएँ, 100 % के लिए 1, विंडो में फ़िट करने के लिए 0। घूमने के लिए खींचें। 'पहले | बाद' आपके एडिट की मूल से तुलना करता है।",
+        "qs4": "सुधारें", "qs4b": "दाईं ओर के स्लाइडर इस्तेमाल करें। 'ऑटो' टोन अपने-आप सेट करता है। ग्रे पिकर: किसी सफ़ेद या ग्रे चीज़ पर क्लिक करें और रंग की झलक हट जाती है। 'एडवांस्ड' ज़्यादा कंट्रोल दिखाता है।",
+        "qs5": "क्रॉप करें और घुमाएँ", "qs5b": "क्रॉप: कोने या किनारे खींचें, फ़्रेम के अंदर खींचकर उसे हिलाएँ, फिर 'लागू करें' दबाएँ। घुमाना और पलटना उसी हिस्से में हैं।",
+        "qs6": "सेव करें", "qs6b": "'सेव / एक्सपोर्ट' आपकी चुनी जगह पर नई फ़ाइल, JPEG या PNG, बनाता है। मूल फ़ोटो जैसी थी वैसी ही रहती है।",
+        "qs7": "अगली फ़ोटो", "qs7b": "← → से फ़ोटो बदलें। 'हटाएँ' मौजूदा फ़ोटो को ट्रैश में भेजता है, जहाँ से वह वापस आ सकती है। 'सभी अस्वीकृत ट्रैश में' लाल फ़ोटो एक साथ हटाता है।",
+        "qs_tip": "सब कुछ आपके कंप्यूटर पर होता है: न इंटरनेट, न अकाउंट, न ट्रैकिंग।",
+    },
+}
+for _name, _texts in QS_TEXT.items():
+    LANGUAGES[_name].update(_texts)
+for _name in LANGUAGES:
+    for _key, _value in QS_TEXT["English"].items():
+        LANGUAGES[_name].setdefault(_key, _value)
+
+KOFI = "https://ko-fi.com/satdiva"
+LANG_BY_CODE = {"en": "English", "es": "Español", "fr": "Français", "pt": "Português",
+                "ar": "العربية", "zh": "中文", "hi": "हिन्दी"}
+
+
+def _settings_file():
+    if sys.platform == "darwin":
+        base = os.path.expanduser("~/Library/Application Support/LocalShot")
+    elif sys.platform.startswith("win"):
+        base = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "LocalShot")
+    else:
+        base = os.path.expanduser("~/.config/localshot")
+    return os.path.join(base, "settings.json")
+
+
+def load_settings():
+    try:
+        with open(_settings_file(), encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_settings(data):
+    try:
+        os.makedirs(os.path.dirname(_settings_file()), exist_ok=True)
+        with open(_settings_file(), "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
+
+def computer_language():
+    """The computer's own language (System Settings on a Mac, the Windows display
+    language), if LocalShot speaks it; English otherwise."""
+    tags = []
+    try:
+        if sys.platform == "darwin":
+            import subprocess
+            out = subprocess.run(["defaults", "read", "-g", "AppleLanguages"],
+                                 capture_output=True, text=True, timeout=3).stdout
+            tags += [t.strip(' ",()\n') for t in out.split("\n") if t.strip(' ",()\n')]
+        elif sys.platform.startswith("win"):
+            import ctypes, locale
+            tags.append(locale.windows_locale.get(ctypes.windll.kernel32.GetUserDefaultUILanguage(), ""))
+    except Exception:
+        pass
+    tags += [os.environ.get("LANG", ""), os.environ.get("LANGUAGE", "")]
+    for tag in tags:
+        code = tag.replace("_", "-").split("-")[0].lower()
+        if code in LANG_BY_CODE:
+            return LANG_BY_CODE[code]
+    return "English"
+
+
 # ─── COLORS ───────────────────────────────────────────────────────────────────
 
 C = {
@@ -510,7 +682,7 @@ IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff", ".tif")
 SCORE_LONG_SIDE = 1600
 MOTION_SHUTTER = Fraction(1, 250)
 MAX_ZOOM = 4.0
-APP_VERSION = "1.6"      # shown in the window title, so an old copy is easy to spot
+APP_VERSION = "1.7"      # shown in the window title, so an old copy is easy to spot
 GRIP = 14                # how close the pointer must be to grab a corner or side of the crop frame
 
 
@@ -685,7 +857,9 @@ class FlatButton(tk.Label):
 class LocalShot:
     def __init__(self, root):
         self.root = root
-        self.lang = "English"
+        self.settings = load_settings()
+        choice = self.settings.get("language", "auto")       # "auto" follows the computer
+        self.lang = choice if choice in LANGUAGES else computer_language()
         self.t = LANGUAGES[self.lang]
         self.advanced = False
 
@@ -735,6 +909,8 @@ class LocalShot:
         self._setup_window()
         self._build_ui()
         self._bind_keys()
+        if self.settings.get("quickstart_at_start", True):
+            self.root.after(500, self.show_quickstart)      # the first time, and until switched off
 
     def _setup_window(self):
         self.root.title(self.t["title"] + "  ·  " + APP_VERSION)
@@ -789,10 +965,14 @@ class LocalShot:
         right = tk.Frame(bar, bg=C["bg2"])
         right.pack(side=tk.RIGHT, padx=16)
 
-        self.lang_var = tk.StringVar(value=self.lang)
+        FlatButton(right, "?", self.show_quickstart, C["bg3"]).pack(side=tk.LEFT, padx=(0, 6))
+        FlatButton(right, "☕ Ko-fi", self.open_kofi, C["accent"], fg="#000000").pack(side=tk.LEFT, padx=(0, 12))
+        auto = self.t["auto_lang"]
+        chosen = self.settings.get("language", "auto")
+        self.lang_var = tk.StringVar(value=auto if chosen not in LANGUAGES else self.lang)
         lang_cb = ttk.Combobox(right, textvariable=self.lang_var,
-                                values=list(LANGUAGES.keys()),
-                                width=9, state="readonly")
+                                values=[auto] + list(LANGUAGES.keys()),
+                                width=11, state="readonly")
         lang_cb.pack(side=tk.LEFT, padx=(0, 12))
         lang_cb.bind("<<ComboboxSelected>>", self._change_language)
 
@@ -1087,6 +1267,63 @@ class LocalShot:
                                   bg=C["bg2"], fg=C["text3"],
                                   font=("Helvetica", 10))
         self.size_lbl.pack(side=tk.RIGHT, padx=14)
+        self.thanks_lbl = tk.Label(bar, text=self.t["kofi_thanks"], bg=C["bg2"], fg=C["accent"],
+                                   font=("Helvetica", 10, "bold"), cursor="hand2")
+        self.thanks_lbl.bind("<Button-1>", lambda e: self.open_kofi())
+
+    # ─── KO-FI & QUICK START ──────────────────────────────────────────────────
+
+    def open_kofi(self):
+        webbrowser.open(KOFI)
+
+    def _show_thanks(self):
+        try:
+            self.thanks_lbl.config(text=self.t["kofi_thanks"])
+            self.thanks_lbl.pack(side=tk.LEFT, padx=10)
+        except tk.TclError:
+            pass
+
+    def show_quickstart(self):
+        t = self.t
+        win = tk.Toplevel(self.root)
+        win.title(t["quick_start"])
+        win.configure(bg=C["bg2"])
+        sh = self.root.winfo_screenheight()
+        win.geometry(f"600x{min(800, sh - 90)}+60+30")
+        win.transient(self.root)
+        tk.Label(win, text=t["quick_start"], bg=C["bg2"], fg=C["accent"],
+                 font=("Helvetica", 20, "bold")).pack(anchor="w", padx=20, pady=(16, 2))
+        tk.Label(win, text=t["qs_intro"], bg=C["bg2"], fg=C["text"], font=("Helvetica", 12),
+                 wraplength=530, justify="left").pack(anchor="w", padx=20, pady=(0, 10))
+        body = tk.Frame(win, bg=C["bg2"])
+        body.pack(fill=tk.BOTH, expand=True, padx=20)
+        for n in range(1, 8):
+            row = tk.Frame(body, bg=C["bg2"])
+            row.pack(fill=tk.X, pady=5)
+            tk.Label(row, text=str(n), bg=C["accent"], fg="#000000", width=2,
+                     font=("Helvetica", 12, "bold")).pack(side=tk.LEFT, anchor="n", padx=(0, 10))
+            col = tk.Frame(row, bg=C["bg2"])
+            col.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            tk.Label(col, text=t[f"qs{n}"], bg=C["bg2"], fg=C["text"],
+                     font=("Helvetica", 13, "bold"), anchor="w").pack(fill=tk.X)
+            tk.Label(col, text=t[f"qs{n}b"], bg=C["bg2"], fg=C["text2"], font=("Helvetica", 11),
+                     wraplength=480, justify="left", anchor="w").pack(fill=tk.X)
+        tk.Label(win, text=t["qs_tip"], bg=C["bg2"], fg="#2EC4B6", font=("Helvetica", 11),
+                 wraplength=530, justify="left").pack(anchor="w", padx=20, pady=(6, 4))
+        bottom = tk.Frame(win, bg=C["bg2"])
+        bottom.pack(fill=tk.X, padx=20, pady=(4, 14))
+        at_start = tk.BooleanVar(value=self.settings.get("quickstart_at_start", True))
+
+        def toggled():
+            self.settings["quickstart_at_start"] = bool(at_start.get())
+            save_settings(self.settings)
+
+        tk.Checkbutton(bottom, text=t["show_at_start"], variable=at_start, command=toggled,
+                       bg=C["bg2"], fg=C["text2"], selectcolor=C["bg3"], activebackground=C["bg2"],
+                       font=("Helvetica", 11)).pack(side=tk.LEFT)
+        FlatButton(bottom, t["got_it"], win.destroy, C["accent"], fg="#000000").pack(side=tk.RIGHT)
+        win.lift()
+        win.focus_set()
 
     # ─── MODE & LANGUAGE ──────────────────────────────────────────────────────
 
@@ -1100,7 +1337,14 @@ class LocalShot:
             self.mode_btn.config(text=self.t["advanced_mode"])
 
     def _change_language(self, event=None):
-        self.lang = self.lang_var.get()
+        picked = self.lang_var.get()
+        if picked in LANGUAGES:
+            self.settings["language"] = picked
+            self.lang = picked
+        else:                                   # Automatic: like the computer
+            self.settings["language"] = "auto"
+            self.lang = computer_language()
+        save_settings(self.settings)
         self.t = LANGUAGES[self.lang]
         self.root.title(self.t["title"] + "  ·  " + APP_VERSION)
         if self._strip_job:
@@ -1827,6 +2071,7 @@ class LocalShot:
             self._update_status()
             return
         self.status_lbl.config(text=self.t["saved"])
+        self._show_thanks()
         self.root.after(3000, self._update_status)
 
     # ─── TRANSFORMS ───────────────────────────────────────────────────────────
