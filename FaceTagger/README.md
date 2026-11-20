@@ -124,7 +124,9 @@ After processing, you'll see:
 
 ## 📄 License
 
-MIT License - Feel free to use and modify!
+Free to use for everyone, for personal and professional work.
+Not allowed without written permission: modifying it, redistributing it, or selling it — please share the official link instead: https://the-artmedium.github.io/ImageStream/
+All rights reserved. See the [LICENSE](LICENSE) file. Contact: jeenajah@gmail.com
 
 ## 🙏 Credits
 
