@@ -166,10 +166,10 @@ All tools are free forever. All run offline. No subscriptions, no accounts, no t
 
 ## License
 
-GPL v3 — Free to use, modify and distribute.
-Cannot be resold or bundled into commercial products.
-See [LICENSE](../LICENSE) for full terms.
+Free to use for everyone, for personal and professional work.
+Not allowed without written permission: modifying it, redistributing it, or selling it — please share the official link instead: https://the-artmedium.github.io/ImageStream/
+All rights reserved. See the [LICENSE](LICENSE) file. Contact: jeenajah@gmail.com
 
 ---
 
-Built by [The Art Medium](https://github.com/The-ArtMedium) · theartsmedium@gmail.com
+Built by [The Art Medium](https://github.com/The-ArtMedium) · jeenajah@gmail.com
