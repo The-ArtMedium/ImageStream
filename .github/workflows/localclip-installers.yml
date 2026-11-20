@@ -1,0 +1,106 @@
+name: LocalClip Installers
+
+on:
+  push:
+    paths:
+      - 'LocalClip/releases/LocalClip.zip'     # a new LocalClip.zip builds the installers by itself
+    tags:
+      - 'localclip-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            LocalClip/releases
+            LocalClip/installer
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unpack the LocalClip source
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path _src | Out-Null
+          Expand-Archive -Path LocalClip/releases/LocalClip.zip -DestinationPath _src
+          New-Item -ItemType Directory -Force -Path _src/LocalClip/installer | Out-Null
+          Copy-Item LocalClip/installer/LocalClip.spec _src/LocalClip/LocalClip.spec -Force
+          Copy-Item LocalClip/installer/windows.iss _src/LocalClip/installer/windows.iss -Force
+      - name: Install build tools
+        working-directory: _src/LocalClip
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller pillow
+      - name: Build the program
+        working-directory: _src/LocalClip
+        run: pyinstaller LocalClip.spec --clean --noconfirm
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+      - name: Build the installer
+        working-directory: _src/LocalClip
+        shell: pwsh
+        run: |
+          $v = (Select-String -Path app/window.py -Pattern 'APP_VERSION = "([^"]+)"').Matches[0].Groups[1].Value
+          Write-Host "LocalClip version $v"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$v" installer\windows.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-Windows-Setup
+          path: _src/LocalClip/dist/installer/LocalClip-Setup-Windows.exe
+      - name: Put the Setup .exe on the Releases page (direct download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: localclip-latest
+          name: LocalClip (latest build)
+          files: _src/LocalClip/dist/installer/LocalClip-Setup-Windows.exe
+
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            LocalClip/releases
+            LocalClip/installer
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unpack the LocalClip source
+        run: |
+          mkdir _src
+          unzip -q LocalClip/releases/LocalClip.zip -d _src
+          cp LocalClip/installer/LocalClip.spec _src/LocalClip/LocalClip.spec
+      - name: Install build tools
+        working-directory: _src/LocalClip
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller pillow
+      - name: Build the app
+        working-directory: _src/LocalClip
+        run: pyinstaller LocalClip.spec --clean --noconfirm
+      - name: Sign the app (ad hoc) and make the disk image
+        working-directory: _src/LocalClip
+        run: |
+          codesign --force --deep --sign - dist/LocalClip.app
+          mkdir -p dist/dmg
+          cp -R dist/LocalClip.app dist/dmg/
+          ln -s /Applications dist/dmg/Applications
+          hdiutil create -volname "LocalClip" -srcfolder dist/dmg -ov -format UDZO LocalClip-macOS.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LocalClip-Mac-dmg
+          path: _src/LocalClip/LocalClip-macOS.dmg
+      - name: Put the .dmg on the Releases page (direct download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: localclip-latest
+          name: LocalClip (latest build)
+          body: "Mac: download the .dmg, open it, drag LocalClip to Applications. Windows: download the Setup .exe. If your computer shows a security warning, see the notice on the ImageStream home page."
+          files: _src/LocalClip/LocalClip-macOS.dmg
