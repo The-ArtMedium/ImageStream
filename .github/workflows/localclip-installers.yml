@@ -85,14 +85,75 @@ jobs:
       - name: Build the app
         working-directory: _src/LocalClip
         run: pyinstaller LocalClip.spec --clean --noconfirm
-      - name: Sign the app (ad hoc) and make the disk image
+      - name: Sign with Developer ID, have Apple check it, and make the disk image
         working-directory: _src/LocalClip
+        env:
+          MAC_CERT_P12: ${{ secrets.MAC_CERT_P12 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          codesign --force --deep --sign - dist/LocalClip.app
+          set -e
+          APP="dist/LocalClip.app"
+          DMG="LocalClip-macOS.dmg"
+          if [ -z "$MAC_CERT_P12" ]; then
+            echo "No Developer ID certificate in the secrets: signing ad hoc (people will see Open Anyway)."
+            codesign --force --deep --sign - "$APP"
+          else
+            # the certificate goes into a temporary keychain that only exists during this build
+            KC="$RUNNER_TEMP/signing.keychain-db"; KCPW="$(uuidgen)"
+            echo "$MAC_CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+            security create-keychain -p "$KCPW" "$KC"
+            security set-keychain-settings -lut 21600 "$KC"
+            security unlock-keychain -p "$KCPW" "$KC"
+            security import "$RUNNER_TEMP/cert.p12" -k "$KC" -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KCPW" "$KC" > /dev/null
+            security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+            rm -f "$RUNNER_TEMP/cert.p12"
+            IDENT=$(security find-identity -v -p codesigning "$KC" | awk '/Developer ID Application/ {print $2; exit}')
+            echo "Signing as: $(security find-identity -v -p codesigning "$KC" | grep 'Developer ID Application' | head -1)"
+            ENT="$RUNNER_TEMP/entitlements.plist"
+            cat > "$ENT" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/>
+            <key>com.apple.security.cs.disable-library-validation</key><true/>
+          </dict></plist>
+          PLIST
+            # every program piece inside the app, deepest first, then the app itself
+            find "$APP/Contents" -type f -print0 | while IFS= read -r -d '' f; do
+              if file -b "$f" | grep -q "Mach-O"; then printf '%s\t%s\n' "$(echo "$f" | tr -cd '/' | wc -c)" "$f"; fi
+            done | sort -rn | cut -f2- | while IFS= read -r f; do
+              codesign --force --timestamp --options runtime --entitlements "$ENT" --sign "$IDENT" "$f"
+            done
+            find "$APP/Contents" -type d -name "*.framework" | sort -r | while IFS= read -r fw; do
+              codesign --force --timestamp --options runtime --sign "$IDENT" "$fw" 2>/dev/null || true
+            done
+            codesign --force --timestamp --options runtime --entitlements "$ENT" --sign "$IDENT" "$APP"
+            codesign --verify --deep --strict --verbose=2 "$APP" || true
+          fi
           mkdir -p dist/dmg
-          cp -R dist/LocalClip.app dist/dmg/
+          cp -R "$APP" dist/dmg/
           ln -s /Applications dist/dmg/Applications
-          hdiutil create -volname "LocalClip" -srcfolder dist/dmg -ov -format UDZO LocalClip-macOS.dmg
+          hdiutil create -volname "LocalClip" -srcfolder dist/dmg -ov -format UDZO "$DMG"
+          if [ -n "$MAC_CERT_P12" ]; then
+            codesign --force --timestamp --sign "$IDENT" "$DMG"
+            # Apple checks the app (notarization); usually a few minutes
+            xcrun notarytool submit "$DMG" --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" --wait --output-format json > notary.json || true
+            cat notary.json
+            STATUS=$(python3 -c "import json; print(json.load(open('notary.json')).get('status',''))" || echo "")
+            SUBID=$(python3 -c "import json; print(json.load(open('notary.json')).get('id',''))" || echo "")
+            if [ "$STATUS" != "Accepted" ]; then
+              echo "Apple did not accept it. Apple's report:"
+              [ -n "$SUBID" ] && xcrun notarytool log "$SUBID" --apple-id "$APPLE_ID" --password "$APPLE_APP_PASSWORD" --team-id "$APPLE_TEAM_ID" || true
+              exit 1
+            fi
+            xcrun stapler staple "$DMG"
+            echo "Signed and notarized by Apple."
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: LocalClip-Mac-dmg
@@ -102,5 +163,5 @@ jobs:
         with:
           tag_name: localclip-latest
           name: LocalClip (latest build)
-          body: "Mac: download the .dmg, open it, drag LocalClip to Applications. Windows: download the Setup .exe. If your computer shows a security warning, see the notice on the ImageStream home page."
+          body: "Mac: download the .dmg, open it, drag LocalClip to Applications - it opens like any app. Windows: download the Setup .exe; if Windows shows a blue screen, click More info, then Run anyway."
           files: _src/LocalClip/LocalClip-macOS.dmg
